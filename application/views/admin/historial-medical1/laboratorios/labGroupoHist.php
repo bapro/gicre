@@ -1,0 +1,29 @@
+<?php
+echo '<option value="" ></option>';
+foreach ($query->result() as $row){
+echo '<option value="'.$row->groupo.'">'.$row->groupo.'</option>';
+
+}?>
+ <script>
+ $("#list-group").change(function(){
+
+loadGroupo($(this).val());
+});
+
+
+function loadGroupo(groupo){	
+$.ajax({
+type:'POST',
+url:'<?=base_url('admin_medico/groupDetailedLabHist')?>',
+data: {groupo : groupo,historial_id:<?=$id_historial?>,operator:<?=$operator?>,user_id:<?=$user_id?>,emergency_id:<?=$emergency_id?>,hist:<?=$hist?>},
+success:function(data) {
+$('#allLaboratoriosInd').html(data);
+
+},
+
+
+});	
+}
+
+
+ </script>
