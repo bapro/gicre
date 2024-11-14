@@ -61,6 +61,7 @@ td{text-align:left}
 	 ?>
         <tr>
 		<td><h4><?=$all_m_c->name;?></h4>
+		(<?=$all_m_c->type?>)
 		<h5>Asistente medico</h5>
 		<?php
 		$sqld ="SELECT id_doctor FROM  doctor_centro_medico WHERE centro_medico=$all_m_c->id_m_c";

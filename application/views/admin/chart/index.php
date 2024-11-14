@@ -30,7 +30,7 @@
       <select class="form-control select2 " name="centro" id="centro" onChange="getCentroDate(this.value);" disabled>
 	  <option value="" hidden></option>
 	  <?PHP
-			$sql ="SELECT name,centro_medico  FROM  medical_centers INNER JOIN h_c_enfermedad ON medical_centers.id_m_c=h_c_enfermedad.centro_medico group by name order by name desc";
+			$sql ="SELECT name,centro_medico  FROM  medical_centers INNER JOIN h_c_sinopsis ON medical_centers.id_m_c=h_c_sinopsis.centro_medico group by name order by name desc";
 			$query= $this->db->query($sql);
 			foreach ($query->result() as $row){?>
 			<option value="<?=$row->centro_medico?>" ><?=$row->name?></option>
@@ -49,7 +49,7 @@
       <select class="form-control select2 " name="medico" id="medico" onChange="getDocDate(this.value);" disabled>
 	  <option value="" hidden></option>
 	  <?PHP
-			$sql ="SELECT name,user_id  FROM  h_c_enfermedad INNER JOIN users ON h_c_enfermedad.user_id=users.id_user group by name order by name desc";
+			$sql ="SELECT name,user_id  FROM  h_c_sinopsis INNER JOIN users ON h_c_sinopsis.user_id=users.id_user group by name order by name desc";
 			$query= $this->db->query($sql);
 			foreach ($query->result() as $row){?>
 			<option value="<?=$row->user_id?>" ><?=$row->name?></option>

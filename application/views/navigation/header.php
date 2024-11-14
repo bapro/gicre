@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
-<!-- Theme stylesheet, if possible do not edit this stylesheet -->
+
 <link href="<?=base_url();?>assets/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
 
 <!-- Custom stylesheet - for your changes -->
@@ -37,6 +37,9 @@ td,th{text-align:left}
   #465298 10px,
   #465298 20px
 );}
+
+
+
 </style>
 <script>
 var interval;
@@ -127,6 +130,9 @@ function tempAlert(msg,duration)
 <ul class="nav navbar-top" >
 
 <li><a  style='color:#2A4796'><img style="width:100px" src="<?= base_url();?>assets/img/logo-online-gicre.png" alt="GICRE ONLINE"><strong>G</strong>estión <strong>I</strong>ntegral de <strong>C</strong>onsultas y <strong>R</strong>ecetas <strong>E</strong>lectrónica</a></li>
+
+<li><a  href="<?php echo site_url("navigation/AddRequest");?>"><i class="fa fa-search" aria-hidden="true"></i> Buscar paciente</a></li>
+
 </ul>
 </div>
 </nav>

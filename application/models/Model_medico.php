@@ -295,14 +295,7 @@ function CountEnfermedad($historial_id){
     return $q->num_rows();
 }
 
-function Enfermedad($historial_id)
-    {
-	$this->db->select('*');
-$this->db->from('enfermedad');
-$this->db->where('historial_id',$historial_id);
-$query = $this->db->get();
- return $query->result();
-   }
+
 
 function count_examenes($historial_id){
    $this->db->select('id_ex')->from('examenes');
@@ -318,5 +311,35 @@ public function Examenes($historial_id){
  $query = $this->db->get();
  return $query->result();
 }
+
+
+
+function get_patients_facs_total()
+    {
+ $this->db->select('*'); 
+  $this->db->from('tpfacturado');
+   $this->db->where('NOMBRE !=', '');
+   $this->db->group_by('NEC_PRO');
+ $query = $this->db->get();
+return $query->result();
+ }
+
+ function get_patients_facs($limit, $start)
+    {
+ $this->db->select('*'); 
+  $this->db->from('tpfacturado');
+  $this->db->where('NOMBRE !=', '');
+  $this->db->group_by('NEC_PRO');
+$this->db->order_by('NOMBRE', 'ASC');
+   $this->db->limit($limit, $start);
+ $query = $this->db->get();
+return $query->result();
+ }
+
+
+
+
+
+
 	
 }

@@ -1,8 +1,8 @@
 
 <div id="examNeuro" ></div>
 
-<div class="modal fade" id="ver_ex_neu"  role="dialog" >
-<div class="modal-dialog modal-inc-width8" >
+<div class="modal fade" id="ver_ex_neu" tabindex="-1" role="dialog" >
+<div class="modal-dialog modal-inc-width8" role="document">
 <div class="modal-content" >
 
 </div>
@@ -18,11 +18,9 @@ $('#ver_ex_neu').on('hidden.bs.modal', function () {
 examNeuro();
 function examNeuro()
 {
-var user_id  = <?=$user_id?>;
-var historial_id  = <?=$id_historial?>;
 $.ajax({
 url:"<?php echo base_url(); ?>hospitalizacion/examNeuro",
-data: {historial_id:historial_id,user_id:user_id},
+data: {historial_id:<?=$id_historial?>,user_id:<?=$user_id?>,id_hosp:<?=$id_hosp?>},
 method:"POST",
 success:function(data){
 $('#examNeuro').html(data);

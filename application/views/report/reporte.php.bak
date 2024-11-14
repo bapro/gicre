@@ -1,0 +1,67 @@
+
+
+<div class="row">
+<button class="btn btn-primary" onclick="ExportToExcel('xlsx')" style="float:right">Export Table Data To Excel File</button>
+</div>
+ <div class="row vertical-center-row">
+<table class="table table-stripped"  id="tbl_exporttable_to_xls" style="width:70%">
+<thead>
+
+<tr>
+<th  >
+<?=$centro_name?><br/>  
+Productividad Por Medico<br/> de  <?=$from?> hasta <?=$to?>
+
+</th>
+
+</tr>
+
+
+<tr>
+<th  >MEDICO</th>
+<th  >VALOR</th>
+</tr>
+
+</thead>
+<tbody>
+
+<?php
+$total1=0;
+foreach ($reports_medicos as $row){
+$doc_name=$this->db->select('name')->where('id_user',$row->idMed)->get('users')->row('name');
+//$area_name=$this->db->select('name')->where('id_ar',$areaDocId)->get('areas')->row('title_area');
+$total1 += $row->Paciente;
+?>
+<tr>
+<td  ><?=$doc_name?></td>
+<td  ><?=$row->Paciente;?> </td>
+
+</tr>
+<?php
+}
+
+?>
+<th>Total</th><th><?=$total1?> pacientes</th>
+</tbody>
+
+ </table>
+ 
+</div>
+
+ <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+ <script>
+ 
+
+
+ function ExportToExcel(type, fn, dl) {
+	
+       var elt = document.getElementById('tbl_exporttable_to_xls');
+       var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+       return dl ?
+         XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }):
+         XLSX.writeFile(wb, fn || ('doctor_productivity.' + (type || 'xlsx')));
+    }
+	
+
+ </script>
+ 

@@ -1,4 +1,5 @@
 <script>
+
 jQuery("input[name='database']").on('click', function(e) {
 		if($('.chkNo').is(':checked')) {
 			 $("#patient_apellido").show(1000);
@@ -12,22 +13,6 @@ $(document).on("input", ".patient-nec", function() {
     this.value = this.value.replace(/\D/g,'');
 });
 //------------------display inputs---------------
-$("#seguro_medico").on('change', function (e) {
-e.preventDefault();
-$("#load-time-seguro").fadeIn().html('<span style="font-size:24px" class="glyphicon glyphicon-refresh glyphicon-refresh-animate load"></span>');
-$.ajax({
-url: '<?php echo site_url('admin_medico/seguro_name');?>',
-type: 'post',
-data:'seguro_medico='+$(this).val(),
-success: function (data) {
-$(".seguro_input").hide();
-$("#seguro_input").html(data);
-$("#load-time-seguro").hide();
-}
-
-});
-});
-
 
 //-----get cedula patiente------------------
 $("#patient_cedula3").keyup(function(){
@@ -176,6 +161,51 @@ $("#load-time-provincia").fadeIn().html('<span style="font-size:24px" class="gly
         location.reload(true);
 
     }
+
+
+$("#clock").keyup(function(){
+$.ajax({
+type: "POST",
+url:"<?php echo base_url(); ?>searchAutoComplete/filterClockData",
+data:{keyword:$(this).val(),origin:1, centro:$("#centro-ocup").val()},
+beforeSend: function(){
+$("#clock").css("background","#DCDCDC");
+},
+success: function(data){
+$("#employee-result").show();
+$("#employee-result").html(data);
+$("#clock").css("background","");
+},
+});
+});
+
+
+function selectThisClock1(val) {
+var id_user=$(".id_user").val();
+$.ajax({
+type: "POST",
+dataType: 'json',
+url: "<?=base_url('zona_franca/addEmployeeToPatient')?>",
+data :{val:val,id_user:id_user},
+success:function(response){
+
+window.location.href="<?php echo base_url(); ?>zona_franca/employee_data?id_patient="+response.patient_id+"&centro="+response.centro+"&id="+response.id+"&id_user="+id_user;
+},
+ error: function(jqXHR, textStatus, errorThrown) {
+alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
+
+$('#employee-result').html('<p>status code: '+jqXHR.status+'</p><p>errorThrown: ' + errorThrown + '</p><p>jqXHR.responseText:</p><div>'+jqXHR.responseText + '</div>');
+console.log('jqXHR:');
+console.log(jqXHR);
+console.log('textStatus:');
+console.log(textStatus);
+console.log('errorThrown:');
+console.log(errorThrown);
+},
+});
+
+}
+
 
 
 </script>

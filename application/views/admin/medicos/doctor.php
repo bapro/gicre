@@ -192,7 +192,7 @@ $asisnam=$this->db->select('name')->where('id_user',$asistm->id_asdoc)->get('use
 
 <td  style="text-align:left;">
 <a  title="Ver" href="<?php echo base_url("admin/update_user/$asistm->id_asdoc/2")?>" ><?=$asisnam?></a>
-afectado a <a  title="Ver" href="<?php echo base_url("admin/centro_medico/$asistm->id_asdoc/2")?>" ><?=$centro?></a>
+
 </td>
 </tr>
 

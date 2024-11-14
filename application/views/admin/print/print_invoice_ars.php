@@ -4,9 +4,9 @@
  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display|Spectral">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/mpdf.css">
 <style>
- table { border-collapse: collapse; witdh:100%} 
+ table { border-collapse: collapse; witdh:100%;font-size: 10px} 
     tr { border-top: solid 1px black border-bottom: solid 1px black; } 
-    td { border-right: none; border-left: none;padding: 1em; }
+    td { border-right: none; border-left: none;padding: 1em;border-color:#E6E6E6; }
 </style>
 </head>
 <body>
@@ -29,9 +29,20 @@ $doc=$this->db->select('exequatur,area,cedula')->where('id_user',$row->medico)
 
 $area=$this->db->select('title_area')->where('id_ar',$doc['area'])
 ->get('areas')->row('title_area');
-$centro=$this->db->select('name,type,logo')->where('id_m_c',$id_centro)->get('medical_centers')->row_array();	
 
-if($centro['type']=="privado"){
+$centroInfo=$this->db->select('name,logo,rnc,primer_tel,segundo_tel,provincia,municipio,barrio,calle,type')->where('id_m_c',$id_centro)
+->get('medical_centers')->row_array();
+$centro_name=$centroInfo['name'];
+$rnc=$centroInfo['rnc'];
+$centro_logo=$centroInfo['logo'];
+$primer_tel=$centroInfo['primer_tel'];
+$segundo_tel=$centroInfo['segundo_tel'];
+$barrio=$centroInfo['barrio'];
+$calle=$centroInfo['calle'];
+$centro_prov=$this->db->select('title')->where('id',$centroInfo['provincia'])->get('provinces')->row('title');
+$centro_muni=$this->db->select('title_town')->where('id_town',$centroInfo['municipio'])->get('townships')->row('title_town');
+
+if($centroInfo['type']=="privado"){
 $segurocodigoc=$this->db->select('codigo')->where('id_seguro',$row->seguro_medico)->where('id_doctor',$row->medico)->get('codigo_contrato')->row('codigo');
 
 ?>
@@ -45,19 +56,27 @@ $segurocodigoc=$this->db->select('codigo')->where('id_seguro',$row->seguro_medic
 <span ><strong>Exeq : <?=$doc['exequatur']?></strong></span><br/>
 <span><strong>RNC: <?=$doc['cedula']?></strong></span>
 </div>
+<hr/>
 <?php } else {
-$centro_logo='<img  style="width:90px;" src="'.base_url().'/assets/img/centros_medicos/'.$centro['logo'].'"  />';
 $segurocodigoc=$this->db->select('codigo')->where('id_seguro',$row->seguro_medico)->where('id_centro',$id_centro)->get('codigo_contrato')->row('codigo');
 		
 	?>
-<div style="position: absolute; top: 0px; float:right; font-size: 10px;width:30px;font-weight:bold">
+<span style="position: absolute; top: 0px; float:right; font-size: 10px;width:100%;font-weight:bold">
 <?=$id_centro?>-<?=$last_id?>
- </div>
-<h2 style="text-align:center;text-transform:uppercase"><?=$centro['name']?> </h2>
-<h5 style="text-align:center"><?=$centro_logo?></h5>
+ </span>
+<table >
+<tr style="border:none">
+<td><img style="width:70px" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro_logo; ?>"  /></td>
+<td >
+<h3><?=$centro_name?></h3>
+<strong>Tel:</strong> <?=$primer_tel?> <?=$segundo_tel?> <strong>RNC: </strong><?=$rnc?> <strong>Ubicación:</strong> <?=$calle?>, <?=$barrio?>, <?=$centro_prov?>, <?=$centro_muni?> 
+</td>
 
-<?php }?>
+</tr>
+</table>
 <hr/>
+<?php }?>
+
 <div style="width:13%;display: block;float: left;">
 <span style="font-size:7px;text-align:center"><strong><?=$ars['title']?></strong></span><br/>
 
@@ -142,7 +161,7 @@ foreach($invoice as $fac)
    $numauto=$this->db->select('numauto')->where('idfacc',$numautoid)
  ->get('factura2')->row('numauto');
  
- if($centro['type']=="privado"){
+ if($centroInfo['type']=="privado"){
 $service=$this->db->select('procedimiento')->where('id_tarif',$fac->servicio)->get('tarifarios')->row('procedimiento');	
  }else{
  $service=$this->db->select('sub_groupo')->where('id_c_taf',$fac->servicio)->get('centros_tarifarios')->row('sub_groupo');
@@ -171,19 +190,19 @@ $fecha=date("d-m-Y", strtotime($fac->fecha));
  
 ?>
 <tr>
-<td style="text-align:left;"><?php echo $i; $i++;?></td>
-<td style="text-align:left;"><?=$fecha?></td>
-<td style="text-align:left;"><?=$imgpat?></td>
-<td style="text-transform:uppercase;text-align:left"><?=$paciente['nombre']?></td>
+<td style="text-align:left;" valign="top"><?php echo $i; $i++;?></td>
+<td style="text-align:left;" valign="top"><?=$fecha?></td>
+<td style="text-align:left;" valign="top"><?=$imgpat?></td>
+<td style="text-transform:uppercase;text-align:left" valign="top"><?=$paciente['nombre']?></td>
 
-<td style="text-align:left"><?=$paciente['cedula']?></td>
+<td style="text-align:left" valign="top"><?=$paciente['cedula']?></td>
 
-<td style="text-align:left"><?=$num_af?></td>
-<td style="text-align:left;color:#8B0000" ><?=$numauto?></td>
-<td style="text-align:left;" ><?=$service?></td>
+<td style="text-align:left" valign="top"><?=$num_af?></td>
+<td style="text-align:left;color:#8B0000"valign="top" ><?=$numauto?></td>
+<td style="text-align:left;" valign="top"><?=$service?></td>
 <!--<td style="text-align:right"><?=number_format($fac->tsubtotal,2)?></td>
 <td style="text-align:right"><?=number_format($fac->totpagpa,2)?></td>-->
-<td style="text-align:left">RD$ <?=number_format($fac->t2,2)?></td>
+<td style="text-align:left" valign="top">RD$ <?=number_format($fac->t2,2)?></td>
 
 </tr> 
 <?php
@@ -242,7 +261,7 @@ if (file_exists($signature)) {?>
 </td> 
 <td style='border:none;width:70%'>
 <?php
-$sello_doc=$this->db->select('sello')->where('doc',$row->medico)->get('doctor_sello')->row('sello');
+$sello_doc=$this->db->select('sello')->where('doc',$row->medico)->where('dist',0)->get('doctor_sello')->row('sello');
 if ($sello_doc) {?>
 <img  style="width:200px;" src="<?= base_url();?>/assets/update/<?php echo $sello_doc; ?>"  />
 <?php

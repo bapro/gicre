@@ -1,11 +1,25 @@
 <style>
 .label.label-default{background:none;color:black;font-weight:bold;border:1px solid #38a7bb;}
 </style>
+
 <div class="col-md-12" style="background:linear-gradient(to top, #E0E5E6, white);border:1px solid #38a7bb;" >
+
+<?php if($centro_type=='Salud ocupacional') {?>
+<div class="col-md-12">
+<label class="control-label"  >Buscar el empleado por clock/name/national ID  </label>
+<input autocomplete="off" id="clock" type="text" class="form-control"  />
+<input  id="centro-ocup" value="<?=$id_m_c?>" type="hidden" class="form-control"  />
+
+<div id="employee-result"> </div>
+<br/>
+</div>
+
+<?php }?>
+<div class="col-md-12">
  <div class="alert alert-info">
   <strong>Buscar el paciente primero ante de empezar a crear nueva cita.</strong>
 </div>
- <div class="form-group sumges">
+<div class="row">
  <div class="col-lg-4">
  <label class="control-label">Buscar por cedula</label>
    <div class="form-inline">
@@ -44,14 +58,14 @@
    <button  class="btn btn-primary btn-sm" type="submit" id="button_patient_name" ><i class="fa fa-search" aria-hidden="true"></i></button>
  </form>
   </div>
-<br>
+  <br/> <br/>  <br/> 
  </div>
- <br/><br/>
+ </div>
  </div>
 <div class="col-md-12">
 <div class="button_name" style="margin-left:45%"></div>
 <span id="no_patient_name_found"><?php echo $this->session->flashdata('no_patient_name_found'); ?></span>
-<hr id="hr_ad"/>
+<br/>
 <div id="patientdata"> </div>
 </div>
 

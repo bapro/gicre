@@ -19,10 +19,11 @@ foreach($queryexneu->result() as $row)
 $user_c11=$this->db->select('name')->where('id_user',$row->inserted_by)->get('users')->row('name');
 $user_c12=$this->db->select('name')->where('id_user',$row->updated_by)->get('users')->row('name');
 $inserted_time = date("d-m-Y H:i:s", strtotime($row->inserted_time));
-
 $update_time = date("d-m-Y H:i:s", strtotime($row->updated_time));	
+
 ?>
 <div class="modal-header text-center"  id="background_">
+<?php $this->load->view('hospitalizacion/historial/header-patient-data');?>
 <button type="button" title="Cierra" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times-circle"  style="font-size:48px;color:red"></i></button>
 
 
@@ -44,7 +45,7 @@ Creado por :<?=$user_c11?>, <?=$inserted_time?><br/>
 
 </div>
 
-<div class="modal-body" style="max-height: calc(150vh - 210px); overflow-y: auto;">
+<div class="modal-body text-left" style="max-height: calc(150vh - 210px); overflow-y: auto;">
 <div id="resultwrwre" style='color:green;text-align:center' ></div>
 <div class="col-md-12"  >
 

@@ -88,6 +88,34 @@ echo "<span style='color:black'>Creado por : $user_c18 ($inserted_time) <br/> Mo
 <th class="thh">CORREO</th>
 <td class="vtd"><?=$row->correo;?></td>
 </tr>
+<tr>
+<th class="thh">OFTALMOLOGOS AFECTADOS</th>
+<td>
+
+<?php 
+$sql = "select id_user, name FROM users WHERE area=32 ORDER BY name DESC";
+ $querylb= $this->db->query($sql);
+ foreach($querylb->result()  as $afec){
+
+$id_user_lab=$this->db->select('id_user')->where('id_user',$afec->id_user )
+->where('id_lab_lente',$row->id)
+ ->get('user_oftal_lab_lentes')->row('id_user');
+ 
+		if($id_user_lab==$afec->id_user ){
+		  echo "$afec->name <br/>";
+		} 
+		
+
+}
+?>
+
+</td>
+</tr>
+
+
+
+
+
 
 </table>
 </div>

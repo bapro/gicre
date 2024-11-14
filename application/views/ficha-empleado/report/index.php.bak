@@ -1,0 +1,72 @@
+ <div class="col-md-12" >
+ <h1>Reporte De Licencia Médica</h1>
+ <h3>Elegir Rango De Fecha</h3>
+ <form class="form-inline" method="get"  action="<?php echo site_url("zona_franca/SeachCitaResultAs");?>" >
+<div class="col-md-9" style="background:#E0E5E6;border:1px solid #38a7bb;"> 
+<div class="col-md-3">
+<label for="desde" >Desde</label> 
+<select class="form-control select2" name="from"  >
+<?php 
+
+foreach($query2->result() as $row)
+{ 
+$date2=date("Y-m-d", strtotime($row->inserted_time));
+?>
+<option value="<?=$date2?>" ><?=$date2?></option>
+<?php
+}
+?>
+
+</select>
+<br/><br/>
+</div>
+<div class="col-md-3">
+<label for="hasta" >Hasta</label> 
+<select class="form-control select2" name="to"  >
+<?php 
+
+foreach($query1->result() as $row)
+{ 
+$date1=date("Y-m-d", strtotime($row->inserted_time));
+?>
+<option value="<?=$date1?>" ><?=$date1?></option>
+<?php
+}
+?>
+
+</select>
+
+
+</div>
+<div class="col-md-3">
+<br/>
+<button type="submit" id="click_button" class="btn btn-primary btn-xs" ><i class="fa fa-search"></i></button>
+</div>
+
+</form>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<script>
+
+
+
+$('.select2').select2({
+	 width: '100%',
+ placeholder: "SELECCIONAR",
+    allowClear: true, 
+  language: {
+
+    noResults: function() {
+
+      return "No hay resultado.";        
+    },
+   
+  }
+});	
+
+
+</script>

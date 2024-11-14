@@ -1,214 +1,161 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
+	<section class="py-3">
+	<div class="container  d-flex align-items-center justify-content-center">
+	<div class="col-md-9">
+	<a class="btn btn-primary mb-3"  href="#" data-bs-toggle="modal" data-bs-target="#createAreaModal" >Crear Seguro Médico</a>
+	<div class="card">
+	<div class="card-header fs-1"> Seguro Médico</div>
+	<div class="card-body">
 
-<title>ADMEDICALL</title>
+  <div id="list-insurances"></div>
 
-<meta name="keywords" content="">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display|Spectral">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">
-<link href="<?=base_url();?>assets/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
-<!-- Custom stylesheet - for your changes -->
-<link href="<?=base_url();?>assets/css/custom.css" rel="stylesheet">
-<link rel="shortcut icon" href="<?= base_url();?>assets/img/adms.png" type="image/x-icon" />
 
-<!-- owl carousel css -->
-<style>
+	</div>
+	</div>
+	</div>
+	</div>
+		
+		 <div class="modal fade" id="createAreaModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+   <div class="modal-dialog ">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h1 class="modal-title">Crear Seguro Médico</h1>
+         <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="#staticBackdrop"  aria-label="Close"></button>
+       </div>
+       <div class="modal-body" >
 
-td,th{text-align:center}
+ 
+<form method="post" enctype="multipart/form-data" novalidate class="needs-validation"  action="<?php echo site_url('seguro_medico/save_s_m');?>">
 
-</style>
-</head>
-<!-- *** welcome message modal box *** -->
+ <div class="mb-3">
 
-<?php
-$this->load->view('admin/header_admin');
-$id_user=($this->session->userdata['admin_id']);
-?>
-<body >
-<hr id="hr_ad"/>
-<div class="container">
-<div class="row">
+<label class="form-label "><span class="text-danger"></span> Nombre :</label>
 
-<div class="col-md-12">
-<a href="#" class="btn btn-primary btn-xs st"  title="Crear nuevo seguro medico" data-toggle="modal"   data-target="#NuevaSeguroMedico"  ><i class="fa fa-plus" aria-hidden="true"></i>Nuevo seguro medico</a>
+ <input type="text" class="form-control" name="title" id="title_ns" required>
+<div class="invalid-feedback">Cual es el nombre?</div>
+</div>
+
+
+ <div class="mb-3">
+<label class="form-label "><span class="text-danger"></span> Cargar Logo :</label>
+
+<input type="file" class="file" name="picture"  id="picture" required>
+<div class="invalid-feedback">Sube el logo</div>
 
 </div>
 
 
+
+ <div class="mb-3">
+<label class="form-label ">RNC :</label>
+
+ <input type="text"  title="Registro Nacional de Contribuyente" class="form-control" name="rnc" id="rnc" >
+
 </div>
 
-<?php echo $this->session->flashdata('success_msg'); ?>
 
 
-<hr id="hr_ad"/>
+ <div class="mb-3">
 
-<div  style="overflow-x:auto;">
-<table id="example" class="table table-striped table-bordered" style="margin:auto" width="70%" cellspacing="0">
-<thead>
-<tr style="background:#5957F7;color:white">
-<th style="width:5px">Seguro Medico</th>
-<th style="width:2px">Logo</th>
-<th style="width:5px">RNC</th>
-<th style="width:1px">Acciones</th>
-</tr>
-</thead>
-<tbody>
-<?php foreach($all_seguro_medico as $all_a)
+<label class="form-label " title="Registro nacional de contribuyente">Telefonos :</label>
 
-{
-?>
-<tr>
-<td  style="width:5px;text-transform:uppercase"><?=$all_a->title;?></td>
-<td>
+ <input type="text" class="form-control" name="tel" id="tel" >
+
+</div>
+
+
+
+
+ <div class="mb-3">
+<label class="form-label " title="Registro nacional de contribuyente">Correo :</label>
+
+ <input type="text" class="form-control" name="email"  id="email">
+
+</div>
+
+
+ <div class="mb-3">
+<label class="form-label " title="Registro nacional de contribuyente">Dirección :</label>
+
+ <input type="text" class="form-control" name="direccion" id="direccion" >
+
+</div>
+
+
+ <div class="mb-3">
+<label class="form-label ">Campos:</label>
+
 <?php 
-if($all_a->logo==""){
-	$logo="";
-}
-else {
-$logo='<img  style="width:90px;" src="'.base_url().'/assets/img/seguros_medicos/'.$all_a->logo.'"  />';	
-}
- ?>
-<?php echo $logo; ?>
-</td>
-<td  style="width:5px"><?=$all_a->rnc;?></td>
-<td style="width:1px" >
-<a data-toggle="modal" data-target="#EditSeguroMedico" class="st" title="Editar" href="<?php echo base_url("admin/EditSeguroMedico/$all_a->id_sm")?>" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-<a data-toggle="modal" data-target="#relatedCentroMedico" class="st" href="<?php echo base_url('admin/RelatedCentro/'.$all_a->id_sm)?>" title="Centros medicos conectados "><i class="fa fa-link" aria-hidden="true"></i></a>
-
-<a title="desactivar" id="<?=$all_a->id_sm; ?>"  class="st deleteseguro" style="background:rgb(223,0,0)"><i class="fa fa-times" aria-hidden="true" ></i></a>
-
-</td>
-</tr>
-<?php
-}
-?>
-</tbody>  
-
-  
-</table>
+foreach ($ALL_FIELDS as $row ) {?>
+<div class="form-check">
+  <input class="form-check-input" type="checkbox" name='field_id[]' id="flexCheckDefault-<?=$row->id?>" value="<?=$row->id?>">
+  <label class="form-check-label" for="flexCheckDefault-<?=$row->id?>">
+   <?=$row->name?>
+  </label>
+</div>
+<?php }  ?>
+<div id="erBox4" class="text-danger"></div>
+</div>
+<div class="col-sm-12 col-md-offset-3">
+<button type="submit"  id="send" class="btn btn-primary btn-xs save-new-seguro" > Guardar</button>
 
 </div>
-<hr/>
-<div class="row">
-<div class="col-md-12">
-
-<a href="#" class="btn btn-primary btn-xs st"  title="Crear nuevo seguro medico" data-toggle="modal"   data-target="#NuevaSeguroMedico"  ><i class="fa fa-plus" aria-hidden="true"></i>Nuevo seguro medico</a>
 <br/><br/>
-</div>
-</div>
-
-<div class="modal fade" id="EditSeguroMedico"  tabindex="-1" role="dialog" >
-<div class="modal-dialog">
-<div class="modal-content" >
-<div class="modal-body">
-</div>
-</div>
-</div>
-</div>
-<div class="modal fade" id="relatedCentroMedico" tabindex="-1" role="dialog" >
-<div class="modal-dialog">
-<div class="modal-content">
-<div class="modal-body">
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<?php 
 
 
-$this->load->view('footer');
-$this->load->view('admin/modal');
 
-?>
-</body>
+</form>
 
 
-<!-- *** FOOTER END *** -->
 
-<!-- *** COPYRIGHT ***
-_________________________________________________________ -->
+ 
+       </div>
+      
+     </div>
+   </div>
+ </div>
+    </section>
+	
 
-<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+  <?php
+ 
+  $this->load->view('footer');
+  ?>
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js "></script>
-<script src="<?=base_url();?>assets/js/custom.js"></script> 
-<script type="text/javascript"> 
+ <script src="<?= base_url();?>assets_new/js/jquery-3.2.1.min.js" ></script>
+  <script src="<?= base_url();?>assets_new/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+ <script src="<?= base_url();?>assets_new/vendor/tinymce/tinymce.min.js"></script>
+ <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+  
+ <script src="<?= base_url();?>assets_new/js/main.js"></script> 
 
-$( document ).ready(function() {
-$('#relatedCentroMedico').on('hidden.bs.modal', function () {
-$(this).removeData('bs.modal');
-});
+<?php $this->load->view('prevent-duplicated-entry');?>
+<script>
 
-$('#EditSeguroMedico').on('hidden.bs.modal', function () {
-$(this).removeData('bs.modal');
-});
-
-$('#deletesuccess').delay(3000).fadeOut();
-
-//delete seguro
-
-$(".deleteseguro").click(function(){
-if (confirm("Estás seguro de desactivar ?"))
-{ 
-var el = this;
-var del_id = $(this).attr('id');
-var rowElement = $(this).parent().parent(); //grab the row
-
-$.ajax({
-type:'POST',
-url:'<?=base_url('admin/delete_seguro_medico')?>',
-data: {id : del_id},
-success:function(response) {
-
-// Removing row from HTML Table
-$(el).closest('tr').css('background','tomato');
-$(el).closest('tr').fadeOut(800, function(){ 
-$(this).remove();
-});
-
-}
-});
-}
-});
-
-});
+$(document).ready( function(){
 
 
-function get_detail()
-{
-var size=$('#picture')[0].files[0].size;
-var extension=$('#picture').val().replace(/^.*\./, '');
-switch (extension) {
-case 'png': case 'jpeg': case 'jpg':
-$('#divFiles').hide();
-$('#send').prop("disabled",false);
-break;
-default:
-$('#picture').val("");
-$('#divFiles').show();
-$('#divFiles').text('Esta extension es prohibida : ' + extension );
-$('#send').prop("disabled",true);
-}
-
-
-}
-
+listarInsurances();
 
 	
-$('.save-new-seguro').click(function(e) { 
+	
+	function listarInsurances(){
 
-if($("#title_ns").val() == "" ||  $("#rnc").val() == "" ||  $("#tel").val() == "" ||  $("#email").val() == "" ||  $("#direccion").val() == "" ){
-$("#erBox").html("Todos los campos son obligatorios !");
-return false;
-} 
+	     $.ajax({
+ type: "POST",
+ url: "<?php echo site_url('seguro_medico/healthInsuranceTable');?>",
+
+ success:function(data){
+ $("#list-insurances").html(data);
+ },
+ 
+
+ });	
+	}
+	
+	
+
+$('.save-new-seguro').click(function(e) { 
+ 
       checked = $("input[type=checkbox]:checked").length;
 
       if(!checked) {
@@ -216,11 +163,17 @@ return false;
         return false;
       }
 
-});
-
-
-
-
+});	
+	
+	
+		
+	
+ });
 </script>
+
+	
+
+	 
+</body>
 
 </html>

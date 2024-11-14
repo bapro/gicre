@@ -1,0 +1,1 @@
+ <script src="<?=base_url();?>assets/js/hospitalizacion/signos-vitales.js?rnd=13"></script> 

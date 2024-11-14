@@ -19,16 +19,16 @@ $inserted_time  = date("d-m-Y H:i:s", strtotime($codigo['inserted_time']));
 <div class="col-md-12" style="text-align:center">
 <h2 style="color:green" >CENTRO MEDICO </h2>
  <h4 style="color:green" ><?=$centro['name']?> </h4>
-<p><img width="120" height="120" class="img-thumbnail" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro['logo']; ?>"  /></p>
- <ul style='color:black;list-style:none'>
-<li>Creado por <?=$u1?> fecha <?=$inserted_time?></li>
-<li>Editado por <?=$u2?> fecha <?=$updated_time?> </li>
-</ul>
+<!--<p><img width="120" height="120" class="img-thumbnail" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro['logo']; ?>"  /></p>-->
+
+<i class="bi bi-info-circle-fill text-info" title="Creado por <?=$u1?> fecha <?=$inserted_time?>&#010;  Editado por <?=$u2?> fecha <?=$updated_time?>" ></i>
+  <?=$seguromedico?>
  <h5 style="color:green" >Codigo Prestador : <input type="text"  id="show-cc" style="display:none;width:150px;text-align:center" value="<?=$codigo['codigo']?>"/>
  <span id="hide-cc"><?=$codigo['codigo']?></span>
- <button  type="button" class="btn btn-sm btn-default" id="show-s-b-cc" style="float: none;" ><span class="glyphicon glyphicon-pencil"></span></button>
- <button type="button" id="save-b-cc" class="btn btn-sm btn-success" style="float: none; display: none;"><span class="glyphicon glyphicon-ok-sign"></span></button>
- <?=$seguromedico?>
+
+ <button  type="button" class="btn btn-sm btn-default" id="show-s-b-cc" style="float: none;" ><span class="fa fa-pencil"></span></button>
+ <button type="button" id="save-b-cc" class="btn btn-sm btn-success" style="float: none; display: none;"><span class="fa fa-save"></span></button>
+
  </h5>
   <hr id="hr_ad"/>
 <table class="table table-striped" id='list-of-n-cat' >
@@ -52,7 +52,7 @@ $inserted_time  = date("d-m-Y H:i:s", strtotime($codigo['inserted_time']));
 <td><input id="new-simon2" class="form-control rmv-red" type="text"/> </td>
 <td><input id="new-consulta2" style="width:100%"  class="form-control  rmv-red" type="text"/> </td>
 <td><input id="new-monto2" class="form-control  rmv-red" type="text"/> </td>
-<td> <button type="button" id="NewsaveBtn2" class="btn btn-sm btn-success" style="float: none;"><i class="fa fa-save"> Guardar</i></button></td>
+<td> <button type="button" id="NewsaveBtn2" class="btn btn-sm btn-success"><span class="fa fa-save"></span> Guardar</button></td>
 </tr> 
 </thead>
 <tbody >
@@ -66,7 +66,7 @@ $inserted_time  = date("d-m-Y H:i:s", strtotime($codigo['inserted_time']));
 <div class="col-md-12 table-responsive" style="max-height:120vh;overflow: auto;" >
 <div id='display_centro_tarif_cat'></div>
 </div>
-<div class="col-md-12 table-responsive" style='border:1px solid #38a7bb;height:850px;' >
+<div class="col-md-12 table-responsive" style='' >
 <br/>
 
 <div id="servicios" style="text-align:center;"><span class="alert alert-info" >Los servicios de la categoria se muestran aqui.<span></div>
@@ -117,7 +117,7 @@ success: function(msg){
 display_centro_tarif_cat();
 function display_centro_tarif_cat(){
 $.ajax({
-url:"<?php echo base_url(); ?>admin/display_centro_tarif_cat",
+url:"<?php echo base_url(); ?>tarifarios_centro/display_centro_tarif_cat",
 data: {id_seguro:<?=$id_seguro?>,id_centro:<?=$id_centro?>},
 method:"POST",
 success:function(data){
@@ -176,7 +176,7 @@ var codigo_id  = "<?=$codigo['id']?>";
 var user_name  = "<?=$user_name?>";
 $.ajax({
 type: "POST",
-url: '<?php echo site_url('admin/save_edit_c_c');?>',
+url: '<?php echo site_url('admin_medico/save_edit_c_c');?>',
 data:{codigo_id:codigo_id,codigo:codigo,user_name:user_name},
 success: function(data){
 $("#show-cc").hide();

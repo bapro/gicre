@@ -1,0 +1,212 @@
+<?php 
+foreach($query->result() as $edit_em )
+
+if($edit_em->enviado_a==1){
+		$enviado="Triaje";
+	} elseif($edit_em->enviado_a==2){
+		$enviado="Emergencia General";
+	}
+	elseif($edit_em->enviado_a==3){
+		$enviado="Emergencia Pediatría";
+	}
+	elseif($edit_em->enviado_a==4){
+	$enviado="Quirofano";	
+	}
+	elseif($edit_em->enviado_a==5){
+	$enviado="Emergencia Obstétrica Y Ginecología";	
+	}
+	elseif($edit_em->enviado_a==6){
+	$enviado="Reanimación";	
+	}
+?>
+<div class="modal-header" >
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times" aria-hidden="true"></i></button>
+<h4 class="modal-title ">Update Emergencia # <?=$edit_em->id_ep?></h4>
+<p id="erBoxm"></p>
+</div>
+
+<div class="modal-body" id="background_">
+<form method="post" id=""  class="form-horizontal" action="<?php echo site_url('emergency/emergency_management');?>">
+<input  type="hidden" name="creadted_by" id="creadted_by"  value="<?=$id_user?>"  >
+<input  type="hidden" name="operation"   value="<?=$edit_em->id_ep?>"  >
+<input  type="hidden" name="id_patient" id="id_patient"  value="<?=$edit_em->id_pat?>"  >
+ <div class="form-group">
+<label class="control-label col-sm-3"><span class="req">*</span> Centro medico</label>
+<div class="col-sm-6">
+<select class="form-control emergencia required"   name="centro_medico" id="centro_medico11" > 
+<?php
+foreach($centro_medico as $ce){
+	
+	if($edit_em->centro == $ce->id_m_c) {
+		echo "<option value=".$ce->id_m_c." selected>".$ce->name."</option>";
+	} else {
+		echo "<option value=".$ce->id_m_c.">".$ce->name."</option>";
+	}
+	}
+?>
+ </select>
+ <div id="load-time-es"></div>
+ </div>
+ </div>
+<div class="form-group">
+<label class="control-label col-sm-3">Causa</label>
+<div class="col-sm-6 cau">
+<select class="form-control emergencia required"   name="em_name" id="em_name" >
+<?php
+foreach($queryc->result() as $row){
+
+if($edit_em->causa == $row->id_em_c) {
+		echo "<option value=".$row->id_em_c." selected>".$row->em_name."</option>";
+	} else {
+		echo "<option value=".$row->id_em_c.">".$row->em_name."</option>";
+	}
+}
+?>
+	
+</select>
+
+</div>
+
+</div>
+	<div class="form-group">
+<label class="control-label col-sm-3">Paciente Referido Por</label>
+<div class="col-sm-6 centrom">
+<select class="form-control emergencia required" name="paciente_referido" id="paciente_referido" >
+ <option value="" ></option>
+ <?php
+foreach($queryrp->result() as $row){
+
+if($edit_em->paciente_referido_por == $row->id_em_c) {
+		echo "<option value=".$row->id_em_c." selected>".$row->em_name."</option>";
+	} else {
+		echo "<option value=".$row->id_em_c.">".$row->em_name."</option>";
+	}
+
+}
+?>
+ </select>
+ </div>
+ </div>
+<div class="form-group">
+<label class="control-label col-sm-3">Medio De Llegado</label>
+<div class="col-sm-6">
+<select class="form-control emergencia required"  id="medio_llegado" name="medio_llegado"  >
+ <option value=""></option>
+  <?php
+foreach($queryml->result() as $row){
+
+if($edit_em->medio_de_llegado == $row->id_em_c) {
+		echo "<option value=".$row->id_em_c." selected>".$row->em_name."</option>";
+	} else {
+		echo "<option value=".$row->id_em_c.">".$row->em_name."</option>";
+	}
+
+}
+?>
+</select>
+
+</div>
+ </div>
+ <div class="form-group">
+<label class="control-label col-sm-3">Enviado A</label>
+<div class="col-sm-6">
+<select class="form-control enviad_a required"   name="enviado_a" id="enviado_a"  >
+<option value="<?=$edit_em->enviado_a?>"><?=$enviado?></option>
+<option value='1'>Triaje</option>
+<option value='2'>Emergencia General</option>
+<option value='3'>Emergencia Pediatría</option>
+<option value='4'>Quirofano</option>
+<option value='5'>Emergencia Obstétrica Y Ginecología</option>
+<option value='6'>Reanimación</option>
+</select>
+
+</div>
+</div>
+ <div class="form-group">
+<label class="control-label col-sm-3">Estado De Paciente</label>
+<div class="col-sm-6">
+<select class="form-control emergencia required"  name="estado_paciente" id="estado_paciente"  >
+<option value=""></option>
+ <?php
+foreach($queryep->result() as $row){
+
+if($edit_em->estado_de_paciente == $row->id_em_c) {
+		echo "<option value=".$row->id_em_c." selected>".$row->em_name."</option>";
+	} else {
+		echo "<option value=".$row->id_em_c.">".$row->em_name."</option>";
+	}
+
+}
+?>
+</select>
+</div>
+</div>
+ <button type="submit" disabled id="btn-twice1" style="margin-left:153px" class="btn btn-primary btn-sm send_cit" ><i class="fa fa-floppy-o" aria-hidden="true"  ></i> Guardar </button>
+<div id="load-text"><em><i></i></em></div>
+</form>
+
+</div>
+<?php $this->session->set_userdata('enviado_a', $this->input->post('enviado_a'));?>
+<script>
+
+$('.emergencia').select2({ 
+placeholder: "SELECCIONAR",
+tags: true
+
+});
+
+$('.enviad_a').select2({ 
+placeholder: "SELECCIONAR"
+
+});
+
+  $.fn.modal.Constructor.prototype.enforceFocus = function () {
+        $(document)
+        .off('focusin.bs.modal') // guard against infinite focus loop
+        .on('focusin.bs.modal', $.proxy(function (e) {
+            if (this.$element[0] !== e.target && !this.$element.has(e.target).length && !$(e.target).closest('.select2-dropdown').length) {
+                this.$element.trigger('focus')
+            }
+        }, this))
+    }
+
+
+$('.required').on('change', function(){
+$('#btn-twice1').prop("disabled", false);
+})	
+	
+	
+$('#btn-twice1').on('click', function(){
+
+if($("#em_name").val() == "" ){
+$("#em_name").focus();
+$("#erBoxm").html("Selecionne una causa.").css("color","red");
+return false;
+} 
+if($('#paciente_referido').val() == ""){
+$("#paciente_referido").focus();
+$("#erBoxm").html("Selecionne el paciente referido").css("color","red");
+return false;
+}
+
+if($("#medio_llegado").val() == "" ){
+$("#medio_llegado").focus();
+$("#erBoxm").html("Selecionne el medio llegado").css("color","red");
+return false;
+}
+if($('#enviado_a').val() == ""){
+$("#enviado_a").focus();
+$("#erBoxm").html("Selecionne a qui se lo envia").css("color","red");
+return false;
+} 
+
+
+if($('#estado_paciente').val() == ""){
+$("#estado_paciente").focus();
+$("#erBoxm").html("Ingrese el estado del paciente").css("color","red");
+return false;
+} 
+});
+	
+	
+</script>

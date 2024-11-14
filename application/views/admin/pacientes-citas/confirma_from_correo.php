@@ -207,6 +207,7 @@ echo $area;
 <input type="hidden" value="<?=$area ?>" name="doctor-area"/>
 <input type="hidden" value="<?=$row->centro?>" name="centro-id"/>
 <input type="hidden" value="2" name="direction"/>
+<input type="hidden" value="<?=$pat['tel_cel'] ?>" name="patient-phone"/>
 <hr/>
 <textarea placeholder="Escribir mensage al paciente." class="form-control" id="background_" name="medico-text" rows="4" cols="55"></textarea><br/>
 

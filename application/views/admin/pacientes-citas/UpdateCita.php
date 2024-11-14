@@ -8,7 +8,7 @@ foreach($FindCita as $edit_cit)
 </div>
 
 <div  id="background_">
-<form method="post" class="form-horizontal" id="send_data_cita" action="<?php echo site_url('admin_medico/saveUpdateCita');?>">
+<form method="post" class="form-horizontal" id="send_data_cita" action="<?php echo site_url('cita/saveUpdateCita');?>">
 <input type="hidden" name="update_by" value="<?=$name?>"/>
 <input type="hidden" name="id_patient" value="<?=$edit_cit->id_patient?>">
 <input type="hidden" name="id_cita" value="<?=$edit_cit->id_apoint?>">
@@ -248,7 +248,7 @@ tags: true
 	var id_patient="<?=$edit_cit->id_patient?>";
 	$.ajax({
 	type: "POST",
-	url: "<?=base_url('admin_medico/daySelected')?>",
+	url: "<?=base_url('cita/daySelected')?>",
 	data: {day:day,doc:doc,fecha_propuesta1:fecha_propuesta1,centro_medico:centro_medico,id_patient:id_patient},
 	cache: true,
 	success:function(data){ 

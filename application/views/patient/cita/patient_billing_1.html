@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="../assets/css/style.css" />
+
+    <title>ADMEDICALL</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <a href="http://" class="btn btn-sm btn-outline-primary position-absolute btn-back ms-2"><i
+                class="fa fa-arrow-left"></i></a>
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="images/logo.png" alt="Admedicall">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse text-uppercase" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Citas por hoy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Solicitudes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Paciente</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Facturaction
+                        </a>
+                        <ul class="dropdown-menu fs-7" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">MSSM & CM</a></li>
+                            <li><a class="dropdown-item" href="#">Factura</a></li>
+                            <li><a class="dropdown-item" href="#">Factura Borradas</a></li>
+                            <li><a class="dropdown-item" href="#">CREACION DE FACTURA PARA RECLAMAR A LA ARS publico
+                                    Asistente Medico</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-user text-primary"></i> User
+                        </a>
+                        <ul class="dropdown-menu fs-7" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Asistente Medico ALERGISTA</a></li>
+                            <li><a class="dropdown-item" href="#">Mi Cuenta</a></li>
+                            <li><a class="dropdown-item" href="#">Cerrar Sesión</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="position-absolute bottom-0 w-100">
+            <div class="d-flex">
+                <div class="flex-fill bg-primary pt-1"></div>
+                <div class="flex-fill bg-warning pt-1"></div>
+                <div class="flex-fill bg-success pt-1"></div>
+                <div class="flex-fill bg-danger pt-1"></div>
+            </div>
+        </div>
+    </nav>
+    <section class="py-3">
+        <div class="container">
+            <div class="alert alert-primary" role="alert">
+                Usted tiene una cuenta gratuita !
+            </div>
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4>DSALUD</h4>
+                    <img src="images/116184197.jpg" alt="" width="110">
+                    <div><i class="fa fa-phone"></i> 8092379217</div>
+                    <div class="py-1"><b>RNC</b> 106856420</div>
+                    <div><i class="fa fa-map-marker-alt"></i> <small>ISABEL AGUIAR NO.296, HERRERA, SANTO DOMINGO, SANTO
+                            DOMINGO OESTE</small></div>
+                </div>
+            </div>
+
+            <div class="card my-3">
+                <div class="card-body text-center">
+                    <h4 class="mb-3">DATOS DEL PACIENTE</h4>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered table-striped mb-0">
+                            <thead>
+                                <tr class="bg-th">
+                                    <th></th>
+                                    <th>Record</th>
+                                    <th>Nombres</th>
+                                    <th>Cedula</th>
+                                    <th>Seguro Medico</th>
+                                    <th>Tel</th>
+                                    <th>Direccion</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="align-middle">
+                                    <td>
+                                        <img src="images/user-d-tbl.jpg" width="72">
+                                    </td>
+                                    <td>6</td>
+                                    <td>Jose Aneudy Sanchez</td>
+                                    <td>0123456789</td>
+                                    <td>Privado</td>
+                                    <td>(800) 717-3303</td>
+                                    <td>las trinitarias no.4 mirador del oeste</td>
+                                    <td>admedicall@gmail.com</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card my-3">
+                <div class="card-body text-center">
+                    <div class="row align-items-center">
+                        <div class="col-auto">Fecha</div>
+                        <div class="col-auto">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card my-3">
+                <div class="card-body">
+                    <h4 class="mb-3">FACTURA</h4>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered table-striped mb-0">
+                            <thead>
+                                <tr class="bg-th">
+                                    <th width="170">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">No hay tarifarios crear</a>
+                                    </th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Sub-Total</th>
+                                    <th>Descuento</th>
+                                    <th>Total Pagar Paciente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="align-middle">
+                                    <td>
+                                        <select class="form-select form-select-sm">
+                                            <option selected=""></option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm">
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text" id="basic-addon2">RD$</span>
+                                            <input type="text" class="form-control" placeholder="" aria-label=""
+                                                aria-describedby="basic-addon2">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text" id="basic-addon3">RD$</span>
+                                            <input type="text" class="form-control" placeholder="" aria-label=""
+                                                aria-describedby="basic-addon3">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text" id="basic-addon4">RD$</span>
+                                            <input type="text" class="form-control" placeholder="" aria-label=""
+                                                aria-describedby="basic-addon4">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text" id="basic-addon5">RD$</span>
+                                            <input type="text" class="form-control" placeholder="" aria-label=""
+                                                aria-describedby="basic-addon5">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="align-middle bg-tbl-f text-center fw-bold">
+                                    <td colspan="3">
+                                        TOTALES
+                                    </td>
+                                    <td>
+                                        RD$ 0.00
+                                    </td>
+                                    <td>
+                                        <div class="text-danger">
+                                            RD$ 0.00
+                                        </div>
+                                    </td>
+                                    <td>
+                                        RD$ 0.00
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card my-3">
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-9">
+                            <div class="form-floating">
+                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea"
+                                    style="min-height: 150px;"></textarea>
+                                <label for="floatingTextarea">Comentario</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-sm btn-primary"><i class="fa fa-save"></i>
+                                GUARDAR</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <footer class="fixed-bottom bg-light border-top">
+        <div class="container text-center py-3">
+            Acuérdate que Dios es el médico por excelencia.<br>Copyright © 2022 GICRE Todos los derechos reservados.
+        </div>
+        <div class="d-flex">
+            <div class="flex-fill bg-primary pt-1"></div>
+            <div class="flex-fill bg-warning pt-1"></div>
+            <div class="flex-fill bg-success pt-1"></div>
+            <div class="flex-fill bg-danger pt-1"></div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/bootstrap.bundle.js"></script>
+
+</body>
+
+</html>

@@ -16,7 +16,8 @@ $doc=$user_id;
 else{
 $controller="medico";
 $doc= $this->db->select('id_doctor')->where('id_asdoc',$user_id)->get('centro_doc_as')->row('id_doctor');
-$centro=0;		
+//$centro=0;	
+$centro= $this->db->select('centro_medico')->where('id_doctor',$user_id)->get('doctor_centro_medico')->row('centro_medico');		
 }
 ?>
 <div class="row"  style="border:1px solid #38a7bb;background:linear-gradient(to right, white, #E0E5E6, white);" >

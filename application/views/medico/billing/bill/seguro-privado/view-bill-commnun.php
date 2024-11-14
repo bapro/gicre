@@ -1,4 +1,10 @@
 <?php
+$id=decrypt_url($id);
+$identificar=decrypt_url($identificar);
+if($id=="" || $identificar==""){
+redirect("$controller/billing_medicos");	
+}
+
 $idt=$this->db->select('medico,seguro_medico,paciente,centro_medico,numfac2')->where('idfacc',$id)->get('factura2')->row_array();
 $get= array(
 'id_seguro' => $idt['seguro_medico'],

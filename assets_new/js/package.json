@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "jq-signature": "^2.0.0"
+  }
+}

@@ -15,7 +15,7 @@ if(!empty($query)) {
 <?php
 foreach($query->result() as $row) {
 ?>
-<li class='nombre-li' onClick="selectNotaName<?=$edit?>('<?php echo $row->nombre; ?>');"><?php echo $row->nombre; ?></li>
+<li class='nombre-li' onClick="selectNotaName('<?php echo $row->nombre; ?>');"><?php echo $row->nombre; ?></li>
 <?php } ?>
 </ul>
 <?php }  ?>

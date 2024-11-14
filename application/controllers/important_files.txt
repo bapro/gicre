@@ -1,0 +1,9 @@
+C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS2019\MSSQL\DATA\dbAPD.mdf
+
+
+
+
+https://www.stellarinfo.com/installation-guide/converter-for-database/Installation_Guide.pdf
+
+
+https://www.stellarinfo.com/article/how-migrate-mssql-server-to-mysql.php

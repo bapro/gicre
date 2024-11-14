@@ -97,7 +97,9 @@ $cent=$this->db->select('name')->where('id_m_c',$rowp->centro)->get('medical_cen
 
 <script>
 
-
+$('#edit_recetas_or_med').on('hidden.bs.modal', function () {
+kardexContent();
+});
 
 
 allRecetasOrdMed();
@@ -223,6 +225,7 @@ success:function(data){
 paginationNumberOrdenMedica1();
 $(".repetion-done").text('repetido ->').css('color','red');
 $('#repetir').prop('disabled', true);
+kardexContent();
 }
 });
 	});

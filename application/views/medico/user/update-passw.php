@@ -5,14 +5,17 @@
 </div>
 
 <div class="modal-body" id="background_" >
-<form  method="post" action="<?php echo site_url('admin_medico/NewPassword');?>">
+<form  method="post" action="<?php echo site_url('admin_medico/NewPassword');?>"  autocomplete="off">
 <fieldset>
 <input type="hidden" name="id_user" value="<?=$id_admin?>"/>
 <input type="hidden" name="id_current_user" value="<?=$id_current_user?>"/>
 <div class="form-group">
 <div class="input-group">
 <span class="input-group-addon"><i class="fa fa-lock text-danger" aria-hidden="true"></i></span>
-<input type="password" placeholder="Nueva Contraseña" name="pass1" id="pass1" type="text" class="form-control" >
+<input type="password" placeholder="Nueva Contraseña" name="pass1" id="pass1" type="text" class="form-control" title="Uso de caracteres especiales como, [@, $].
+Uso de letras mayúsculas [A - Z] y minúsculas [a - z].
+Uso de números [0 - 9].
+Asi tu tiene una contraseña fuerte." >
 </div>
 </div>
 <div class="form-group">

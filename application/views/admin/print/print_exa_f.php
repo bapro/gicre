@@ -38,8 +38,15 @@ if($row->radio =="SANO"){
 </tr>
 
 <tr>
+
 <td style="text-align:right"><strong>Talla </strong></td>
-<td><?=$row->talla;?></td>
+<td><?=$row->talla;?> m
+<?php
+if($row->pulgada_exf){
+	echo " | $row->pulgada_exf inc";
+}
+ ?> 
+ </td>
 <td><strong>Fr</strong> <?=$row->fr;?></td>
 <td colspan="2"><strong>Tempo.</strong> <?=$row->tempo;?> &#8451 </td>
 <td >

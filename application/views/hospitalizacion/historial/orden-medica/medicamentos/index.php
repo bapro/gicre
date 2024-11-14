@@ -16,7 +16,7 @@ $querymedal = $this->db->query($sqladf);
 <h4 class="h4 his_med_title">I- Indicaciones Medicamentos</h4>
 </div>
 <div class="col-md-4" >
-Elegir medicamentos del almacen <em style='font-size:11px'>(<?=$querymedal->num_rows();?> registros)<input id='select-medicamentos' type="checkbox"/>
+Elegir medicamentos del almacen <em style='font-size:11px'>(<?=$querymedal->num_rows();?>) <input id='select-medicamentos' type="checkbox"/>
 <form method='post' >
 <label class="control-label" ><span style="color:red">*</span> Medicamento <em id="ldm" style='font-size:11px'></em></label>
 
@@ -26,7 +26,7 @@ Elegir medicamentos del almacen <em style='font-size:11px'>(<?=$querymedal->num_
 </select>
 <input  type='hidden' id='cantAlmacen'/>
 
-<label class="control-label" ><span style="color:red">*</span> Cantidad </label>
+<label class="control-label" ><span style="color:red">*</span> Cantidad <span id="amount-in-stock"></span></label>
 
 <input class="form-control" name="cantidad"  id="cantidad" disabled >
 <p><em id='result-cant'></em></p>
@@ -115,6 +115,7 @@ loadAllMedicamentos();
 }else{
 $("#medicamento").html("");
 allPresentation();
+$("#amount-in-stock").html("");
 }
 });
 
@@ -136,6 +137,8 @@ $("#ldm").html('');
 
 $("#medicamento").on('change', function(event) {
 getCantidad($(this).val());
+$("#amount-in-stock").fadeIn().html('...');
+
 $('#cantidad').prop('disabled',false);
 $.ajax({
 url:"<?php echo base_url(); ?>emergency/getMedPresentation",
@@ -146,6 +149,20 @@ $("#presentacion").html(data);
 },
 
 });
+
+$.ajax({
+url:"<?php echo base_url(); ?>emergency/getMedAmountInStock",
+data: {idmed:$(this).val()},
+method:"POST",
+success:function(data){
+$("#amount-in-stock").html(data);
+},
+
+});
+
+
+
+
 });
 
 
@@ -209,13 +226,13 @@ kardexContent();
 
 
 //-----------------------------------------------------------------------------------------
-
+allRecetasOrdMed();
 function allRecetasOrdMed()
 {
 $("#new_indication_ord_med").fadeIn().html('<span class="load"> <img  width="40px" src="<?= base_url();?>assets/img/loading.gif" /></span>');
 $.ajax({
 url:"<?php echo base_url(); ?>hospitalizacion/allRecetasOrdMed",
-data: {historial_id:<?=$id_historial?>,user_id:<?=$user_id?>,area:"",printing:2},
+data: {historial_id:<?=$id_historial?>,user_id:<?=$user_id?>,area:"",printing:3},
 method:"POST",
 success:function(data){
 

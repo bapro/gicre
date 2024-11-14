@@ -5,12 +5,12 @@
  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display|Spectral">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/mpdf.css">
 <style>
- table { border-collapse: collapse; witdh:100%} 
-    tr { border-top: solid 1px black border-bottom: solid 1px black; } 
-    td { border-right: none; border-left: none;padding: 1em; }
+ table { border-collapse: collapse; witdh:100%}
+    tr { border-top: solid 1px black border-bottom: solid 1px black; }
+    td { border-right: none; border-left: none;padding: 6px; }
 
 p{text-align:center}
-.trback td{background:#A9E4EF}
+.trback td{background:#EDEBEB}
 
 #header-table, tr, td {
     border: none;
@@ -18,18 +18,18 @@ p{text-align:center}
 </style>
 </head>
 
-
+<body>
 <?php
 
 $this->padron_database = $this->load->database('padron',TRUE);
 
 
 foreach($billing1 as $row1)
- 
- 
+
+
  $numafiliado=$this->db->select('input_name')->where('patient_id',$row1->paciente)->where('input_name !=','')
  ->get('saveinput')->row('input_name');
- 
+
 
  $seguron=$this->db->select('title,logo')->where('id_sm',$row1->seguro_medico)->get('seguro_medico')->row_array();
 $centro=$this->db->select('name,logo,provincia,municipio,barrio,calle,rnc,primer_tel,segundo_tel,type')->where('id_m_c',$row1->centro_medico)
@@ -42,20 +42,8 @@ $paciente=$this->db->select('nombre,tel_resi,tel_cel,email,afiliado,cedula,photo
  ->get('patients_appointments')->row_array();
  $doctor=$this->db->select('id_user, name')->where('id_user',$row1->medico )
 ->get('users')->row('name');
- 
- if($paciente['photo']=="padron"){
- $photo=$this->padron_database->select('IMAGEN')
-->where('MUN_CED',$paciente['ced1'])
-->where('SEQ_CED',$paciente['ced2'])
-->where('VER_CED',$paciente['ced3'])
-->get('fotos')->row('IMAGEN');
-$imgpat='<img  width="90"  src="data:image/jpeg;base64,'. base64_encode($photo) .'"  />';	
-} else if($paciente['photo']==""){
-$imgpat="";	
-}
-else{
-$imgpat='<img  style="width:90px;" src="'.base_url().'/assets/img/patients-pictures/'.$paciente['photo'].'"  />';		
-}
+
+
 foreach($billing2 as $rw)
 if($print=="privado"){
 	$display="";
@@ -81,51 +69,56 @@ foreach($abonodata->result() as $row)
  <div style="<?=$display?>; position: absolute; top: 0px; text-align:right; font-size: 10px;font-weight:bold">
  <?=$row1->numfac?>
  </div>
-<!--<div align="center">  <img class="img "  style="width:90px" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro['logo']; ?>"  /></div>
-<div  align="center" style="font-size:12px">
 
-<h2  align="center"> <?=$centro['name']?></h2>
-
-<p><strong>Tel :</strong> <?=$centro['primer_tel']?> <?=$centro['segundo_tel']?></p>
-
- <p><strong>RNC : </strong><?=$centro['rnc']?></p>
-<p style="font-size:11px"><strong>Ubicacion :</strong> <?=$centro['calle']?>, <?=$centro['barrio']?>, <?=$provincia?>, <?=$muncipio?> </p>
-
-<input id="servicio" type="hidden" value="<?=$area?>"/>
-
-</div>-->
 <table  id='header-table' >
 <tr>
 <td>
-<h3  align="center"> <?=$centro['name']?></h3>
+<img class="img "  style="width:130px" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro['logo']; ?>"  />
+<!--<h3  align="center"> <?=$centro['name']?></h3>-->
 <p><strong>Tel :</strong> <?=$centro['primer_tel']?> <?=$centro['segundo_tel']?></p>
 
  <p><strong>RNC : </strong><?=$centro['rnc']?></p>
-<p style="font-size:11px"><strong>Ubicacion :</strong> <?=$centro['calle']?>, <?=$centro['barrio']?>, <?=$provincia?>, <?=$muncipio?> </p>
+<p ><strong>Ubicación :</strong> <?=$centro['calle']?>, <?=$centro['barrio']?>, <?=$provincia?>, <?=$muncipio?> </p>
 </td>
-<td style="font-size:11px">
-<img class="img "  style="width:80px" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro['logo']; ?>"  />
+<td >
 <?php
-$comprobante= $this->db->select('name,comprobante')->join('comprobante_fiscal_name', 'comprobante_fiscal_paciente.id_comprobante = comprobante_fiscal_name.id')->where('id_fac',$last_bill_id)->get('comprobante_fiscal_paciente')->row_array();
+$comprobante= $this->db->select('name,comprobante,vencimiento')->join('comprobante_fiscal_name', 'comprobante_fiscal_paciente.id_comprobante = comprobante_fiscal_name.id')->where('id_fac',$last_bill_id)->get('comprobante_fiscal_paciente')->row_array();
+if($comprobante){
 $compro=$comprobante['comprobante'];
 echo "<strong>NCF $compro</strong><br/>";
-echo "factuara de ". $comprobante['name'];
+echo "<strong>Factura de</strong> ". $comprobante['name'];
+echo "<br/>";
+if($comprobante['vencimiento']){
+echo "<strong>Vencimiento </strong>". $comprobante['vencimiento'];
+}
+}else{
+$compro='';	
+}
 ?>
 </td>
 </tr>
 </table>
 <br/>
 <div  style="border-top:1px solid rgb(0,64,128)">
-<br/>
-<h3  align="center">DATOS DEL PACIENTE<br/><?=$imgpat?> </h3> 
+<?php
+$currentDateTime=date('d-m-Y H:i:s');
+$newDateTime = date('d-m-Y h:i A', strtotime($currentDateTime));
+if($compro){
+$numfacp='';
+}else{
+$numfacp="FACTURA # $row1->numfac2";
+}
+ ?>
+<h6  style="text-align:right"><?=$numfacp?></h6>
+<h3  align="center">DETALLE DE FACTURA </h3>
 <table style="font-size:11px;width:100%"  >
 <tr  class="trback">
 <td><strong>Nombres</strong></td>
 <td><strong>Cedula</strong></td>
 <td><strong>Seguro Medico</strong></td>
 <td><strong>Tel.</strong></td>
-<td><strong>Direccion</strong></td>
-<td><strong>Email</strong></td>
+<td><strong>Dirección</strong></td>
+<td><strong>Correo Elec.</strong></td>
 </tr>
 <tr>
 <td style="text-transform:uppercase"> <?=$paciente['nombre']?></td>
@@ -139,14 +132,9 @@ echo "factuara de ". $comprobante['name'];
 </table>
 
 </div>
-<?php 
-$currentDateTime=date('d-m-Y H:i:s');
-$newDateTime = date('d-m-Y h:i A', strtotime($currentDateTime));
 
- ?>
-<h3  align="center">FACTURA # <?=$row1->numfac2?></h3> 
-<h6  align="center" style="color:red">Fecha de impresión <?=$newDateTime?></h6> 
-<table style="font-size:11px;width:100%">
+
+<table style="font-size:11px;width:100%" cellpadding="0" cellspacing="0">
 <tr  class="trback">
 <td><strong>Servicio</strong></td>
 <td><strong>Cantidad</strong></td>
@@ -157,13 +145,13 @@ $newDateTime = date('d-m-Y h:i A', strtotime($currentDateTime));
 <td><strong>Fecha</strong></td>
 </tr>
 <?php foreach($billing2 as $rf){
-	
+
 $fecha_fac=date('d-m-Y', strtotime($rf->filter));
 	?>
 <tr>
 
 <td>
-<?php 
+<?php
 if($print=="privado"){
 $service=$this->db->select('procedimiento')->where('id_tarif',$rf->service)->get('tarifarios')->row('procedimiento');
 } else{
@@ -198,7 +186,7 @@ RD$<?=number_format($rf->totpapat,2);?>
 
 </td>
 </tr>
-<?php } 
+<?php }
  $this->db->select("SUM(cantidad) as cant");
 $this->db->where("id2",$last_bill_id);
 $this->db->from('factura');
@@ -209,93 +197,129 @@ $this->db->where("id2",$last_bill_id);
 $this->db->from('factura');
 $pu=$this->db->get()->row()->pu;
 $pun=number_format($pu,2);
-//-----------------------------------------------------	
+//-----------------------------------------------------
 $this->db->select("SUM(subtotal) as sbt");
 $this->db->where("id2",$last_bill_id);
 $this->db->from('factura');
-$sbt=$this->db->get()->row()->sbt;
-//------------------------------------
+$sbt1=$this->db->get()->row()->sbt;
 
-$abono=	$sbt - $total_bono;
-$abono=number_format($abono,2);	
-
-$sbt=number_format($sbt,2);
+//-----------------------------------------
+$sbt=number_format($sbt1,2);
 //---------------------------------
 $this->db->select("SUM(descuento) as descu");
 $this->db->where("id2",$last_bill_id);
 $this->db->from('factura');
-$descu=$this->db->get()->row()->descu;
-$descu=number_format($descu,2);
+$descu1=$this->db->get()->row()->descu;
+$descu=number_format($descu1,2);
 //-------------------------------------------
 
 $this->db->select("SUM(totpapat) as tpat");
 $this->db->where("id2",$last_bill_id);
 $this->db->from('factura');
 $tpat=$this->db->get()->row()->tpat;
-$tpat=number_format($tpat,2);	
+$tpat=number_format($tpat,2);
 
+//-----------------------CUANDO HAY COMPROBANTE------------------
+if($comprobante){
+$itbs1=$sbt1 * 0.18;
+$totgeneral1=$itbs1 + $sbt1;
+$totgeneral=number_format($totgeneral1,2);
+$itbs=number_format($itbs1,2);
+$totpagpat1=$totgeneral1 - ($total_bono + $descu1);
+$totpagpat=number_format($totpagpat1,2);
+}else{
+$itbs=0;
+$totpagpat=0;
+$totpagpat1= $sbt1 - ($total_bono + $descu1);
+$totpagpat=number_format($totpagpat1,2);
+}
 	?>
-<tr style="background:#cde2b2;color:white">
+
+<tr style='border-top:1px solid #c0c0c0'>
 <td colspan='4'></td>
 <td>
-<strong>Subtotal </strong>
+<strong>Subtotal: </strong>
+</td>
 <td>
+<strong>RD$<?=$sbt;?></strong>
+</td>
+</tr>
+<?php if($comprobante){?>
+<tr style='border-bottom:1px solid #c0c0c0;background:#EDEBEB'>
+<td colspan='4'></td>
 <td>
-<strong>RD$<?=$abono;?></strong>
+<strong>Itbis(18%): </strong>
+</td>
+<td>
+<strong>RD$<?=$itbs?></strong>
 </td>
 
 </tr>
-<tr style="background:#cde2b2;color:white">
+<tr style='border-bottom:1px solid #c0c0c0;'>
 <td colspan='4'></td>
 <td>
-<strong>Descuento </strong>
+<strong>Total General: </strong>
+</td>
 <td>
+<strong>RD$<?=$totgeneral?></strong>
+</td>
+
+</tr>
+<?php } ?>
+<tr>
+<td colspan='4'></td>
+<td>
+<strong>Descuento: </strong>
+</td>
 <td>
 <strong>RD$<?=$descu;?></strong>
 </td>
 
 </tr>
 
-<tr style="background:#cde2b2;color:white">
+<tr style='border-bottom:1px solid #c0c0c0'>
 <td colspan='4'></td>
 <td>
-<strong>Abono </strong>
+<strong>Abono: </strong>
+</td>
 <td>
-<td>
-<strong>RD$<?=number_format($row->bono,2);?></strong>
+<strong>RD$<?=number_format($total_bono,2);?></strong>
 </td>
 
 </tr>
 
 
 
-<tr style="background:#cde2b2;color:white">
+<tr style='background:#EDEBEB'>
 <td colspan='4'></td>
 <td>
-<strong>Subtotal </strong>
+<strong>Total Pagar Paciente: </strong>
+</td>
 <td>
-<td>
-<strong>RD$<?=$tpat;?></strong>
+<strong>RD$<?=$totpagpat;?></strong>
 </td>
 
 </tr>
 
 </table>
-<br/><br/>
-<div style="text-align:center">
+<br/><br/><br/><br/>
+<table style='width:100%'>
+<tr>
+  <td style='text-align:center;width:50%'>
 
- <?php 
-$firma_doc="$id_doc-1.png";
+<hr/>
+Firma Del Responsable
 
-$signature = "assets/update/$firma_doc";
+</td>
 
-if (file_exists($signature)) {?>
-<img  style="width:300px;margin: -20px;" src="<?= base_url();?>/assets/update/<?=$firma_doc?>"  />
-<?php
-} else {
+<td style='text-align:center;width:50%'>
 
-}
-?>
-<hr style="width:50%"/>
-<span style="text-align:center">Firma y sello</span>
-</div>
+<hr/>
+Firma Del Paciente
+
+</td>
+</tr>
+
+</table>
+<p  style="color:red;text-align:right;float:left;position:absolute;bottom:60">FECHA DE IMPRESION <?=$newDateTime?></p>
+</body>

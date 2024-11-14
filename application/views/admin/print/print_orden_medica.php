@@ -1,15 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display|Spectral">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/mpdf.css">
+<style>
+ table { border-collapse: collapse; witdh:100%;font-size: 10px}
+    tr { border-top: solid 1px #E6E6E6 border-bottom: solid 1px #E6E6E6; }
+     td { border:none;border-bottom:1px solid #E6E6E6;}
+    div.footer-firma {
+      position: absolute;
+      width: 80%;
+      bottom: 80px;
+    }
+	
+	.center-img {
+   width:70%;
+   height:70px;
+   object-fit:cover;
+   object-position:50% 50%;
+  }
+  p{}
+ 
+</style>
+</head>
+<body>
 <?php
 
-$sala=$this->db->select('name,inserted_time,centro,id_user')->where('idsala',$id_sala)->get($orden_medica_sala)->row_array();
+$sala=$this->db->select('name,inserted_time,centro,id_user,fecha_ingreso,diagno_ing')->where('idsala',$id_sala)->get($orden_medica_sala)->row_array();
 if(empty($sala)){
 redirect('/page404');
 }
-$cent=$this->db->select('name')->where('id_m_c',$sala['centro'])->get('medical_centers')->row('name'); 
+$centro=$this->db->select('name,logo,calle,barrio,primer_tel,segundo_tel,rnc,provincia,municipio')->where('id_m_c',$sala['centro'])->get('medical_centers')->row_array(); 
+
+$provinciacent=$this->db->select('title')->where('id',$centro['provincia'])->get('provinces')->row('title');
+$muncipiocent=$this->db->select('title_town')->where('id_town',$centro['municipio'])->get('townships')->row('title_town');
+
+
+ $paciente=$this->db->select('provincia,municipio,nombre,tel_resi,tel_cel,email,afiliado,cedula,photo,ced1,ced2,ced3,nacionalidad,date_nacer,seguro_medico,afiliado,plan,calle')->where('id_p_a',$id_historial)
+ ->get('patients_appointments')->row_array();
+
+ $provincia=$this->db->select('title')->where('id',$paciente['provincia'])
+ ->get('provinces')->row('title');
+
+
+$municipio=$this->db->select('title_town')->where('id_town',$paciente['municipio'])
+ ->get('townships')->row('title_town');
+
+
+ $seguron=$this->db->select('title,logo')->where('id_sm',$paciente['seguro_medico'])->get('seguro_medico')->row_array();
+
+if($seguron['logo']==""){
+	$logoseg="<span style='font-size:12px'><strong>Seguro Medico</strong> Privado</span>";
+}
+else{
+$logoseg='<img  style="width:50px;" src="'.base_url().'/assets/img/seguros_medicos/'.$seguron['logo'].'"  />';
+}
+
+
+ $nss=$this->db->select('input_name,inputf')->where('patient_id',$id_historial)
+ ->get('saveinput')->row_array();
+
+  $plan=$this->db->select('name')->where('id',$paciente['plan'])->get('seguro_plan')->row('name');
+  $this->load->view('getPatientAge');
 ?>
-<h3><?=$cent; ?></h3>
+<table  id='header-table' style="width:100%" >
+<tr>
+<td>
+<img class="img "  style="width:80px" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro['logo']; ?>"  />
+</td>
+<td>
+<h2  align="center"> <?=$centro['name']?></h2>
+<p><strong>Tel :</strong> <?=$centro['primer_tel']?> <?=$centro['segundo_tel']?></p>
+
+ <p><strong>RNC : </strong><?=$centro['rnc']?></p>
+<p style="font-size:11px"><strong>Ubicacion :</strong> <?=$centro['calle']?>, <?=$centro['barrio']?>, <?=$provinciacent?>, <?=$muncipiocent?> </p>
+</td>
+
+</tr>
+</table>
+
+<p style='text-align:center'><strong><?=$title?></strong></p>
+<table  align="left" style="width:100%" class='r-b' >
+<tr>
+	<?=$display?> 	
+		<td style="text-transform:uppercase;"><strong><?=$paciente['nombre']?></strong></td>
+
+		<td style="text-align:center">
+		<table class="r-b" style="width:100%;border-collapse: collapse; border-spacing: 0;">
+		<tr>
+		<td>
+		<?=$logoseg?>
+		</td>
+		<td style="text-align:center">
+		<?php
+		$afiliado=$paciente['afiliado'];
+		if($paciente['afiliado'] !=""){echo "$afiliado ";}
+		if($paciente['plan'] !=""){echo "$plan";}
+		?>
+		</td>
+		<?php
+		if($nss){?>
+		<td style="text-align:center;text-transform:lowercase"><?=$nss['inputf']?> <span style="color:red"><?=$nss['input_name']?></span></td><td></td>
+		<?php}?>
+		</tr>
+
+		</table>
+		</td>
+		
+	</tr>
+
+
+
+<tr style="background:rgb(192,192,192);color:white">
+
+		<td><strong>Cedula</td>
+		<td><strong>Nacionalidad</strong></td>
+		<td><strong>Edad</strong></td>
+		<td style='width"70px'><strong>Telefonos</strong></td>
+		<td></td>
+	</tr>
+
+	<tr>
+		<td style="" > <?=$paciente['ced1']?>-<?=$paciente['ced2']?>-<?=$paciente['ced3']?></td>
+		<td style=""><?=$paciente['nacionalidad']?></td>
+		<td style=""><?=getPatientAge($paciente['date_nacer'])?></td>
+		<td style=";"><?=$paciente['tel_resi']?> / <?=$paciente['tel_cel']?></td>
+		<td style="text-transform: lowercase;"></td>
+	</tr>
+</table>
+<hr/>
+<table>
+<tr>
 <?php if($sala['name']){?>
-<p><strong>Sala</strong> <?=$sala['name']?></p>
+<td><strong>SALA:</strong> <?=$sala['name']?></td>
 <?php } ?>
+<?php if($sala['fecha_ingreso']) {?>
+<td><strong>FECHA DE INGRESO:</strong> <?= date("d-m-Y", strtotime($sala['fecha_ingreso']))?></td>
+<?php } if($sala['diagno_ing']) {?>
+ <td><strong>DIAGNOSTICO DE INGRESO:</strong> <?=$sala['diagno_ing']?></td>
+<?php } ?>
+</tr>
+</table>
+<hr/>
 I- MEDICAMENTOS
 <table  style="width:100%" cellspacing="0" >
 
@@ -30,11 +162,11 @@ I- MEDICAMENTOS
 	 
 	 {
 	 $fecha = date("d-m-Y H:i:s", strtotime($row->insert_date));			 
-		 $med=$this->db->select('name')->where('id',$row->medica)->get('emergency_medicaments')->row('name');
+		
 		 ?>
        <tr>
 		<td><?=$fecha;?></td>
-		<td><?=$med;?><br/><i><u><?=$row->dosis;?></u></i></td>
+		<td><?=$row->medica;?><br/><i><u><?=$row->dosis;?></u></i></td>
 		<td><?=$row->presentacion;?></td>
 		<td><?=$row->frecuencia;?></td>
 		<td><?=$row->via;?><br/><?=$row->oyo;?></td>
@@ -66,23 +198,21 @@ II- ESTUDIOS
 	foreach($estudios->result() as $row)
 	 
 	 {
-		//$estudio=$this->db->select('name')->where('id',$row->estudio)->get('type_studies')->row('name');
-	   
-	   $estudio=$this->db->select('sub_groupo')->where('id_c_taf',$row->estudio)->get('centros_tarifarios')->row('sub_groupo');
-	   
+		 if($orden_medica_sala=='orden_medica_sala'){
+			 $estudio=$row->estudio;
+		 }else{
+		 $estudio=$this->db->select('sub_groupo')->where('id_c_taf',$row->estudio)->get('centros_tarifarios')->row('sub_groupo');
+		 }
 	   	$cuerpo=$this->db->select('name')->where('id',$row->cuerpo)
        ->get('type_body_parts')->row('name');
 	   
-	   
-	   
-	   
-       $fecha = date("d-m-Y H:i:s", strtotime($row->insert_date));	 
+	   $fecha = date("d-m-Y H:i:s", strtotime($row->insert_date));	 
 		  
 	 ?>
         <tr  >
 		<td><?=$fecha;?></td>
 		<td>
-		<?=$estudio;?>
+		<?=$estudio;?> 
 		</td>
 		<td><?=$row->cuerpo;?></td>
 		<td><?=$row->lateralidad;?></td>
@@ -111,8 +241,14 @@ III- LABORATORIOS
 	foreach($lab->result() as $row)
 	 
 	 {
-	//$lab=$this->db->select('name')->where('id',$row->laboratory)->get('laboratories')->row('name');
-	$lab=$this->db->select('sub_groupo')->where('id_c_taf',$row->laboratory)->get('centros_tarifarios')->row('sub_groupo');	
+	 if($orden_medica_sala=='orden_medica_sala'){
+	$lab=$this->db->select('name')->where('id',$row->laboratory)
+  ->get('laboratories')->row('name');
+	}else{
+    $lab=$this->db->select('sub_groupo')->where('id_c_taf',$row->laboratory)
+  ->get('centros_tarifarios')->row('sub_groupo');
+	}
+	
   $insert_time = date("d-m-Y H:i:s", strtotime($row->insert_time));
  ?>
         <tr  >
@@ -167,7 +303,7 @@ IV- MEDIDAS GENERALES
 	 ?>
     </tbody>    
 </table>
-<br/>
+
 <?php
 $id_op=$sala['id_user'];
  $doc=$this->db->select('name,exequatur,area')->where('id_user',$id_op)
@@ -194,10 +330,7 @@ $firma='';
 ?>
 <table class='r-b'  >
 <tr>
-<td style="text-align:right"><strong><i>Dr</strong> <?=$doc['name']?></i></td>
-<td style="text-align:right"><strong><i>Exeq.</strong> <?=$doc['exequatur']?></i></td>
- <td style="text-align:right"><?=$area?></i></td>
-<td  style="text-align:right"> <?=date("d-m-Y H:i:s", strtotime($sala['inserted_time']));?></td>
+<td  style="color:red"> <?=date("d-m-Y H:i:s", strtotime($sala['inserted_time']));?></td>
 <?=$firma?>
 <?=$sello?>
 </tr>
@@ -255,4 +388,10 @@ $this->db->where($where4);
 
 $this->db->update($orden_medica_recetas, $data4);
 //-----------------------------------------------------------------------------------
+$author = $doc['name'];
+$exeq = $doc['exequatur'];
+
+$mpdf->setFooter("Dr $author, Exeq. $exequatur, $area<br/>Página {PAGENO} de {nb}");
 ?>
+</body>
+</html>

@@ -1,0 +1,992 @@
+ <?php
+    $sql_uro_ant ="SELECT *  FROM  h_c_urology_antecedentes WHERE id_patient=$id_historial";
+  $query_uro_ant=$this->db->query($sql_uro_ant);
+  if($query_uro_ant->result() !=NULL){
+	  foreach ($query_uro_ant->result() as $row)
+ $uro_sin_ha_1=$row->uro_sin_ha_1;
+ $uro_ant_escl =$row->uro_ant_escl;
+ $uro_ant_imp =$row->uro_ant_imp;
+ $uro_ant_ane_fal=$row->uro_ant_ane_fal;
+ $uro_ant_vari=$row->uro_ant_vari;
+ $uro_ant_fimosis =$row->uro_ant_fimosis;
+ $uro_ant_hid=$row->uro_ant_hid;
+ $uro_ant_its=$row->uro_ant_its;
+ $uro_ant_tumorales=$row->uro_ant_tumorales;
+ $uro_ant_otros =$row->uro_ant_otros;
+ $uro_sin_ha_2 =$row->uro_sin_ha_2;
+ $uro_ant_cancer_prostata=$row->uro_ant_cancer_prostata;
+ $uro_ant_poli_renal=$row->uro_ant_poli_renal;
+ $uro_ant_uroli=$row->uro_ant_uroli;
+ $uro_ant_cist=$row->uro_ant_cist;
+ $uro_ant_otros2=$row->uro_ant_otros2;
+ $id = $row->id;
+  }else{
+ $uro_sin_ha_1=0;
+ $uro_ant_escl =0;
+ $uro_ant_imp =0;
+ $uro_ant_ane_fal=0;
+ $uro_ant_vari=0;
+ $uro_ant_fimosis =0;
+ $uro_ant_hid=0;
+ $uro_ant_its="";
+ $uro_ant_tumorales="";
+ $uro_ant_otros ="";
+ $uro_sin_ha_2 =0;
+ $uro_ant_cancer_prostata=0;
+ $uro_ant_poli_renal=0;
+ $uro_ant_uroli=0;
+ $uro_ant_cist=0;
+ $uro_ant_otros2="";  
+  $id = 0;
+  }
+ ?>
+ <div class="load-paginate-on-click" id="load-uro-ant"></div>
+ <div style="position: fixed;left:16vw;z-index:500">
+<span id="uro-ant-btns" style="disable:none">
+		<button type="button" class="btn btn-success btn-lg" style="border:1px solid;display:none" id="saveEditUroAnt" ><i class="fa fa-save"></i></button>
+		<button type="button" class="btn btn-warning btn-lg" style="border:1px solid;" id="showEditUroAnt"><i class="fa fa-pencil"></i></button>
+        
+		</span>
+ </div>
+ <br/>
+<div id="uro-ant-disabled">
+
+ <div class="col-md-12"  >
+ <input type="hidden" id="hist_id" value="<?=$id_historial?>"/>
+  <input type="hidden" id="id_uro_ant" value="<?=$id?>"/>
+   <input type="hidden" id="uro_ant_user_id" value="<?=$user_id?>"/>
+<strong>Antecedentes Personales Patológicos </strong>
+<table class="table" style="width:80%">
+<tr>
+<td style="text-align:left;">
+<div class="checkbox "> 
+<?php
+   if ($uro_sin_ha_1 ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+<label><input type="checkbox" class="" name="uro_sin_ha_1" id="uro_sin_ha_1" <?=$selected?> >Sin Hallazgo</label>
+</div>
+</td>
+<td></td>
+</tr>
+<tr class="disabled-antes1">
+
+<td style="text-align:left">
+<div style="margin-left:30px;position:absolute">
+<div class="checkbox ">
+<?php
+   if ($uro_ant_escl ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+  <label><input type="checkbox" class="" name="uro_ant_escl" <?=$selected?>>Esclerosis Múltiple</label>
+</div>
+<div class="checkbox ">
+<?php
+   if ($uro_ant_imp ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+  <label><input type="checkbox" class="" name="uro_ant_imp" <?=$selected?>>Importancia</label>
+</div>
+<div class="checkbox ">
+<?php
+   if ($uro_ant_ane_fal ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+  <label><input type="checkbox" class="" name="uro_ant_ane_fal" <?=$selected?>>Anemia Falciforme</label>
+</div>
+
+</div>
+
+</td>
+
+<td style="text-align:left">
+
+<div class="checkbox ">
+<?php
+   if ($uro_ant_vari ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+  <label><input type="checkbox" class="" name="uro_ant_vari" <?=$selected?>>Varicoceles</label>
+</div>
+<div class="checkbox ">
+<?php
+   if ($uro_ant_fimosis ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+  <label><input type="checkbox" class="" name="uro_ant_fimosis" <?=$selected?>>Fimosis</label>
+</div>
+<div class="checkbox ">
+<?php
+   if ($uro_ant_hid ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+  <label><input type="checkbox" class="" name="uro_ant_hid" <?=$selected?>>Hidroceles</label>
+</div>
+
+
+
+</td>
+</tr>
+</table>
+</div>
+
+ <div class="col-md-12 disabled-antes1"  >
+
+<div class="form-group row">
+<label class="col-sm-2 col-form-label" style="text-align:right">ITS </label>
+<div class="col-sm-8">
+ <button type="button" id="btnSpeechUroAntIts" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroAntIts"></span>
+<textarea id="uro_ant_its" rows='6' class="form-control" placeholder="Ninguno" ><?=$uro_ant_its?></textarea>
+</div>
+</div>
+<div class="form-group row">
+
+<label class="col-sm-2 col-form-label" style="text-align:right">Tumorales </label>
+<div class="col-sm-8">
+ <button type="button" id="btnSpeechUroAntTumo" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroAntTumo"></span>
+ <textarea id="uro_ant_tumorales" rows='6' class="form-control " placeholder="Ninguno" ><?=$uro_ant_tumorales?></textarea>
+</div>
+</div>
+<div class="form-group row">
+
+<label class="col-sm-2 col-form-label" style="text-align:right">Otros </label>
+<div class="col-sm-8">
+ <button type="button" id="btnSpeechUroAntOtros" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroAntOtros"></span>
+<textarea id="uro_ant_otros" rows='6' class="form-control" placeholder="Ninguno" ><?=$uro_ant_otros?></textarea>
+
+</div>
+</div>
+
+</div>
+ <div class="col-md-12"  >
+ <hr class="prenatal-separator"/>
+<strong>Antecedentes Familiares</strong>
+<table class="table">
+<tr>
+<td style="text-align:left">
+<div class="checkbox ">
+<?php
+   if ($uro_sin_ha_2 ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+   <label><input type="checkbox"  name="uro_sin_ha_2" id="uro_sin_ha_2" <?=$selected?>>Sin Hallazgo</label> 
+</div>
+</td>
+<td>
+
+</td>
+</tr>
+<tr class="disabled-antes2">
+<td style="text-align:left">
+<div style="margin-left:30px;position:absolute">
+<div class="checkbox ">
+<?php
+   if ($uro_ant_cancer_prostata ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+  <label><input type="checkbox" class="" name="uro_ant_cancer_prostata" <?=$selected?>>Cáncer Próstata</label>
+</div>
+<div class="checkbox ">
+<?php
+   if ($uro_ant_poli_renal ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+  <label><input type="checkbox" class="" name="uro_ant_poli_renal" <?=$selected?>>Polisquistosis Renal</label>
+</div>
+<div class="checkbox ">
+<?php
+   if ($uro_ant_uroli ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+  <label><input type="checkbox" class="" name="uro_ant_uroli" <?=$selected?>>Urolitiasis</label>
+</div>
+<div class="checkbox ">
+<?php
+   if ($uro_ant_cist ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+  <label><input type="checkbox" class="" name="uro_ant_cist" <?=$selected?>>Cistinuria</label>
+</div>
+</div>
+</td>
+<td style="text-align:left;">
+<div class="form-group row">
+
+<label class="col-sm-2 col-form-label" style="text-align:right">Otros </label>
+<div class="col-sm-8">
+ <button type="button" id="btnSpeechUroAntOtros2" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroAntOtros2"></span>
+<textarea id="uro_ant_otros2" rows='6' class="form-control" placeholder="Ninguno" ><?=$uro_ant_otros2?></textarea>
+
+</div>
+</div>
+</td>
+</tr>
+
+</table>
+
+ </div>
+ 
+ <div class="col-md-12">
+<hr class="prenatal-separator"/>
+<strong>Antecedentes alergicos y reaccion a medicamentos</strong>
+ <?php
+    $sql_uro_ant_al ="SELECT id_desa, alimentos, medicamentos, otros FROM  h_c_desarollo WHERE historial_id=$id_historial";
+  $query_uro_ant_al=$this->db->query($sql_uro_ant_al);
+  if($query_uro_ant_al->result() !=NULL){
+	  foreach ($query_uro_ant_al->result() as $row)
+ $alimentos_al=$row->alimentos;
+ $medicamentos_al =$row->medicamentos;
+ $otros_al =$row->otros;
+ $id_desa  = $row->id_desa ;
+  }else{
+ $alimentos_al="";
+ $medicamentos_al ="";
+ $otros_al ="";
+ $id_desa  = "";
+  }
+ ?>
+  <input type="hidden" id="id_desa" value="<?=$id_desa?>"/>
+<table class="table">
+<tr>
+<td style="text-align:left">
+<div class="form-group" >
+<label class="control-label col-md-2" >Alimentos Alergicos</label>
+<div class="col-md-9">
+
+<input type="text" class="form-control" id="alimentos_al" value="<?= $alimentos_al?>"  placeholder="Ninguno" />
+</div>
+
+</div>
+
+<div class="form-group">
+<label class="control-label col-md-2" >Medicamentos Alergicos</label>
+<div class="col-md-9">
+<input type="text" class="form-control" id="medicamentos_al"  value="<?= $medicamentos_al?>" placeholder="Ninguno" >
+</div>
+
+</div>
+<div class="form-group">
+<label class="control-label col-md-2" >Otros Alergicos</label>
+<div class="col-md-9">
+<input type="text" class="form-control" id="otros_al" value="<?= $otros_al?>"  placeholder="Ninguno">
+</div>
+
+</div> 
+</td>
+</tr>
+</table>
+<hr class="prenatal-separator"/>
+<strong>Otros antecedentes</strong>
+</div>
+<div class="col-md-12">
+ <?php
+    $sql_uro_ant_al ="SELECT * FROM  h_c_ante_otros WHERE historial_id=$id_historial";
+  $query_uro_ant_al=$this->db->query($sql_uro_ant_al);
+  if($query_uro_ant_al->result() !=NULL){
+	  foreach ($query_uro_ant_al->result() as $row)
+ $quirurgicos=$row->quirurgicos;
+ $gineco =$row->gineco;
+ $abdominal =$row->abdominal;
+ $toracica =$row->toracica;
+ $transfusion =$row->transfusion;
+  $otros1 =$row->otros1;
+  $hepatis =$row->hepatis;
+  $hpv =$row->hpv;
+  $toxoide =$row->toxoide;
+  $otros2 =$row->otros2;
+  $grouposang =$row->grouposang;
+  $tipificacion =$row->tipificacion;
+  $rh =$row->rh;
+ $id_ao   = $row->id_ao;
+  }else{
+ $quirurgicos="";
+ $gineco =0;
+ $abdominal ="";
+  $toracica =="";
+ $transfusion ="";
+  $otros1 ="";
+  $hepatis ="";
+  $hpv ="";
+  $toxoide ="";
+  $otros2 ="";
+  $grouposang ="";
+  $tipificacion ="";
+  $rh ="";
+ $id_ao= "";
+  }
+ ?>
+  <input type="hidden" id="id_desa" value="<?=$id_desa?>"/>
+<div  class="col-md-8">
+ <table class="table" >
+
+<tr>
+<td class="col-xs-6">
+Quirurgicos
+<textarea class="form-control" rows="6" id="quirurgicos"  placeholder="Ninguno" ><?=$quirurgicos?></textarea>
+</td>
+<td>
+Gineco-obstetricos
+<select class="form-control select2" id="gineco" >
+<option value="" >Ninguno</option>
+<?php 
+
+foreach($GinecOb as $row)
+{
+if($gineco==$row->name)	
+{
+	$selected="selected";
+}else{
+$selected="";	
+}
+echo '<option value="'.$row->name.'"  '.$selected.'>'.$row->name.'</option>';
+}
+?>
+</select>
+</td>
+</tr>
+<tr>
+<td>Abdominal
+<textarea class="form-control" rows="6" id="abdominal" placeholder="Ninguno" ><?=$abdominal?></textarea></td>
+<td>Toracica
+<textarea class="form-control" rows="6" id="toracica" placeholder="Ninguno" ><?=$toracica?></textarea></td>
+</tr>
+<tr>
+<td>Transfusion sanguinea
+<textarea class="form-control" rows="6" id="transfusion" placeholder="Ninguno" ><?=$transfusion?></textarea></td>
+<td>Otros
+<textarea class="form-control" id="otros1" rows="6" placeholder="Ninguno" ><?=$otros1?></textarea></td>
+</tr>
+
+
+</table>
+
+<div id="new-medica-select"></div>
+</div>
+<div class="col-md-4">
+
+<table class="table right-otro" style="width:63%">
+<tr>
+<td>Hepatis B</td> <td>&nbsp;No &nbsp;<input type="radio" id="hepatis" name="hepatis" value="No" checked>&nbsp; &nbsp; Si&nbsp;<input type="radio" id="hepatis" name="hepatis" value="Si"></td>
+</tr>
+<tr>
+<td>HPV</td> <td>&nbsp;No&nbsp;<input type="radio"  id="hpv" name="hpv" value="No" checked>&nbsp; &nbsp; Si&nbsp;<input type="radio"  id="hpv" name="hpv" value="Si"></td>
+</tr>
+<tr>
+<td>Toxoide Tetanico </td> <td> &nbsp;No&nbsp;<input type="radio"  id="toxoide" name="toxoide" value="No" checked>&nbsp; &nbsp;Si&nbsp;<input type="radio"  id="toxoide" name="toxoide" value="Si"></td>
+</tr>
+<tr>
+<!--<td><label>Otros</label><textarea class="form-control" cols="20" id="otros2"></textarea></td>-->
+</tr>
+<tr>
+<td>
+Grupo Sanguineo
+</td>
+<td>
+<?php
+
+$grouposangvalues = array("A", "B", "AB", "0");
+
+echo '<select class="form-control" id="grouposang">';
+echo '<option value="" >Ninguno</option>';
+
+ foreach($grouposangvalues as $grouposangvalue)
+{
+	
+if($grouposang==$grouposangvalue){
+		        $selected="selected";
+		} else {
+		       $selected="";
+	    }	
+	
+	
+echo "<option $selected >$grouposangvalue</option>";
+}
+echo '</select>';
+?>
+
+<span class="alert-danger tipif-info">Alerto: Si no tiene el tipo de sangre del paciente debe de indicar una tipificación.</span>
+</td>
+</tr>
+<tr>
+<td style="width:20px">Rh</td>
+<td>Positivo
+<?php
+if($rh =="Positivo"){
+	$checked="checked";
+} else{
+	$checked="";
+	}?>
+<input type="radio" id="rhoa" name="rhoa" value="Positivo" class="ck" <?=$checked?>>
+<?php
+if($rh =="Negativo"){
+	$checked="checked";
+} else{
+	$checked="";
+	}?>
+&nbsp;Negativo <input type="radio" id="rhoa" name="rhoa" value="Negativo" <?=$checked?>></td>
+</tr>
+<tr>
+<td>Tipificación</td>
+<td style="width:190px">
+<input type="text" id="tipificacion" value="<?=$tipificacion?>" style="width:40px"/> 
+<span id="tip-hide">
+<?php
+if($rh =="Positivo"){
+echo "<span  style='font-weight:bold;'>+</span>";
+} else if($rh =="Negativo"){
+echo "<span  style='font-weight:bold;'>-</span>";
+	}
+	else {echo "<span  style='font-weight:bold;'></span>";}
+?>
+</span>
+<span id="mas" style="display:none;font-weight:bold">+</span>
+<span id="menos" style="display:none;font-weight:bold">-</span>
+</td>
+</tr>
+</table>
+</div>
+
+
+</div>
+
+<div class="col-md-12">
+<br/><br/>
+<hr class="prenatal-separator"/>
+<strong>Habitos Toxicos </strong>
+ <?php
+    $sql_uro_ant_ht ="SELECT * FROM  h_c_habitos_toxicos WHERE historial_id=$id_historial";
+  $query_uro_ant_ht=$this->db->query($sql_uro_ant_ht);
+  if($query_uro_ant_ht->result() !=NULL){
+	  foreach ($query_uro_ant_ht->result() as $row)
+ $cafe_cant=$row->cafe_cant;
+ $cafe_cant_desc=$row->cafe_cant_desc;
+ $cafe_frec =$row->cafe_frec;
+ $pipa_cant =$row->pipa_cant;
+ $pipa_cant_desc =$row->pipa_cant_desc;
+ $pipa_frec =$row->pipa_frec;
+ $ciga_can =$row->ciga_can;
+ $ciga_can_desc =$row->ciga_can_desc;
+  $ciga_frec =$row->ciga_frec;
+  $alc_can =$row->alc_can;
+  $alc_can_desc =$row->alc_can_desc;
+  $hookah =$row->hookah;
+  $hookah_desc =$row->hookah_desc;
+  $hab_f_hookah =$row->hab_f_hookah;
+  $alc_frec =$row->alc_frec;
+  $tab_can =$row->tab_can;
+  $tab_can_desc =$row->tab_can_desc;
+  $tab_frec =$row->tab_frec;
+  $hab_c_drug =$row->hab_c_drug;
+  $hab_c_drug_desc =$row->hab_c_drug_desc;
+  $hab_f_drug =$row->hab_f_drug;
+ $id  = $row->id;
+  }else{
+$ciga_can_desc ="";
+$cafe_cant_desc='';
+ $cafe_cant="";
+ $hab_c_drug_desc ="";
+ $cafe_frec ="";
+ $pipa_cant ="";
+  $pipa_cant_desc ="";
+ $pipa_frec ="";
+ $ciga_can ="";
+  $ciga_frec ="";
+  $alc_can ="";
+  $alc_can_desc ="";
+  $hookah ="";
+   $hookah_desc ="";
+  $hab_f_hookah ="";
+  $alc_frec ="";
+  $tab_can ="";
+  $tab_can_desc ="";
+  $tab_frec ="";
+  $hab_c_drug ="";
+  $hab_f_drug ="";
+ $id  = "";
+  }
+  $frecuencies = array("Diariamente", "Ocasionalmente", "A veces");
+ ?>
+ <div class="table-responsive">
+ <table class="table" >
+
+<tr style="font-weight:bold">
+<th></td><td></td><td>Habito</td><td>Cantidad</td><td>Descripción</td><td>Frecuencia</td><td></td><td></td><td>Habito</td><td>Cantidad</td><td>Descripción</td><td>Frecuencia</th>
+</tr>
+<tr>
+<th> </th>
+<th class="id"><img style="border:1px solid rgb(206,206,206);padding:1px" src="<?= base_url();?>assets/img/historial_medical/cafe_burned.png" width="30" alt=""/></th>
+<th class="th_habitos" > Cafe</th>
+<td><input type="text" id="hab_c_caf" style="width:50px"  class="form-control " value="<?=$cafe_cant?>" /></td>
+<td><input type="text" id="cafe_cant_desc"  style="width:250px" class="form-control " value="<?=$cafe_cant_desc?>" /></td>
+<td class="th_habitos">
+<?php
+
+echo '<select class="form-control" id="hab_f_caf" style="width:149px">';
+echo '<option value="" >Ninguno</option>';
+
+ foreach($frecuencies as $frecuency)
+{
+	
+if($cafe_frec==$frecuency){
+		        $selected="selected";
+		} else {
+		       $selected="";
+	    }	
+	
+	
+echo "<option $selected >$frecuency</option>";
+}
+echo '</select>';
+
+
+?>
+
+</td>
+<!--Pipa-->
+<th></th>
+<th><img style="border:1px solid rgb(206,206,206);padding:1px" src="<?= base_url();?>assets/img/historial_medical/pipe_burned.png" width="30" alt=""/> </th>
+<th class="th_habitos">Pipa</th>
+<td><input type="text" id="hab_c_pip" style="width:50px" class="form-control "value="<?=$pipa_cant?>"   /></td>
+<td><input type="text" id="pipa_cant_desc"  style="width:250px" class="form-control " value="<?=$pipa_cant_desc?>" /></td>
+<td class="th_habitos">
+
+<?php
+
+echo '<select class="form-control" id="hab_f_pip" style="width:149px">';
+echo '<option value="" >Ninguno</option>';
+
+ foreach($frecuencies as $frecuency)
+{
+	
+if($pipa_frec==$frecuency){
+		        $selected="selected";
+		} else {
+		       $selected="";
+	    }	
+		
+echo "<option $selected >$frecuency</option>";
+}
+echo '</select>';
+
+
+?>
+
+</td>
+</tr>
+<tr>
+<!--Cigarillo-->
+<th></th>
+<th class="id"><img style="border:1px solid rgb(206,206,206);padding:1px" src="<?= base_url();?>assets/img/historial_medical/cigaret_burned.png" width="30" alt=""/></th>
+<th class="th_habitos" > Cigarillo</th>
+<td ><input type="text" id="hab_c_ciga" style="width:50px" class="form-control " value="<?=$ciga_can?>"  /></td>
+<td><input type="text" id="ciga_can_desc"   class="form-control " value="<?=$ciga_can_desc?>" /></td>
+<td class="th_habitos">
+<?php
+echo '<select class="form-control" id="hab_f_ciga" style="width:149px">';
+echo '<option value="" >Ninguno</option>';
+
+ foreach($frecuencies as $frecuency)
+{
+	
+if($ciga_frec==$frecuency){
+		        $selected="selected";
+		} else {
+		       $selected="";
+	    }	
+		
+echo "<option $selected >$frecuency</option>";
+}
+echo '</select>';
+
+
+?>
+
+</td>
+<!--Alcohol-->
+<th> </th>
+<th><img style="border:1px solid rgb(206,206,206);padding:1px" src="<?= base_url();?>assets/img/historial_medical/alcohol_burned.png" width="20" alt=""/> </th>
+<th class="th_habitos">Alcohol</th>
+<td><input type="text" id="hab_c_al" style="width:50px" class="form-control "  value="<?=$alc_can?>" /></td>
+<td><input type="text" id="hab_c_al_desc"   class="form-control " value="<?=$alc_can_desc?>" /></td>
+<td class="th_habitos">
+<?php
+echo '<select class="form-control" id="hab_f_al" style="width:149px">';
+echo '<option value="" >Ninguno</option>';
+
+ foreach($frecuencies as $frecuency)
+{
+	
+if($alc_frec==$frecuency){
+		        $selected="selected";
+		} else {
+		       $selected="";
+	    }	
+		
+echo "<option $selected >$frecuency</option>";
+}
+echo '</select>';
+
+
+?>
+
+</td>
+
+</tr>
+<tr>
+<!--Tabaco-->
+<th></th>
+<th class="id"><img style="border:1px solid rgb(206,206,206);padding:1px" src="<?= base_url();?>assets/img/historial_medical/tobacco_burned.png" width="30" alt=""/></th>
+<th class="th_habitos" > Tabaco</th>
+<td><input type="text" id="hab_c_tab" style="width:50px" class="form-control " value="<?=$tab_can?>"  /></td>
+<td><input type="text" id="hab_c_tab_desc"   class="form-control " value="<?=$tab_can_desc?>" /></td>
+<td class="th_habitos">
+<?php
+echo '<select class="form-control" id="hab_f_tab" style="width:149px">';
+echo '<option value="" >Ninguno</option>';
+
+ foreach($frecuencies as $frecuency)
+{
+	
+if($tab_frec==$frecuency){
+		        $selected="selected";
+		} else {
+		       $selected="";
+	    }	
+		
+echo "<option $selected >$frecuency</option>";
+}
+echo '</select>';
+
+
+?>
+
+</td>
+
+
+<!--Hookah-->
+<th></th>
+<th class="id"><img style="border:1px solid rgb(206,206,206);padding:1px" src="<?= base_url();?>assets/img/historial_medical/hookah_burned.png" width="33" alt=""/></th>
+<th class="th_habitos" > Hookah</th>
+<td><input type="text" id="hookah" style="width:50px" class="form-control input_hookah" value="<?=$hookah?>"  /></td>
+<td><input type="text" id="hookah_desc" style="width:250px" class="form-control input_hookah" value="<?=$hookah_desc?>"  /></td>
+<td class="th_habitos">
+<?php
+echo '<select class="form-control" id="hab_f_hookah" style="width:149px">';
+echo '<option value="" >Ninguno</option>';
+
+ foreach($frecuencies as $frecuency)
+{
+	
+if($hab_f_hookah==$frecuency){
+		        $selected="selected";
+		} else {
+		       $selected="";
+	    }	
+		
+echo "<option $selected >$frecuency</option>";
+}
+echo '</select>';
+
+
+?>
+
+
+</td>
+</tr>
+
+</table>
+
+<table class="table" >
+
+<tr>
+<th style="width:100px"></th><th></th><th style="width:550px">Tipo</th><th>Cantidad</th><th>Descripción</th><th>Frecuencia</th>
+</tr>
+<tr>
+<th><img style="border:1px solid rgb(206,206,206);padding:1px" src="<?= base_url();?>assets/img/historial_medical/drugs_burned.png" width="60" alt=""/></th>
+<th class="th_habitos" > Droga</th>
+<td>
+<select class="form-control  select2 hab_t_drug" id="hab_t_drug" multiple="multiple" >
+<option value="ninguno" >ninguno</option>
+
+
+<?php 
+foreach($drug as $d)
+{ 
+
+$drug_name=$this->db->select('name')
+->where('id_patient',$id_historial)
+->where('name',$d->name)
+->get('h_c_droga')->row('name');
+
+if($d->name==$drug_name){
+	$selected="selected";
+} else {
+   $selected="";
+}
+echo "<option value='$d->name' $selected>$d->name</option>";
+}
+?>
+
+
+
+
+
+
+
+</select>
+</td>
+<td><input type="text" id="hab_c_drug" style="width:50px" class="form-control " value="<?=$hab_c_drug?>"  /></td>
+<td><input type="text" id="hab_c_drug_desc" style="width:250px" class="form-control " value="<?=$hab_c_drug_desc?>"  /></td>
+<td class="th_habitos">
+
+
+<?php
+echo '<select class="form-control" id="hab_f_drug" style="width:149px">';
+echo '<option value="" >Ninguno</option>';
+
+ foreach($frecuencies as $frecuency)
+{
+	
+if($hab_f_drug==$frecuency){
+		        $selected="selected";
+		} else {
+		       $selected="";
+	    }	
+		
+echo "<option $selected >$frecuency</option>";
+}
+echo '</select>';
+
+
+?>
+
+
+</td>
+</tr>
+
+</table>
+</div>
+
+</div>
+</div>
+<?php
+
+if($id > 0){
+   $this->load->view('admin/historial-medical1/urology/footer');	
+}
+?>
+<script>
+
+
+ var btnSpeechUroAntIts = document.getElementById('btnSpeechUroAntIts');
+					
+					btnSpeechUroAntIts.onclick = function() {
+					var output = document.getElementById("uro_ant_its");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroAntIts");
+					runSpeechRecognition(output,action);
+					}
+
+ var btnSpeechUroAntTumo = document.getElementById('btnSpeechUroAntTumo');
+					
+					btnSpeechUroAntTumo.onclick = function() {
+					var output = document.getElementById("uro_ant_tumorales");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroAntTumo");
+					runSpeechRecognition(output,action);
+					}
+					
+					
+ var btnSpeechUroAntOtros = document.getElementById('btnSpeechUroAntOtros');
+					
+					btnSpeechUroAntOtros.onclick = function() {
+					var output = document.getElementById("uro_ant_otros");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroAntOtros");
+					runSpeechRecognition(output,action);
+					}
+					
+					
+ var btnSpeechUroAntOtros2 = document.getElementById('btnSpeechUroAntOtros2');
+					
+					btnSpeechUroAntOtros2.onclick = function() {
+					var output = document.getElementById("uro_ant_otros2");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroAntOtros2");
+					runSpeechRecognition(output,action);
+					}					
+					
+
+	$('#showEditUroAnt').on('click', function(e) {
+	e.preventDefault();
+	$(this).hide();
+	$('#saveEditUroAnt').slideDown();  
+		  $( "#uro-ant-disabled input" ).prop( "disabled", false );
+	   $( "#uro-ant-disabled textarea" ).prop( "disabled", false );
+	   $( "#uro-ant-disabled select" ).prop( "disabled", false );
+		$( "#uro-ant-disabled button" ).fadeIn(1000);
+	});
+
+
+
+
+
+ if(<?=$id?> > 0){
+	  $('#uro-ant-btns').show();
+	  $( "#uro-ant-disabled input" ).prop( "disabled", true );
+	   $( "#uro-ant-disabled textarea" ).prop( "disabled", true );
+	   $( "#uro-ant-disabled select" ).prop( "disabled", true );
+	   $( "#uro-ant-disabled button" ).hide();
+  }else{
+	$('#uro-ant-btns').hide(); 
+	  $( "#uro-ant-disabled input" ).prop( "disabled", false );
+	   $( "#uro-ant-disabled textarea" ).prop( "disabled", false );
+	   $( "#uro-ant-disabled select" ).prop( "disabled", false );
+       $( "#uro-ant-disabled button" ).show();	   
+  }
+
+	$('#uro_sin_ha_1').click(function(){
+    if($('#uro_sin_ha_1').is(":checked")){
+       			$('.disabled-antes1 input').prop('disabled', true);
+			$('.disabled-antes1 textarea').prop('disabled', true);	
+          			$('.disabled-antes1 textarea').val('');
+			$('.disabled-antes1 input').prop('checked', false);			
+    }else{
+			$('.disabled-antes1 input').prop('disabled', false);
+			$('.disabled-antes1 textarea').prop('disabled', false);
+	}
+});
+
+
+
+
+	$('#uro_sin_ha_2').click(function(){
+    if($('#uro_sin_ha_2').is(":checked")){
+       			$('.disabled-antes2 input').prop('disabled', true);
+			$('.disabled-antes2 textarea').prop('disabled', true);	
+          			$('.disabled-antes2 textarea').val('');
+			$('.disabled-antes2 input').prop('checked', false);			
+    }else{
+			$('.disabled-antes2 input').prop('disabled', false);
+			$('.disabled-antes2 textarea').prop('disabled', false);
+	}
+});
+
+
+
+groupSangTip();
+function groupSangTip(){
+if($("#grouposang").val()==''){
+	$(".tipif-info").show(1000);
+	
+}else{
+$(".tipif-info").hide();	
+}
+var grouposang = $("#grouposang").val();
+$("#tipificacion").val(grouposang);
+	
+	
+}
+
+
+
+
+$("#grouposang").on('change', function (e) {
+groupSangTip();
+$("#tip-hide").hide();
+});
+
+
+//=======================tipification===========================
+jQuery("input[name='tipificacion']").on('click', function(e) {
+if($('.ck').is(':checked')) {
+$("#mas").show();
+$("#menos").hide();
+}
+else{
+$("#menos").show();
+$("#mas").hide();
+}
+});
+
+
+//=======================tipification===========================
+
+
+jQuery("input[name='rhoa']").on('click', function(e) {
+$("#tip-hide").hide();
+$("#tip-show").show();
+if($('.ck').is(':checked')) {
+$("#mas").show();
+$("#menos").hide();
+}
+else{
+$("#menos").show();
+$("#mas").hide();
+}
+});
+</script>

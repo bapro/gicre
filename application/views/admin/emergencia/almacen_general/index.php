@@ -19,8 +19,13 @@
 <select class="form-control select2"  id="search-centro">
 <option>Seleccionar Centro Para Subir Medicamentos</option>
 <?php
+
+if($admin_centro){
+$query = $this->db->query("SELECT id_m_c, name FROM medical_centers WHERE id_m_c=$admin_centro");
+}else{
 $sql ="SELECT id_m_c,name FROM  medical_centers  order by name";
 $query = $this->db->query($sql);
+}
 echo '<option value="" hidden></option>';
 foreach ($query->result() as $row){
 

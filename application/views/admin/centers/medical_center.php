@@ -184,7 +184,7 @@ $colorBg = "#E0E5E6";
 <td  style="text-align:left"><?=$result_doctor->exequatur;?></td>
 <td  style="text-align:left">
 <?php if($hide==0){?>
-<a href="<?php echo base_url("admin_medico/doctor/$result_doctor->id_user")?>"  title="Ver" ><i class="fa fa-eye" aria-hidden="true"></i></a>
+<a href="<?php echo base_url("admin/update_user/$result_doctor->id_user/1")?>"  title="Ver" ><i class="fa fa-eye" aria-hidden="true"></i></a>
 <?php } ?> </td>
 </tr>
 

@@ -56,6 +56,7 @@ td{font-size:13px}
 
 
 <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js "></script>
@@ -69,13 +70,40 @@ $(".pagination").hover(function () {
         $(this).find('.box-tooltip').hide();
       });
 	  
-	  
+	 $('#hospitol').on('hidden.bs.modal', function () {
+$(this).removeData('bs.modal');
+ //location.reload();
+}); 
 	   $("#record").on("keyup", function() {
     var value = $(this).val().toLowerCase();
     $("#tbody tr").filter(function() {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
+
+
+
+$(".cancelar-data").click(function(){
+if (confirm("¿Estás seguro de cancelar?"))
+{ 
+var el = this;
+var del_id = $(this).attr('id');
+
+$.ajax({
+type:'POST',
+url:'<?=base_url('hospitalizacion/cancelHospData')?>',
+data: {id:del_id,id_user:<?=$id_user?>},
+success:function(response) {
+$(el).closest('tr').css('background','tomato');
+$(el).closest('tr').fadeOut(800, function(){ 
+$(this).remove();
+});
+
+}
+});
+}
+})
+
 
 
 function disabledserach(){

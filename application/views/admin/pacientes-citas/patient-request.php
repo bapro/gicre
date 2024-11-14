@@ -12,6 +12,8 @@ $pat=$this->db->select('nombre,tel_resi,tel_cel,email,frecuencia,seguro_medico,p
 $area=$this->db->select('title_area')->where('id_ar',$row->area)
 ->get('areas')->row('title_area');
 
+	$doc=$this->db->select('name,link_pago,link_video_conf')->where('id_user',$row->doctor)
+   ->get('users')->row_array();
  ?>
 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 
@@ -128,9 +130,8 @@ echo $area;
 <label class="control-label col-sm-4">Doctor:</label>
 <div class="col-sm-8">
 <?php 
-	$doc=$this->db->select('name')->where('id_user',$row->doctor)
-   ->get('users')->row('name');
-   echo $doc;
+
+   echo $doc['name'];
    ?>
 
 </div>
@@ -175,6 +176,7 @@ echo $area;
 <input type="hidden" value="<?=$area ?>" name="doctor-area"/>
 <input type="hidden" value="<?=$row->centro?>" name="centro-id"/>
 <input type="hidden" value="1" name="direction"/>
+<input type="hidden" value="<?=$pat['tel_cel'] ?>" name="patient-phone"/>
 <hr/>
 <textarea placeholder="Usd puede escribir nota al paciente, por ejemplo en que periodo estara disponible por la cita." class="form-control" id="background_" name="medico-text" rows="4" cols="55"></textarea><br/>
 <div class="form-group">
@@ -189,9 +191,9 @@ echo $area;
 </div>
 </div>
 <div class="form-group" >
-<label class="control-label col-sm-3">Link de Zoom</label>
+<label class="control-label col-sm-3">Link de Video de Conferencia</label>
 <div class="col-sm-8">
-<input type="text" class="form-control" style='border:1px solid #38a7bb' name="link-zoom" placeholder='entrar el link de zoom' />
+<input type="text" class="form-control" style='border:1px solid #38a7bb' name="link-zoom" placeholder='entrar el link de Conferencia' value="<?=$doc['link_video_conf']?>" />
 
 </div>
 </div>
@@ -204,7 +206,7 @@ echo $area;
 <?php
 
 ?>
-<input type="text" class="form-control" style='border:1px solid #38a7bb' name="link-pago" placeholder='entrar el link del pago' />
+<input type="text" class="form-control" style='border:1px solid #38a7bb' name="link-pago" placeholder='entrar el link del pago' value="<?=$doc['link_pago']?>" />
 <?php 
 $val=$this->db->select('price,name')->where('id_doctor',$row->doctor)->get('products')->row_array();
 if($val['price']){

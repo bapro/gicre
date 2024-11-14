@@ -20,8 +20,9 @@ baptiste.prophete123
 <div class="col-md-12 alert alert-info" role="alert">
 <strong>CREAR CUENTA MEDICO</strong> Despues de crear su cuenta recibira un correo de nosotros para el seguimiento
 </div>
+<div class="col-md-5"><?=  validation_errors(); ?></div>
  <div class="col-md-12 ">
-<form method="post" id="form_user2" class="form-horizontal" action="<?php echo site_url("navigation/saveMedico");?>">
+<form method="post" id='form_user2' class="form-horizontal" action="<?php echo site_url("navigation/saveMedico");?>">
 <h3 style="text-align:center;color:red"  id="errorBox2"></h3>
 
 <!-- left column -->
@@ -38,36 +39,39 @@ baptiste.prophete123
 
 
 <div class="form-group ">
-<label class="control-label col-sm-2">EXEQUATUR</label>
+<label class="control-label col-sm-2">EXEQUATUR <span class="req">*</span></label>
 <div class="col-sm-2">
-<input type="text" class="form-control"   name="exequatur"  id="exequatur" placeholder='EXEQUATUR'  >
+<input type="text" class="form-control"   name="exequatur"  id="exequatur" placeholder='EXEQUATUR' value="<?php echo set_value('exequatur'); ?>"  >
  </div>
  </div>
 <div class="form-group" >
-<label class="control-label col-sm-2" >NOMBRES</label>
+<label class="control-label col-sm-2" >NOMBRES <span class="req">*</span></label>
 <div class="col-sm-4">
-<input type="text" class="form-control required"   name="nombre" placeholder='NOMBRES'  >
+<input type="text" class="form-control required"   name="nombre" placeholder='NOMBRES' value="<?php echo set_value('nombre'); ?>"  >
 </div>
 </div>
  <div class="form-group">
-<label class="control-label col-sm-2" >CÉDULA</label>
+<label class="control-label col-sm-2" >CÉDULA <span class="req">*</span></label>
 <div class="col-sm-2">
-<input type="text" class="form-control"   name="cedula" placeholder='CÉDULA'  >
+<input type="text" class="form-control"   name="cedula" placeholder='CÉDULA' value="<?php echo set_value('cedula'); ?>"  >
 </div>
 </div>
 
  <div class="form-group">
-<label class="control-label col-sm-2" >TELEFONO</label>
+<label class="control-label col-sm-2" >TELEFONO <span class="req">*</span></label>
 <div class="col-sm-4">
-<input type="text" class="form-control required"  id='phone' name="phone" placeholder='TELEFONO'  >
+<input type="text" class="form-control required"  id='phone' name="phone" placeholder='TELEFONO' value="<?php echo set_value('phone'); ?>" >
 <span id='check-phone' style='color:white;background:gray' ></span>
 </div>
 </div>
 <div class="form-group ">
-<label class="control-label col-sm-2">ESPECIALIDAD</label>
+<label class="control-label col-sm-2">ESPECIALIDAD <span class="req">*</span></label>
 <div class="col-sm-3">
+<?php 
+$areaName=$this->db->select('title_area')->where('id_ar',set_value('especialidad'))->get('areas')->row('title_area');
+?>
 <select class="form-control select2 required"  name="especialidad"  id="especialidad">
- <option value="" hidden></option>
+ <option value="<?php echo set_value('especialidad'); ?>" ><?=$areaName?></option>
  <?php 
 
  foreach($especialidades as $row)
@@ -82,7 +86,7 @@ baptiste.prophete123
 
 
 <div class="form-group">
-<label class="control-label col-sm-2">SEGURO MÉDICO</label>
+<label class="control-label col-sm-2">SEGURO MÉDICO <span class="req">*</span></label>
 <div class="col-sm-4">
 <input type="checkbox" id="checkbox2"> Seleccionar todo
 <select class="form-control select2 required" id="e2" multiple="multiple"  name="seguro_medico[]">
@@ -98,9 +102,9 @@ echo '<option value="'.$row->id_sm.'">'.$row->title.'</option>';
 </div>
 
  <div class="form-group">
-<label class="control-label col-sm-2" >CORREO ELECTRÓNICO</label>
+<label class="control-label col-sm-2" >CORREO ELECTRÓNICO <span class="req">*</span></label>
 <div class="col-sm-4">
-<input type="email" class="form-control required email-clear" id="email2" autocomplete="off"  name="email" placeholder='CORREO ELECTRÓNICO' style="text-transform:lowercase" >
+<input type="email" class="form-control required email-clear" id="email2" autocomplete="off" value="<?php echo set_value('email'); ?>"  name="email" placeholder='CORREO ELECTRÓNICO' style="text-transform:lowercase" >
 <div id="emailInfo2"></div>
 <span id='check-email' style='color:white;background:gray' ></span>
 </div>
@@ -114,21 +118,7 @@ echo '<option value="'.$row->id_sm.'">'.$row->title.'</option>';
 </div>
 </div>
 
-<div class="form-group are-you-human" style='display:none'>
-<label class="control-label col-sm-2">ERES HUMANO ?</label>
-<div class="col-sm-3">
-<em style='color:white;background:gray'>coloque el resultado</em>
-<?php
-$chars = "0123456789";
-$number1 = substr( str_shuffle( $chars ), 0, 1);
-$number2 = substr( str_shuffle( $chars ), 0, 1);
-?>
-<div class="input-group">
-    <span class="input-group-addon capchtavalue"><span id='number1'><?=$number1?></span> + <span id='number2'><?=$number2?></span></span>
- <input  class="form-control" placeholder='=' id='checkifgood' autocomplete="off" >
-</div>
-</div>
-</div>
+
 
 
 <div class="col-sm-12">
@@ -149,7 +139,6 @@ $number2 = substr( str_shuffle( $chars ), 0, 1);
   $("#email2").on('keyup', function () {
   var email=$("#email2").val();
   $("#check-email").text("Asegurate que este correo es correcto, es un medio de contactarle: " +email);
-  $(".are-you-human").hide();
   $("#check-if-good").val("");
   loadCodigo();
 });
@@ -162,25 +151,6 @@ e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : 
 });
 
 
-
-var timer = null;
-$("#checkifgood").on('keydown', function () {
-       clearTimeout(timer);
-       timer = setTimeout(checkme)
-});
-function checkme (){
-	var number1=parseInt($("#number1").text());
-    var number2=parseInt($("#number2").text());
-	var sum =number1 + number2;
-	if (parseInt($("#checkifgood").val()) == sum){
-	$("#checkifgood").prop("disabled",true);
-   $("#checkifgood").val("correcto!");
-   $("#senduserdoc").prop("disabled",false);
-  }else{
-    $("#senduserdoc").prop("disabled",true);
-  }
-
-};
 
 //-----------------------------------------------------------------------------------------------------------
 var timer2 = null;
@@ -217,9 +187,9 @@ $("#check-if-good").on('keydown', function () {
 function checkIfCodigo (){
 	if($("#ifEmailCorrect").text()==$("#check-if-good").val()){
 	$(".codigo-enviado").hide();
-	$(".are-you-human").show();	
+	 $("#senduserdoc").prop("disabled",false);
 	}else{
-	$(".are-you-human").hide();		
+	 $("#senduserdoc").prop("disabled",true);	
 	}
 };
 

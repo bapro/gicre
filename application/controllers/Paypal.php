@@ -58,7 +58,8 @@ class Paypal extends CI_Controller{
 	
 	
 function success(){
-	$id_doc= $this->session->userdata['id_doc'];
+	 redirect('medico');
+	/*$id_doc= $this->session->userdata['id_doc'];
 	if(empty($this->session->userdata['id_doc'])){
       redirect('/page404');
      }
@@ -67,7 +68,7 @@ function success(){
 	$data['product']=$this->db->select('plan,precio')->where('id',$user['payment_plan'])->get('medico_precio_plan')->row_array();
    $data['id_doc']= $id_doc;
     $data['correo']= $user['correo'];
-$this->load->view('medico/user/new-account-created', $data);
+$this->load->view('medico/user/new-account-created', $data);*/
 }
 
 //--------------------------------MEDICO DEBE PAGAR PARA SEGUIR USANDO EL SERVICIO--------------------------------------------------------------------------
@@ -105,18 +106,37 @@ $this->load->view('medico/user/new-account-created', $data);
 	 }
 
 public function update_account_doctor(){
-	
-$data = array(
-   'payment_plan' => $this->input->post('plan-pago')
+
+$plan=$this->input->post('plan');
+$data['payment_plan']=$plan;
+$id_doctor=$this->input->post('id_doctor');	
+$data['id_doctor']=$id_doctor;
+$dataup = array(
+   'payment_plan' => $plan
  );
   
 $where = array(
-'id_user' =>$this->input->post('id_doctor')
+'id_user' =>$id_doctor
 );
 
 $this->db->where($where);
-$this->db->update("users",$data);	
-redirect($_SERVER['HTTP_REFERER']);	
+$this->db->update("users",$dataup);	
+//redirect($_SERVER['HTTP_REFERER']);
+
+if($this->db->affected_rows() > 0){
+  	$this->paymentPlan($plan,$id_doctor);
+}else{
+    echo "<span class='alert alert-error'>operación falló</span>";
+}
+
+}
+
+
+public function paymentPlan($plan,$id_doctor){
+	$data['payment_plan']=$plan;
+	$data['id_doctor']=$id_doctor;
+	  	$data['status'] =  "<span style='color:green'>Cambiado con éxito</span>";
+	$this->load->view('paypal/doctor_plan', $data);
 }
 
 //------------------------------------------------------------------------------------------------------------

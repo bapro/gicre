@@ -51,13 +51,13 @@ $imgpat='<img  width="60" src="'.base_url().'/assets/img/patients-pictures/'.$ro
 </tbody> 
 <tr>
 <th>
-Eres tu ? <a class="btn btn-primary btn-sm" href="<?php echo site_url("navigation/search_result_nec/$row->id_p_a");?>">Si</a>   <a class="btn btn-default btn-sm" id='not-me'>No</a>
+Eres tu ? <a class="btn btn-primary btn-sm" href="<?php echo site_url("navigation/patient_found/$row->id_p_a");?>">Si</a>   <a class="btn btn-default btn-sm" id='not-me'>No</a>
 </th>
 </tr>   
 </table>
 
 <script>
-$('#formatdate').mask('000-000-0000', {placeholder: '00-00-0000'});
+
 $('#hide-down').hide();
 
 $("#not-me").click(function(){

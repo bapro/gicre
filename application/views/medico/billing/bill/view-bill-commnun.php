@@ -1,4 +1,9 @@
 <?php
+$id=decrypt_url($id);
+$identificar=decrypt_url($identificar);
+if($id=="" || $identificar==""){
+redirect("$controller/billing_medicos");	
+}
 $idt=$this->db->select('medico,seguro_medico,paciente,centro_medico')->where('idfacc',$id)->get('factura2')->row_array();
 $get= array(
 'id_seguro' => $idt['seguro_medico'],
@@ -11,28 +16,28 @@ $data['EditProcedTarif']=$this->model_admin->EditProcedTarif($get);
 
 $id_apoint=$this->db->select('id_rdv')->where('idfacc',$id)->get('factura2')->row('id_rdv');
 
-//$filter_date=$this->db->select('filter_date')->where('id_apoint',$id_apoint)->where('filter_date',date('Y-m-d'))->get('rendez_vous')->row('filter_date');
- $filter_date=$this->db->select('insert_date')->where('p_id',$idt['paciente'])->where('user_id',$idt['medico'])->where('centro_medico',$idt['centro_medico'])->order_by('insert_date','desc')->limit(1)->get('h_c_diagno_def_link')->row('insert_date');
- 
-$data['show_diagno_pat']=$this->model_admin->show_diagno_pat($idt['paciente'],$idt['medico'],$idt['centro_medico'],$filter_date);
-$h_c_conclusion_diagno =$this->db->select('procedimiento,otros_diagnos')->
-where('historial_id',$idt['paciente'])->
-where('id_user',$idt['medico'])->
-where('centro_medico',$idt['centro_medico'])->
-like('inserted_time',date("Y-m-d"))->
-get('h_c_conclusion_diagno')->row_array();
-$data['procedimiento']=$h_c_conclusion_diagno['procedimiento'];
-$data['otros_diagnos']=$h_c_conclusion_diagno['otros_diagnos'];	
+$lastPatConDiag= $this->db->select('id_cdia, procedimiento, otros_diagnos')
+->where('historial_id',$idt['paciente'])
+->where('id_user',$idt['medico'])
+->order_by('id_cdia','DESC')
+->get('h_c_conclusion_diagno')
+->row_array();
+
+$data['procedimiento']=$lastPatConDiag['procedimiento'];
+$data['otros_diagnos']=$lastPatConDiag['otros_diagnos'];	
+$con_id_link=$lastPatConDiag['id_cdia'];
+
+ $data['con_id_link']=$con_id_link;
+$data['show_diagno_pat']=$this->model_admin->show_diagno_pat($con_id_link);
+
 $data['billings2']=$this->model_admin->ViewFact2($id);
 $data['billings']=$this->model_admin->ViewFact($id);
 	//$this->load->view('medico/header',$data);
 if($identificar=="privado"){ 
-$data['cod']=$this->db->select('codigo')->where('id_seguro',$idt['seguro_medico'])->where('id_doctor',$idt['medico'])
-->get('codigo_contrato')->row('codigo');
+$data['cod']=$this->db->select('codigo')->where('id_seguro',$idt['seguro_medico'])->where('id_doctor',$idt['medico'])->get('codigo_contrato')->row('codigo');
 } else {
 	
-$data['cod']=$this->db->select('codigo')->where('id_centro',$idt['centro_medico'])
-->get('codigo_contrato')->row('codigo');
+$data['cod']=$this->db->select('codigo')->where('id_centro',$idt['centro_medico'])->where('id_seguro',$idt['seguro_medico'])->get('codigo_contrato')->row('codigo');
 }
  $seguro_name=$this->db->select('title, rnc')->where('id_sm',$idt['seguro_medico'])
  ->get('seguro_medico')->row_array();

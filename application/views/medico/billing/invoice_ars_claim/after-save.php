@@ -68,7 +68,17 @@ $seguro_logo="";
 } else{
 $seguro_logo='<img  style="width:90px;" src="'.base_url().'/assets/img/seguros_medicos/'.$ars['logo'].'"  />';	
 }
-$centro=$this->db->select('type,name,logo')->where('id_m_c',$row->center_id)->get('medical_centers')->row_array();
+$centro=$this->db->select('name,logo,rnc,primer_tel,segundo_tel,provincia,municipio,barrio,calle,type')->where('id_m_c',$row->center_id)->get('medical_centers')->row_array();
+$centro_name=$centro['name'];
+$rnc=$centro['rnc'];
+$centro_logo=$centro['logo'];
+$primer_tel=$centro['primer_tel'];
+$segundo_tel=$centro['segundo_tel'];
+$barrio=$centro['barrio'];
+$calle=$centro['calle'];
+$centro_prov=$this->db->select('title')->where('id',$centro['provincia'])->get('provinces')->row('title');
+$centro_muni=$this->db->select('title_town')->where('id_town',$centro['municipio'])->get('townships')->row('title_town');
+
 $centro_type=$centro['type'];
 
 if($centro_type=='privado'){
@@ -90,12 +100,19 @@ $segurocodigoc=$this->db->select('codigo')->where('id_seguro',$row->seguro_medic
 <p style="text-align:center"><strong>Exeq: <?=$doc['exequatur']?> </strong></p>
 <p style="text-align:center"><strong>Cedula: <?=$doc['cedula']?> </strong></p>
 <?php } else {
-$centro_logo='<img  style="width:90px;" src="'.base_url().'/assets/img/centros_medicos/'.$centro['logo'].'"  />';	
 $segurocodigoc=$this->db->select('codigo')->where('id_seguro',$row->seguro_medico)->where('id_centro',$row->center_id)->get('codigo_contrato')->row('codigo');
 	
 ?>
-<h2 style="text-align:center"><?=$centro['name']?> </h2>
-<h5 style="text-align:center"><?=$centro_logo?></h5>
+<table >
+<tr style="border:none">
+<td><img style="width:70px" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro_logo; ?>"  /></td>
+<td >
+<h3><?=$centro_name?></h3>
+<strong>Tel:</strong> <?=$primer_tel?> <?=$segundo_tel?> <strong>RNC: </strong><?=$rnc?> <strong>Ubicación:</strong> <?=$calle?>, <?=$barrio?>, <?=$centro_prov?>, <?=$centro_muni?> 
+</td>
+
+</tr>
+</table>
 <?php } ?>
 <hr/>
 <div style="text-align:center" class="form-horizontal">

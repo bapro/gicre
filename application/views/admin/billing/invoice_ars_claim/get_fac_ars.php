@@ -110,9 +110,12 @@ else{
 	<td class="numauto"><?=$fac->numauto;?></td>
    <td class="tcentro"  style="display:none"><?=$fac->centro_medico;?></td>
    <td class="tarea"  style="display:none"><?=$fac->area;?></td>
-	<td class="tsubtotal"><?=$fac->t1;?></td>
-	<td class="totpagseg"><?=$fac->t2;?></td>
-	<td class="totpagpa"><?=$fac->t3;?></td>
+	<td><?=number_format($fac->t1,2)?></td>
+	<td><?=number_format($fac->t2,2)?></td>
+	<td><?=number_format($fac->t3,2)?></td>
+	<td class="tsubtotal" style="display:none"><?=$fac->t1?></td>
+	<td class="totpagseg" style="display:none"><?=$fac->t2?></td>
+	<td class="totpagpa" style="display:none"><?=$fac->t3?></td>
 	<td class="medico" style="display:none"><?=$fac->medico;?></td>
 	<td class="servicio" style="display:none"><?=$fac->service;?></td>
 	<td class="codigoprestado" style="display:none"><?=$fac->codigoprestado;?></td>

@@ -23,13 +23,17 @@ $especialidad=$this->db->select('title_area')->where('id_ar',$area)->get('areas'
 $sello_doc=$this->db->select('sello')->where('doc',$rows->updated_by)->where('dist',0)->get('doctor_sello')->row('sello');
 
 if ($sello_doc) {
-$sello='<td style="border:none"><img  style="width:150px;" src="'.base_url().'/assets/update/'.$sello_doc.'"  /></td>';
+$sello='<td style="border:none"><img  style="width:90px;" src="'.base_url().'/assets/update/'.$sello_doc.'"  /></td>';
 }else{
 $sello='';	
 }
 
 ?>
+
 <table class="table" style="width:100%;font-size:10px" border="1">
+<tr>
+<td colspan='3'></td><td style="color:red;text-align:right"><?=$inserted_time;?></td>
+</tr>
     <tr style="background:rgb(192,192,192);color:white">
 	   <td><strong>Estudio</strong></td>
 		 <td><strong>Parte del cuerpo</strong></td>
@@ -44,10 +48,10 @@ $sello='';
 	 ?>
         <tr>
 		
-		<td><?=$row->estudio;?></td>
-		<td><?=$row->cuerpo;?></td>
-		<td><?=$row->lateralidad;?></td>
-		<td><?=$row->observacion;?></td>
+		<td valign="top"><?=$row->estudio;?></td>
+		<td valign="top"><?=$row->cuerpo;?></td>
+		<td valign="top"><?=$row->lateralidad;?></td>
+		<td valign="top"><?=$row->observacion;?></td>
 	  </tr>
 		
 	 <?php
@@ -55,17 +59,10 @@ $sello='';
 	 ?>
        
 </table>     
- <br/>  
-
+ 
 
 <table style="border:none"> 
 <tr>
-<td style="border:none;font-size: 12px">
-<strong>Dr <?=$author;?></strong>, Exeq. : <?=$exequatur;?><br/>
-<?=$especialidad;?><br/>
-<span style="color:red"><?=$inserted_time;?></span>
-
-</td>
 <td style="border:none">
 
 <?php 
@@ -74,7 +71,7 @@ $firma_doc="$rows->updated_by-1.png";
 $signature = "assets/update/$firma_doc";
 
 if (file_exists($signature)) {?>
-<img  style="width:300px;margin: -20px;" src="<?= base_url();?>/assets/update/<?=$firma_doc?>"  />
+<img  style="width:500px;margin: -20px;" src="<?= base_url();?>/assets/update/<?=$firma_doc?>"  />
 <?php
 } else {
 
@@ -85,3 +82,5 @@ if (file_exists($signature)) {?>
 <?=$sello?>
 </tr>
 </table> 
+
+<?php $mpdf->setFooter("Dr ". $author. ", Exeq.". $exequatur. ", ". $especialidad);?>

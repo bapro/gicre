@@ -1,5 +1,5 @@
 <?php
-$sql ="SELECT id_c_taf, sub_groupo FROM centros_tarifarios WHERE groupo LIKE 'Estudios radiológicos' AND centro_id = $centro_id AND seguro_id=$id_seguro GROUP BY sub_groupo ORDER BY sub_groupo ASC";
+$sql ="SELECT id_c_taf, sub_groupo FROM centros_tarifarios WHERE groupo = 'Radiología convencional' || groupo = 'Estudios radiológicos' || groupo = 'Ecografías' AND centro_id = $centro_id AND seguro_id=$id_seguro GROUP BY sub_groupo ORDER BY sub_groupo ASC";
 
 $query = $this->db->query($sql);
 if($query->result() !=NULL){
@@ -108,7 +108,7 @@ allEstudiosOrdMed();
 });
 
 
-
+allEstudiosOrdMed();
 function allEstudiosOrdMed()
 {
 $("#allEstudiosOrdMed").fadeIn().html('<span class="load"> <img  width="40px" src="<?= base_url();?>assets/img/loading.gif" /></span>');
@@ -117,7 +117,7 @@ var historial_id = <?=$id_historial?>;
 var area  = "";
 $.ajax({
 url:"<?php echo base_url(); ?>hospitalizacion/allEstudiosOrdMed",
-data: {historial_id:historial_id,area:area,user_id:user_id,printing:2},
+data: {historial_id:historial_id,area:area,user_id:user_id,printing:3},
 method:"POST",
 success:function(data){
 $('#allEstudiosOrdMed').html(data);

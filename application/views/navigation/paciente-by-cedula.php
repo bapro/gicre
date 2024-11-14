@@ -150,8 +150,8 @@ echo '<option value="'.$row->title.'">'.$row->title.'</option>';
 
 <?php
 }else{
-	$ced1=0;$ced2=0;$ced3=0;
-	redirect("navigation/createNewRequest/$ced1/$ced2/$ced3");
+
+	redirect("navigation/createNewRequest/$cedula");
 }
 ?>
 </div>

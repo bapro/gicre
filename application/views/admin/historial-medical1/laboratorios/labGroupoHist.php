@@ -11,11 +11,13 @@ loadGroupo($(this).val());
 });
 
 
-function loadGroupo(groupo){	
+function loadGroupo(groupo){
+$("#allLaboratoriosInd").show();
+ $("#allLaboratoriosInd").html('<span style="font-size:12px" class="glyphicon glyphicon-refresh glyphicon-refresh-animate load"></span>');
 $.ajax({
 type:'POST',
-url:'<?=base_url('admin_medico/groupDetailedLabHist')?>',
-data: {groupo : groupo,historial_id:<?=$id_historial?>,operator:<?=$operator?>,user_id:<?=$user_id?>,emergency_id:<?=$emergency_id?>,hist:<?=$hist?>},
+url:'<?=base_url('saveHistorial/groupDetailedLabHist')?>',
+data: {groupo : groupo,historial_id:<?=$id_historial?>,operator:<?=$operator?>,user_id:<?=$user_id?>,emergency_id:<?=$emergency_id?>,hist:<?=$hist?>,centro_medico:<?=$centro_medico?>},
 success:function(data) {
 $('#allLaboratoriosInd').html(data);
 

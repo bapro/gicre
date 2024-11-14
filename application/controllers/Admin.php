@@ -9,27 +9,836 @@ parent::__construct();
 $this->load->model('navigation/account_demand_model');
 $this->load->model('user');
 $this->load->model('model_admin');
-$this->load->model("model_emergencia");
-$this->load->model("product");
-$this->load->model("padron_model");
-//$this->load->library('Ajax_pagination');
+$this->load->model("model_general");
+$this->load->library("create_forms");
+$this->load->model("model_alergy");
+$this->load->model("model_paginate_citas");
+$this->load->library("user_register_info");
+$this->load->library("get_table_data_by_id");
+$this->load->library("search_patient_photo");
 $this->perPage = 3;
 $this->load->model('excel_import_model');
-$this->load->library('excel');
 $this->load->library('user_agent');
+$this->load->library("header_user");
+$this->load->library("invoice");
    $this->load->model('login_model');
     $this->load->library("pagination");
 	 $this->load->library('form_validation'); 
-	  
-
+	 $this->load->library('auto_complete_input');
+	 $this->USER_CONTROLLER = $this->session->set_userdata('USER_CONTROLLER','admin');
+$this->ID_USER =$this->session->userdata('user_id');
+$this->IS_ADMIN_CENTRO =$this->session->userdata('admin_position_centro');
+$this->PERFIL="Admin";
   /*session checks */
-
+$this->load->library('show_pages'); 
     if($this->session->userdata('is_logged_in')=='')
     {
      $this->session->set_flashdata('msg','Please Login to Continue');
      redirect('login');
 }
 }
+
+public function areas(){
+$this->header_user->headerAdmin($this->ID_USER);
+$this->load->view('admin/users/area/index');
+
+}
+
+public function health_insurance(){
+$this->header_user->headerAdmin($this->ID_USER);
+$data['ALL_FIELDS'] = $this->model_admin->all_fields();
+$this->load->view('admin/health_insurances/index', $data);
+
+}
+
+
+public function EditSeguroMedico()
+{
+ $this->header_user->headerAdmin($this->ID_USER);
+$data['name']='';
+$id_seguro= $this->uri->segment(3);
+$data['id_seguro']= $id_seguro;
+
+$data['ALL_FIELDS'] = $this->model_admin->all_fields();
+$data['EditSeguroMedico'] = $this->model_admin->EditSeguroMedico($id_seguro);
+$this->load->view('admin/health_insurances/edit-seguro', $data);
+
+}
+
+
+
+
+public function see_medical_center()
+{
+$this->header_user->headerAdmin($this->ID_USER);
+	$id_medical_center= $this->uri->segment(3);
+
+$this->show_pages->medical_center($id_medical_center);
+
+}
+
+
+
+
+
+
+public function doctor_account($id)
+	{
+		$this->show_pages->doctor_account($id);
+	}
+
+
+
+
+ public function medical_assistent($id)
+	{
+		$this->show_pages->medical_assistent($id);
+	}
+
+
+
+
+
+public function patient_appointment_requests(){
+$this->header_user->headerAdmin($this->ID_USER);
+$this->load->view('patient/request/patients_requests');
+}
+
+
+public function tariffs()
+{
+	$this->show_pages->tariffs();
+
+}
+
+ function search_patient_by_nombres()
+{
+$this->header_user->headerAdmin($this->ID_USER);
+$this->create_forms->search_patient_form();	
+
+}
+
+
+
+public function display_tarif_centro_categoria($id_centro, $id_seguro)
+	{
+		$this->header_user->headerAdmin($this->ID_USER);
+		$results = $this->model_admin->display_tarif_centro_categoria($id_centro, $id_seguro);
+		$data['results'] = $results;
+		$data['id_seguro'] = $id_seguro;
+		$data['id_centro'] = $id_centro;
+
+		$this->load->view('footer-footerJs', $data);
+		if ($results) {
+			$link = 'href="' . base_url() . 'medico/tariffs"';
+			$data['searchTarif'] = "<a $link >Buscar Tarifarios</a>";
+			$this->load->view('tarifario/centro/display_tarif_centro', $data);
+		} else {
+			$this->create_forms->upload_center_tariffs($id_centro, $id_seguro, 0);
+		}
+	}
+
+
+
+
+public function api_connection(){
+$this->header_user->headerAdmin($this->ID_USER);
+$query = $this->db->query("SELECT * FROM api_client ORDER BY client_name DESC");
+$data['results']= $query->result();
+$this->load->view('api/index',$data);
+}
+
+
+public function create_invoice_back($id_centro, $id_apoint, $id_doct, $id_seguro)
+	{
+		$id_ap = decrypt_url($id_apoint);
+
+		$cent = decrypt_url($id_centro);
+
+
+		$centro_type = $this->db->select('type')->where('id_m_c', $cent)->get('medical_centers')->row('type');
+
+		$this->invoice($id_centro, $id_apoint, $id_doct, $id_seguro, $centro_type);
+		
+	}
+
+public function invoice($id_centro, $id_apoint, $id_doct, $id_seguro, $centro_type)
+	{
+		$this->header_user->headerAdmin($this->ID_USER);
+		//$this->db->where_in('id_usuario', $this->ID_USER);
+		//$this->db->delete('tarifarios_temporal');
+		
+		$id_ap = decrypt_url($id_apoint);
+		$doc = decrypt_url($id_doct);
+		$cent = decrypt_url($id_centro);
+		$seg = decrypt_url($id_seguro);
+
+		$id_patient = $this->session->userdata('ID_PATIENT');
+
+
+
+		$seguro_title = $this->db->select('title')->where('id_sm', $seg)->get('seguro_medico')->row('title');
+
+
+
+
+		[$get_patient_info_by_id, $patient_adress, $get_patient_seguro_info_by_id] = $this->get_table_data_by_id->getPatientInfo($this->session->userdata('ID_PATIENT'));
+		$data['patient_adress'] = $patient_adress;
+		[$get_centro_info_by_id, $centro_adress] = $this->get_table_data_by_id->getCentroInfo($cent);
+		$data['centro_adress'] = $centro_adress;
+
+
+		[$get_doctor_info_by_id, $doctor_area] = $this->get_table_data_by_id->getDoctorInfo($doc);
+		$data['get_doctor_info_by_id'] = $get_doctor_info_by_id;
+		$data['doctor_area'] = $doctor_area;
+		[$codigo_contrato, $password, $cedulaFormat, $disabledNap] = $this->get_table_data_by_id->getCodigoContrato($get_centro_info_by_id['type'], $cent, $seg, $doc);
+
+		$data['get_centro_info_by_id'] = $get_centro_info_by_id;
+
+		$data['codigo_contrato'] = $codigo_contrato;
+		$data['password'] = $password;
+		$data['cedulaFormat'] = $cedulaFormat;
+		$data['get_patient_info_by_id'] = $get_patient_info_by_id;
+		$data['disabledNap'] = $disabledNap;
+
+		if ($seguro_title == "PRIVADO") {
+			$tarif_plan = $cent;
+			$patientNss = '';
+		} else {
+			$tarif_plan = $get_patient_info_by_id['plan'];
+			$patientNss = $this->db->select('input_name')->where('patient_id', $this->session->userdata('ID_PATIENT'))->get('saveinput')->row('input_name');
+		}
+		$data['patientNss'] = $patientNss;
+		if ($password) {
+			$ws = "";
+		} else {
+			$ws = "none";
+		}
+
+		$data['ws'] = $ws;
+		$data['centro_type_get'] = $centro_type;
+
+		$sessions_data = array(
+			'seguroTitle' => $seguro_title,
+			'patientPlan'  => $get_patient_info_by_id['plan'],
+			'doctor'  => $doc,
+			'id_apoint' => $id_ap,
+			'centro' => $cent,
+			'seguroId' => $seg,
+			'patientNss' => $patientNss,
+			'patient' => $this->session->userdata('ID_PATIENT'),
+		);
+
+		$this->session->set_userdata($sessions_data);
+
+
+		if ($centro_type == "privado") {
+			$tipo_tarifario = "Doctor Tarifarios";
+			$this->get_table_data_by_id->tarifarios_temporal_for_current_user($sessions_data);
+			$select_servicios = "";
+		} else {
+			//$tipo_tarifario="Centro Tarifarios <span><input  type='checkbox' id='pdss'/> PDSS</span>";
+			$tipo_tarifario = "Servicios";
+			$this->get_table_data_by_id->centro_tarifarios_temporal_for_current_user($sessions_data);
+
+			$select_servicios = $this->db->query("SELECT id_c_taf, groupo FROM  centros_tarifarios_test WHERE centro_id=$cent  && seguro_id=$seg GROUP BY groupo");
+
+			$data['select_servicios'] = $select_servicios;
+		}
+		$data['tipo_tarifario'] = $tipo_tarifario;
+         $this->session->set_userdata('TIPO_TARIFF', $tipo_tarifario);
+		  $this->session->set_userdata('SELECT_SERVICIOS', $select_servicios);
+		[$tarifarios, $count_medico_tariff] = $this->get_table_data_by_id->getTarifariosPorDoctorPrivado($sessions_data);
+		[$tarifarios_centro, $count_centro_tariff] = $this->get_table_data_by_id->getTarifariosPorCentro($cent, $seg);
+		$tasa = $this->get_table_data_by_id->getDevise($this->ID_USER);
+
+		$data['tasa'] = $tasa;
+		$data['tarifarios'] = $tarifarios;
+		$data['count_medico_tariff'] = $count_medico_tariff;
+		$data['tarifarios_centro'] = $tarifarios_centro;
+		$data['count_centro_tariff'] = $count_centro_tariff;
+		$data['values_container_decrpyted'] = $sessions_data;
+		$data['get_patient_seguro_info_by_id'] = $get_patient_seguro_info_by_id;
+
+
+
+
+		$array_encrypted = array(
+			'doctor_ct' => $id_doct,
+			'seguro_ct' => $id_seguro,
+			'tarif_plan_ct' => encrypt_url($tarif_plan),
+			'centro' => $id_centro
+		);
+
+		$data['values_container'] = $array_encrypted;
+
+		$data['tarif_plan'] = $tarif_plan;
+		$data['fecha_factura'] = date('Y-m-d');
+		$data['numauto'] = $this->session->userdata('factura_numauto');
+		$data['autopor'] = $this->session->userdata('factura_autopor');
+		$data['numauto'] = $this->session->userdata('factura_numauto');
+		$data['pendienteCaja'] = '';
+		$data['tarjeta'] = '';
+		$data['transferencia'] = '';
+		$data['effectivo'] = '';
+		$data['cheque'] = '';
+		$data['comment'] = $this->session->userdata('factura_comment');
+		$data['checqueNumero'] = '';
+		$data['btn_fecha_com'] = "style='display:none'";
+		$data['disabled_modalidad_de_pago'] = '';
+		$data['modalidadDePagoId'] = 0;
+		$data['current_controller'] = 'medico';
+		$data['tipo_monena']='RD$';
+		$this->get_table_data_by_id->tarifarios_temporal_for_current_user($sessions_data);
+		$data['wslCentro'] = "http://arssenasa2.gob.do/webservices/webservicesautorizaciones/WSAutorizacionLaboratorio.asmx?WSDL";
+		if ($centro_type == "privado") {
+			$this->load->view('patient/factura/create-factura-centro-privado', $data);
+		} else {
+			if($seg==11){
+				$this->load->view('patient/factura/createPulicCenterInvoiceForPrivateInsurance', $data);
+			}else{
+				$this->load->view('patient/factura/createPulicCenterInvoiceForPublicInsurance', $data);
+			}
+			//$this->load->view('patient/factura/create-factura-centro-publico', $data);
+		}
+	}
+
+public function upload_tariff_form($doctor_ct, $seguro_ct, $tarif_plan_ct, $centro_med)
+{
+$this->header_user->headerAdmin($this->ID_USER);
+$doctor_ct= decrypt_url($doctor_ct);	
+$seguro_ct= decrypt_url($seguro_ct);	
+$tarif_plan_ct= decrypt_url($tarif_plan_ct);	
+$centro_med= decrypt_url($centro_med);
+$this->create_forms->upload_tariff_form($doctor_ct, $seguro_ct, $tarif_plan_ct, $centro_med);
+$data['id_doctor']= $doctor_ct;
+ $data['id_seguro_medico']=$seguro_ct;
+$data['show_select']= 1;
+ $data['get_seg_plan']=$tarif_plan_ct;	
+ $data['get_centro_id'] = $centro_med;
+ [$get_centro_info_by_id, $centro_adress] = $this->get_table_data_by_id->getCentroInfo($centro_med);
+ $data['get_centro_name'] = $get_centro_info_by_id['name'];
+ $this->load->view('tarifario/footer', $data);
+}
+
+
+   public function show_invoice_tariff_by_insurance() {
+      $this->header_user->headerAdmin($this->ID_USER);
+		 $doct_tarif = $this->input->post('id_doctor');
+		  $id_centro = $this->input->post('id_centro');
+		  $data['get_centro_id'] = $id_centro;
+		[$get_centro_info_by_id, $centro_adress]= $this->get_table_data_by_id->getCentroInfo($id_centro);
+		$data['get_centro_name'] = $get_centro_info_by_id['name'];
+		 [$get_doctor_info_by_id, $doctor_area]= $this->get_table_data_by_id->getDoctorInfo($doct_tarif);
+           $data['doctor_name']=$get_doctor_info_by_id['name'];
+        $data['id_doctor'] = $doct_tarif;
+        $results = $this->model_admin->display_tarif_doc($doct_tarif);
+        $data['results'] = $results;
+        $count = count($results);
+        $id_seguro_medico = $this->db->select('seguro_medico')->where('id_doctor', $doct_tarif)->get('doctor_seguro')->row('seguro_medico');
+        $data['id_seguro_medico'] = $id_seguro_medico;
+		 $data['count'] = $count;
+		  $data['show_select']= 1;
+		  $data['get_seg_plan']=0;
+       // if ($count > 0) {
+           $this->load->view('tarifario/doc-tariff-result', $data);
+       // } else {
+           
+     	//$this->create_forms->upload_tariff_form($doct_tarif,"","",0);	
+		 //}
+    } 
+
+
+
+public function appointments_by_date_range(){
+$this->header_user->headerAdmin($this->ID_USER);
+ [$result_centro_medicos, $result_seguro_medicos, $result_doc_by_centers]= $this->create_forms->getCentroAndSeguroByPerfil(0);
+$values = array(
+	'desde' => $this->input->get('desde'),
+	'hasta' => $this->input->get('hasta'),
+	'centro' =>$this->input->get('centro'),
+	'today' =>"",
+	'table_title' => "Citas desde ".$this->input->get('desde'). " hasta ".$this->input->get('hasta'),
+	'result_centro_medicos'=>$result_centro_medicos
+	);
+
+$this->show_pages->show_page_appointments($values);
+}
+
+
+	public function create_default_general_report(){
+$this->header_user->headerAdmin($this->session->userdata('user_id'));
+
+	$sql ="SELECT * FROM hc_reporte_general_name WHERE id  IN (SELECT id_name FROM hc_reporte_general_default_text) GROUP BY name ORDER BY id ASC";
+$data['query']=$this->clinical_history->query($sql); 
+
+$sql2 ="SELECT * FROM hc_reporte_general_name WHERE id NOT IN (SELECT id_name FROM hc_reporte_general_default_text) GROUP BY name ORDER BY id ASC";
+$data['query2']=$this->clinical_history->query($sql2); 
+ $this->load->view('clinical-history/general-report/create-default-text', $data);
+
+}
+
+	public function appointments(){
+$this->header_user->headerAdmin($this->session->userdata('user_id'));
+		$where = array('seen_hoy' => 0, 'doctor' => $this->session->userdata('user_id'));
+		$update = array('seen_hoy' => 1);
+		$this->db->where($where);
+		$this->db->update("rendez_vous", $update);
+		[$result_centro_medicos, $result_seguro_medicos, $result_doc_by_centers, $result_doctors] = $this->create_forms->getCentroAndSeguroByPerfil(0);
+
+		$values = array(
+			'desde' => 0,
+			'hasta' => 0,
+			'centro' => 0,
+			'today'=>date("Y-m-d"),
+			'table_title' => "Citas de hoy",
+			'result_centro_medicos' => $result_centro_medicos
+		);
+        
+		$this->show_pages->show_page_appointments($values);
+
+}
+
+
+
+	public function appointments2(){
+$this->header_user->headerAdmin($this->session->userdata('user_id'));
+		$where = array('seen_hoy' => 0, 'doctor' => $this->session->userdata('user_id'));
+		$update = array('seen_hoy' => 1);
+		$this->db->where($where);
+		$this->db->update("rendez_vous", $update);
+		[$result_centro_medicos, $result_seguro_medicos, $result_doc_by_centers, $result_doctors] = $this->create_forms->getCentroAndSeguroByPerfil(0);
+
+		$admin_position_centro=$this->session->userdata('admin_position_centro');
+		if($admin_position_centro){
+  $where_centro = "&& centro = $admin_position_centro";
+  $querycentro = $this->db->query("SELECT id_m_c, name FROM medical_centers WHERE id_m_c=$admin_position_centro");
+  
+  $sqlsss = "select id_patient FROM rendez_vous WHERE filter_date='$hoy' && centro=$admin_position_centro && cancelar=0 && confirmada=0";
+ $querysss= $this->db->query($sqlsss);
+  $totalrows =$querysss->num_rows();
+  
+  
+}else{
+  $where_centro = "";
+  $querycentro = $this->db->query('SELECT id_m_c, name FROM medical_centers');
+$appointments = $this->model_admin->getConfirmSolicitud();
+$totalrows = count($appointments);
+
+}
+		$data['desde']=0;
+		$data['hasta']=0;
+		$data['centro']=0;
+		$data['centro']=0;
+		 $data['today']=date("Y-m-d");
+        $data['table_title']="Citas de hoy";
+		$data['result_centro_medicos']=$result_centro_medicos;
+		
+		$countTotalCitaDoc=$this->model_admin->countTotalCitaDoc($admin_position_centro);
+$cnt_tot_cit_doc = count($countTotalCitaDoc);
+$data['countTotalCitaDoc']=$countTotalCitaDoc;
+
+$data['countTotalCitaDocNum']="$totalrows cita(s) por hoy de $cnt_tot_cit_doc medico(s)";
+$data['displayTotInfo']='';
+ $config = array();
+		
+		
+		 $config["base_url"] = base_url() . "admin/appointments";
+
+$config["total_rows"] = $totalrows;
+
+$config['full_tag_open']    = "<ul class='pagination'>";
+       $config['full_tag_close']   = "</ul>";
+       $config['num_tag_open']     = '<li>';
+       $config['num_tag_close']    = '</li>';
+       $config['cur_tag_open']     = "<li class='disabled'><li class='active'><a href='#'>";
+       $config['cur_tag_close']    = "<span class='sr-only'></span></a></li>";
+       $config['next_tag_open']    = "<li>";
+       $config['next_tagl_close']  = "</li>";
+       $config['prev_tag_open']    = "<li>";
+       $config['prev_tagl_close']  = "</li>";
+       $config['first_tag_open']   = "<li>";
+       $config['first_tagl_close'] = "</li>";
+       $config['last_tag_open']    = "<li>";
+       $config['last_tagl_close']  = "</li>";
+       $config['first_link'] = 'Primero';
+       $config['last_link'] = 'Último';
+        $config["per_page"] = 10;
+        $config["uri_segment"] = 3;
+
+        $this->pagination->initialize($config);
+
+		
+		$page = ($this->uri->segment(3))? $this->uri->segment(3) : 0;
+		
+        $data["links"] = $this->pagination->create_links();
+
+$data['appointments'] = $this->model_paginate_citas->getConfirmSolicitudTestSpeed($config["per_page"], $page, $admin_position_centro);
+		
+		
+		$this->load->view('patient/appointments_',$data);
+
+}
+
+
+  function today_appointments_query($fecha_hoy){
+if ($this->PERFIL == "Medico") {
+	$query = $this->db->query("SELECT * FROM rendez_vous WHERE doctor=$this->ID_USER && filter_date='$fecha_hoy' && cancelar = 0 ORDER BY id_apoint DESC");
+}
+elseif($this->PERFIL=='Asistente Medico'){
+			$query = $this->db->query("SELECT * FROM rendez_vous
+           INNER JOIN centro_doc_as ON rendez_vous.doctor=centro_doc_as.id_doctor WHERE id_asdoc =$this->ID_USER
+          && filter_date='$fecha_hoy'  && cancelar = 0 GROUP BY id_patient ORDER BY id_apoint DESC");
+			
+		}
+
+		else{
+			$query = $this->db->query("SELECT * FROM rendez_vous WHERE filter_date='$fecha_hoy'  && cancelar = 0 ORDER BY id_apoint DESC");
+			
+		}
+		return $query;
+		
+}
+
+
+
+
+ public function citasTable(){
+	  $this->clinical_history = $this->load->database('clinical_history', TRUE);
+     $draw = intval($this->input->get("draw"));
+    $start = intval($this->input->get("start"));
+    $length = intval($this->input->get("length"));
+	$desde = $this->input->get("desde");
+	$hasta = $this->input->get("hasta");
+	$centro1 =intval($this->input->get("centro"));
+	
+	$fecha_hoy = date("Y-m-d");
+	
+	$query = $this->model_paginate_citas->getRows($_POST);
+	
+    $data = [];
+      foreach ($query as $row) {
+		 $patient=$this->db->select('nombre,photo,id_p_a,edad,nec1,seguro_medico,plan,afiliado, cedula')->where('id_p_a',$row->id_patient)
+     ->get('patients_appointments')->row_array();
+	 if($patient){
+		$seguro_med=$this->db->select('title')->where('id_sm',$patient['seguro_medico'])->get('seguro_medico')->row('title');
+		$centro=$this->db->select('name, type')->where('id_m_c',$row->centro)->get('medical_centers')->row_array();
+		$doctor=$this->db->select('name, area')->where('id_user',$row->doctor)->get('users')->row_array();
+		$areaTitle=$this->db->select('title_area')->where('id_ar',$doctor['area'])->get('areas')->row('title_area');
+		if(strpos($areaTitle, "CIRUJANO VASCULAR") !== false){
+		$freq="SELECT id_historial FROM h_c_cirujano_vascular WHERE  id_historial=$row->id_patient AND inserted_by=$row->doctor group by inserted_time";
+		}else{
+		$freq="SELECT historial_id FROM h_c_enfermedad_actual WHERE  historial_id=$row->id_patient AND inserted_by=$row->doctor group by inserted_time";
+		}
+	  $cita_freq = $this->clinical_history->query($freq);
+
+if($cita_freq->num_rows() == 0){
+	$frecuencia_text="<em class='ms-5 badge bg-danger'>$cita_freq->num_rows <i class='bi bi-eye'></i></em>";
+}else{
+	$frecuencia_text="<em class='ms-5 badge bg-success'>$cita_freq->num_rows <i class='bi bi-eye'></i></em>";
+ }
+		
+		
+		
+		
+	
+    // $afiliado = $patient['afiliado'];
+		//if($patient['photo']){
+		//$img= '<img  class="img-fluid img-thumbnail" width=105 src="'.base_url().'/assets/img/patients-pictures/'.$patient['photo'].'"  />';
+		
+		//}
+		
+		
+						$array_values_for_photo = array(
+						'id_p_a' =>$patient['id_p_a'],
+						'cedula' =>$patient['cedula'],
+						'image_class' => "img-fluid img-thumbnail",
+						'style'=>'width=85'
+
+						);
+						$img = $this->search_patient_photo->search_patient($array_values_for_photo);
+		
+		
+		$today = date('Y-m-d');
+		
+		
+		
+		$isSeenToday1=$this->clinical_history->select('historial_id')->like('inserted_time',$today)->where('inserted_by',$row->doctor)->where('historial_id',$row->id_patient)->where('centro_medico',$row->centro)->get('h_c_conclusion_diagno')->row('historial_id');
+		$isSeenToday2=$this->clinical_history->select('id_patient')->like('inserted_time',$today)->where('id_user',$row->doctor)->where('id_patient',$row->id_patient)->get('h_c_conclusion_diagno_evolution')->row('id_patient');
+		
+			if($isSeenToday1 || $isSeenToday2){
+				$isSeenToday=$isSeenToday1;
+				$this->session->set_userdata('SHOW_BTN_SAVE_HIS', 0);
+				$seen = '<strong class="text-success" style="font-size:15px"><em><strong class="bi bi-check"></strong></em></strong> ';
+			
+			}else{
+				$isSeenToday='';
+				$seen = '';
+			
+			}
+			
+			
+		if(strpos($areaTitle, "GINECO") !== false){
+          $go_to = 'ginecology';
+           }elseif($areaTitle=='UROLOGIA'){
+			 $go_to = 'urology';  
+		   }elseif(strpos($areaTitle, "PEDIATR") !== false){
+			 $go_to = 'pediatry';  
+		   }elseif($areaTitle=='OFTALMOLOGIA'){
+			 $go_to = 'ophthalmology';  
+		   }
+		   elseif(strpos($areaTitle, "CIRUJANO VASCULAR") !== false){
+			 $go_to = 'vascular_surgery';  
+		   }
+		   elseif(strpos($areaTitle, "CARDIO") !== false){
+			 $go_to = 'cardiovascular_evaluation';  
+		   }
+		   else{
+			 $go_to = 'patient_history';  
+		   }
+		
+		if($this->PERFIL =="Asistente Medico" &&  $centro['type']=='privado'){
+			$go_to_hist ='<a  class="dropdown-item"  href="'.site_url()."medico/general_history/".encrypt_url($row->id_patient).'/'.encrypt_url($row->doctor).'/'.encrypt_url($row->centro).'/'.encrypt_url($doctor['area']).'" title="Historia Clínica"><i class="bi bi-hospital"></i> Antecedentes Generales</a>';
+		}
+		
+		else{
+		$go_to_hist ='<a  class="dropdown-item"  href="'.site_url()."clinical_history/$go_to/".encrypt_url($row->id_apoint).'/'.encrypt_url($row->id_patient).'/'.encrypt_url($row->centro).'/'.encrypt_url($row->doctor).'/'.encrypt_url($doctor['area']).'" title="Historia Clínica"><i class="bi bi-hospital"></i> Historia Clínica</a>';
+		}
+		//$resumen_hist ='<button class="dropdown-item"  data-id="'.$row->id_apoint.'" data-bs-toggle="modal" data-bs-target="#largeModalResumenHist2" title="Resumen de la historial clinica"><i class="bi bi-card-list"></i> Resumen</button>';
+		 $desc_qui ='<button class="dropdown-item"  data-id="'.$row->id_apoint.'" data-bs-toggle="modal" data-bs-target="#largeModalSurgeryDescription2" title="Descripción Quirúrgica"><i class="bi bi-file-medical"></i> Descripción Quirúrgica</button>';
+		$indications_hist ='<button  class="dropdown-item" type="buton" data-id="'.$row->id_apoint.'" data-bs-toggle="modal" data-bs-target="#indications" title="Indicaciones"><i class="fas fa-prescription"></i> Indicaciones</abutton>';
+		$follow_up ='<button class="dropdown-item"  data-id="'.$row->id_apoint.'" data-bs-toggle="modal" data-bs-target="#largeModalFollowUp2" title="Dar Seguimiento"><i class="bi bi-fast-forward-circle"></i> Seguimiento</button>';
+		$general_report ='<button type="buton" class="dropdown-item" data-id="'.$row->id_apoint.'" data-bs-toggle="modal" data-bs-target="#largeModalReporteGnrl2" title="Reporte general"> <i class="bi bi-card-text"></i> Reporte General</button>';
+		$go_to_patient_data ='<a  href="'.site_url().''.$this->USER_CONTROLLER.'/patient/'.encrypt_url($row->id_patient).'/'.encrypt_url($row->id_apoint).'/'.encrypt_url($row->centro).'" >'.strtoupper($patient['nombre']).'</a>';
+		$patient_documentos ='<button  class="dropdown-item" type="buton" data-id="'.$row->id_apoint.'" data-bs-toggle="modal" data-bs-target="#patientDocumentos"  title="Documentos del Paciente"><i class="bi bi-archive"></i> Documentos</button>';
+		$orden_medica ='<button  class="dropdown-item" type="buton" data-id="'.$row->id_apoint.'" data-bs-toggle="modal" data-bs-target="#largeModalOrdenMedica2"  title="Orden Médica"><i class="bi bi-h-circle"></i> Orden Médica</button>';
+		
+		
+		if($areaTitle=='OFTALMOLOGIA'){
+			$refraction ='<li><button class="dropdown-item"  data-id="'.$row->id_apoint.'" data-bs-toggle="modal" data-bs-target="#largeModalRefraction" title="Refracción"><i class="bi bi-eye"></i> Refracción</button></li>';
+		$desc_qui ='';
+		$orden_medica ='';
+		$eva_cardio='';	
+		}elseif(strpos($areaTitle, "CARDIO") !== false){
+		$eva_cardio ='<button  class="dropdown-item" type="buton" data-id="'.$row->id_apoint.'" data-bs-toggle="modal" data-bs-target="#cardiovasEval"  title="Evaluación Cardiovascular"> <i class="bi bi-heart-pulse"></i> Evaluación Cardiovascular</button>';	
+		$refraction ='';
+		$desc_qui ='';
+		$orden_medica ='';
+		
+		$follow_up ='';
+		}else{
+		$eva_cardio='';	
+		$refraction ='';
+		
+		}
+		
+		
+		if($this->PERFIL =="Asistente Medico"){
+			$go_doctor_account =strtoupper($doctor['name']);
+		}else{
+			$go_doctor_account ='<a  href="'.site_url().''.$this->USER_CONTROLLER.'/doctor_account/'.$row->doctor.'" >'.strtoupper($doctor['name']).'</a>';
+		}
+		
+		
+		if($this->PERFIL =="Asistente Medico" &&  $centro['type']=='publico'){
+			$actions ='';
+		}else{
+			$actions = "<div class='btn-group' style='position:absolute;' >
+		<ul class='nav navbar-nav'>
+	<li class='dropdown' >
+
+  
+   <button type='button' class='btn btn-primary btn-sm dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'></button>
+  $seen
+		<ul class='dropdown-menu' >
+		<li>$go_to_hist</li>
+		$refraction
+		$eva_cardio
+		<li>$general_report</li>
+		<li>$desc_qui</li>
+		<li>$orden_medica</li>
+		<li>$follow_up </li>
+<li>$indications_hist</li>
+		<li>$patient_documentos</li>
+		
+		</ul>
+		</li>
+		</ul>
+		
+		</div>
+		
+		";
+		}
+		
+		
+		
+		
+	 $sub_array = array();
+	  $sub_array[] = $img;
+	  $sub_array[] = $row->id_patient;
+      $sub_array[] = $go_to_patient_data;
+	  $sub_array[] = $seguro_med;
+	    $sub_array[] = '<a  href="'.site_url().''.$this->USER_CONTROLLER.'/see_medical_center/'.$row->centro.'" >'.$centro['name'].'</a>';
+      $sub_array[] = $go_doctor_account. " <em style='font-size:11px'> $areaTitle</em>";
+	  $sub_array[] = $isSeenToday1. $isSeenToday2;
+	  $sub_array[] = $row->fecha_propuesta;
+	  $sub_array[] = $actions. $frecuencia_text ;
+      $data[] = $sub_array;
+	}
+    }
+
+    $rowesult = array(
+      "draw" => $draw,
+      "recordsTotal" => $this->model_paginate_citas->countAll(),
+            "recordsFiltered" => $this->model_paginate_citas->countFiltered($_POST),
+      "data" => $data
+    );
+    echo json_encode($rowesult);
+    exit();
+}
+
+
+
+
+	public function users(){
+$this->header_user->headerAdmin($this->session->userdata('user_id'));
+$this->load->view('admin/users/index');
+
+}
+
+
+
+ public function upload_center_tariffs($centro,$seguro) {
+      $this->header_user->headerAdmin($this->ID_USER);
+	 $this->create_forms->upload_center_tariffs($centro, $seguro, 1);
+    } 
+
+
+
+
+
+public function exchange_rate(){
+$this->header_user->headerAdmin($this->ID_USER);
+ [$result_centro_medicos, $result_seguro_medicos, $result_doc_by_centers, $result_doctors]= $this->create_forms->getCentroAndSeguroByPerfil(0);
+$data['result_doctors']=$result_doctors;
+$this->load->view('medico/tarifarios/tasa-de-cambio',$data);
+}
+
+public function create_invoice_ambulatory()
+	{
+		$this->db->where_in('id_usuario', $this->ID_USER);
+		$this->db->delete('tarifarios_temporal');
+		$centro_type = $this->db->select('type')->where('id_m_c', $this->input->get('centro'))->get('medical_centers')->row('type');
+	$this->invoice->create_invoice(encrypt_url($this->input->get('centro')) , encrypt_url("fac"), encrypt_url($this->input->get('doc')), encrypt_url($this->input->get('seg')), $centro_type);
+	}
+
+
+
+public function create_invoice($id_centro, $id_apoint, $id_doct, $id_seguro)
+	{
+		$id_ap = decrypt_url($id_apoint);
+
+		$cent = decrypt_url($id_centro);
+
+
+		$centro_type = $this->db->select('type')->where('id_m_c', $cent)->get('medical_centers')->row('type');
+
+		$is_appointment_already_billed = $this->db->select('id_rdv, idfacc')->where('id_rdv', $id_ap)->get('factura2')->row_array();
+
+		if ($is_appointment_already_billed) {
+			redirect("admin/factura_by_id/" . encrypt_url($is_appointment_already_billed['idfacc']) . "/" . $centro_type);
+		} else {
+			$this->invoice->create_invoice($id_centro, $id_apoint, $id_doct, $id_seguro, $centro_type);
+		}
+	}
+
+
+
+
+
+public function factura_by_id()
+{
+$this->header_user->headerAdmin($this->ID_USER);
+$id = $this->uri->segment(3);
+$identificar = $this->uri->segment(4);	
+$this->db->where_in('id_usuario', $this->ID_USER);
+$this->db->delete('tarifarios_temporal');
+$this->ver_factura_by_id($id,$identificar);
+}
+
+
+
+public function ver_factura_by_id($idFac,$ident){	
+$data['id']=$idFac;
+$data['identificar']=$ident;
+$this->load->view('patient/factura/ver-factura-queries',$data);	
+}
+
+
+
+
+public function hospitalized_patients(){
+$this->load->view('header');
+$id_patient = $this->session->userdata('ID_PATIENT');
+$data['id']=$id_patient;
+ [$result_centro_medicos, $result_seguro_medicos, $result_doc_by_centers]= $this->create_forms->getCentroAndSeguroByPerfil(0);
+$data['result_centro_medicos']=$result_centro_medicos;
+$this->load->view('patient/hospitalized-patients',$data);
+}
+
+
+
+
+
+public function create_patient()
+{
+$this->header_user->headerAdmin($this->ID_USER);
+ $this->create_forms->create_patient_form();
+
+
+}
+
+ public function patient_search_result(){
+	 
+	 $id_patient = $this->session->userdata('CEDULA_FOUND_EN_GICRE_ID');
+	 redirect("admin/patient/".$id_patient);
+	
+ }
+ 
+ 
+public function patient($id_patient, $id_apoint=0, $id_centro)
+	{
+	
+		$this->show_pages->patient($id_patient, $id_apoint=0, $id_centro);
+	}
+
+
+public function invoice_report()
+{
+	$this->header_user->headerAdmin($this->ID_USER);
+	 [$result_centro_medicos, $result_seguro_medicos, $result_doc_by_centers, $result_doctors]= $this->create_forms->getCentroAndSeguroByPerfil(0);
+$data['result_doctors']=$result_doctors;
+$data['result_centro_medicos']=$result_centro_medicos;
+	$data['search_date_range_seguro_factura']=$this->model_admin->search_date_range_seguro_factura_adm();
+	$this->load->view('factura/reporte-de-facturas/index', $data);
+}
+
+
+
+public function invoice_ars_claim_reports()
+{
+	$this->header_user->headerAdmin($this->ID_USER);
+	 $this->create_forms->create_invoice_ncf_form();
+
+}
+
+
+
+
+
+
+
+
  public  function searchChart()
         {
 			$this->load->view('admin/chart/index');
@@ -63,7 +872,7 @@ Public function mensagesUpdte(){
 
 
 	Public function mensagesToAllUsers(){
-	$id_ur=$this->session->userdata['admin_id'];
+	$id_ur=$this->session->userdata['user_id'];
 	$type=$this->input->post('tipo');
 	$area=$this->input->post('area');
 	if($type=="Todo"){
@@ -96,8 +905,8 @@ Public function mensagesUpdte(){
 
  Public function chatBox()
 {
-$data['iduser']=$this->session->userdata['admin_id'];
-$perfil=$this->session->userdata['admin_perfil'];
+$data['iduser']=$this->session->userdata['user_id'];
+$perfil=$this->session->userdata['user_perfil'];
 $name=$this->session->userdata['admin_name'];
 $userInfo="$name $perfil";
 $data['userInfo']=$userInfo;
@@ -116,7 +925,7 @@ redirect('admin/chatWithBox');
 
 public function redirectFromCorro($sender_id,$receive_id)
 {
-$this->session->set_userdata('admin_id',$sender_id);
+$this->session->set_userdata('user_id',$sender_id);
 $this->session->set_userdata('idChatWith',$receive_id);
 redirect('admin/chatWithBox');
 }
@@ -127,7 +936,7 @@ redirect('admin/chatWithBox');
 
 public function chatWithBox()
 {
-$id_user=$this->session->userdata['admin_id'];
+$id_user=$this->session->userdata['user_id'];
 $idChatWith=$this->session->userdata['idChatWith'];
 //---------------------------------LOAD USERS----------------------------------------------------------
  $data['output']= '';
@@ -211,9 +1020,9 @@ $this->load->view('chat/chatHistorialData',$data);
 
 public function newMessageReceived()
 {
-$data['iduser']=$this->session->userdata['admin_id'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
-$message= $this->db->select('id')->where('message_to',$this->session->userdata['admin_id'])->where('seen',0)->get('chat_medico');
+$data['iduser']=$this->session->userdata['user_id'];
+$data['perfil']=$this->session->userdata['user_perfil'];
+$message= $this->db->select('id')->where('message_to',$this->session->userdata['user_id'])->where('seen',0)->get('chat_medico');
 $data['result']=$message->num_rows();
 $this->load->view('chat/medico/new-message-medico', $data);
 }
@@ -224,7 +1033,7 @@ $this->load->view('chat/medico/new-message-medico', $data);
 
  Public function index()
 {
-$iduser=$this->session->userdata['admin_id'];
+$iduser=$this->session->userdata['user_id'];
 
 
 $where = array(
@@ -236,7 +1045,7 @@ $this->db->delete('detect_user_on_hist');
 
 
 $data['iduser']=$iduser;
-$data['perfil']=$this->session->userdata['admin_perfil'];
+$data['perfil']=$this->session->userdata['user_perfil'];
 $data['name']=$this->session->userdata['admin_name'];
 
 $logint=$this->db->select('user_id')->where('user_id',$iduser)->where('dateo',date("Y-m-d"))->get('user_login_twice');
@@ -245,7 +1054,7 @@ $login=$logint->num_rows();
 $last_time=$this->db->select('login_time')->where('user_id',$iduser)->where('dateo',date("Y-m-d"))->order_by('user_id','desc')->limit(1)->get('user_login_twice')->row('login_time');
 $data['last_time']= date("d-m-Y H:i",strtotime($last_time));
 
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
  if($login >1) {
 $row=$this->db->select('id')->like('data',$iduser)->get('ci_sessions');
 
@@ -305,8 +1114,13 @@ echo json_encode($found);
 
  public function orden_medica()
 {
-$data['user_id'] = $this->uri->segment(3);
-$data['id_historial'] = $this->uri->segment(4);
+$user_id= decrypt_url($this->uri->segment(3));$id_historial= decrypt_url($this->uri->segment(4));
+if($user_id=="" || $id_historial=="" ){
+redirect('/page404');
+}
+$data['user_id'] = $user_id;
+$data['id_historial'] = $id_historial;
+
 $data['title']="ORDEN MEDICA";
 $this->padron_database = $this->load->database('padron',TRUE);
 $paciente=$this->db->select('photo,ced1,ced2,ced3')->where('id_p_a',$this->uri->segment(4))
@@ -334,7 +1148,7 @@ $this->load->view('admin/historial-medical1/orden-medica/index',$data);
 
 Public function user_in_danger2()
 {
-	$data['id_admin']=$this->session->userdata['admin_id'];
+	$data['id_admin']=$this->session->userdata['user_id'];
 	$this->load->view('admin/users/user_in_danger',$data);
 }
 
@@ -345,14 +1159,37 @@ Public function user_in_danger2()
 
  Public function was_me()
 {
-	$this->model_admin->was_me($this->session->userdata['admin_id']);
+	$this->model_admin->was_me($this->session->userdata['user_id']);
  $this->load->view('admin/users/was_me');
 
 }
 
 	public function historial_medical()
 	{
-   $data['perfil']=$this->session->userdata['admin_perfil'];
+   $data['perfil']=$this->session->userdata['user_perfil'];
+   $queryHist = $this->db->get_where('h_c_sinopsis',array(
+'historial_id'=>decrypt_url($this->uri->segment(3)),
+'inserted_by'=> $this->session->userdata['user_id'],
+'filter_date'=>date('Y-m-d')
+));
+if($queryHist->num_rows() == 0){
+$id_con_d= $this->db->select('id_cdia')
+->where('historial_id',decrypt_url($this->uri->segment(3)))
+->where('inserted_by',$this->session->userdata['user_id'])
+->where('current_day',date('Y-m-d'))
+->order_by('id_cdia','desc')->get('h_c_conclusion_diagno')->row('id_cdia');
+$wheres = array(
+'id_cdia'=>$id_con_d
+);
+$this->db->where($wheres);
+$this->db->delete('h_c_conclusion_diagno');
+
+$where2 = array(
+'con_id_link'=>$id_con_d
+);
+$this->db->where($where2);
+$this->db->delete('h_c_diagno_def_link');
+ }
    $this->load->view('admin/historial-medical1/view-historial-clinica',$data);
 
 	}
@@ -360,7 +1197,30 @@ Public function user_in_danger2()
 
 		public function historial_medical_past()
 	{
-    $data['perfil']=$this->session->userdata['admin_perfil'];
+    $data['perfil']=$this->session->userdata['user_perfil'];
+	   $queryHist = $this->db->get_where('h_c_sinopsis',array(
+'historial_id'=>decrypt_url($this->uri->segment(3)),
+'inserted_by'=> $this->session->userdata['user_id'],
+'filter_date'=>date('Y-m-d')
+));
+	if($queryHist->num_rows() == 0){
+$id_con_d= $this->db->select('id_cdia')
+->where('historial_id',decrypt_url($this->uri->segment(3)))
+->where('inserted_by',$this->session->userdata['user_id'])
+->where('current_day',date('Y-m-d'))
+->order_by('id_cdia','desc')->get('h_c_conclusion_diagno')->row('id_cdia');
+$wheres = array(
+'id_cdia'=>$id_con_d
+);
+$this->db->where($wheres);
+$this->db->delete('h_c_conclusion_diagno');
+
+$where2 = array(
+'con_id_link'=>$id_con_d
+);
+$this->db->where($where2);
+$this->db->delete('h_c_diagno_def_link');
+ }
    $this->load->view('admin/historial-medical1/view-historial-clinica-past',$data);
 
 	}
@@ -394,23 +1254,17 @@ $this->load->view('admin/display_demands', $data);
 
 
 public function patients_requests(){
-$data['user_id']=$this->session->userdata['admin_id'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
-$data['name']=$this->session->userdata['admin_name'];
-$this->load->view('admin/header_admin',$data);
-$sql ="SELECT id_patient, id_apoint, fecha_propuesta, nec FROM rendez_vous WHERE  confirmada=1 ORDER BY id_apoint DESC";
-$query= $this->db->query($sql);
-$data['query']=$query;
-$this->load->view('admin/pacientes-citas/patients_requests', $data);
+$this->header_user->headerAdmin($this->ID_USER);
+$this->load->view('patient/request/patients_requests');
 
 }
 
 
-public function appointments()
+public function appointments_()
 {
-
+$hoy=date("d-m-Y");
 $where = array(
-'user' =>$this->session->userdata['admin_id']
+'user' =>$this->session->userdata['user_id']
 );
 
 $this->db->where($where);
@@ -419,7 +1273,7 @@ $this->db->delete('detect_user_on_hist');
 
 
 $where = array(
-'operator' =>$this->session->userdata['admin_id']
+'operator' =>$this->session->userdata['user_id']
 );
 $update = array(
 'printing'  =>0
@@ -429,7 +1283,7 @@ $this->db->update("h_c_indications_labs",$update);
 
 
 $where = array(
-'operator' =>$this->session->userdata['admin_id']
+'operator' =>$this->session->userdata['user_id']
 );
 $update = array(
 'singular_id'  =>0
@@ -438,30 +1292,51 @@ $this->db->where($where);
 $this->db->update("h_c_indicaciones_medicales",$update);
 
 $where1 = array(
-'userid' =>$this->session->userdata['admin_id'],
+'userid' =>$this->session->userdata['user_id'],
 'id_enfermedad' =>0
 );
 
 $this->db->where($where1);
 $this->db->delete('saveEnfImage');
 
-$data['iduser']=$this->session->userdata['admin_id'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
-$data['name']=$this->session->userdata['admin_name'];
-$querycentro = $this->account_demand_model->getCentroMedico();
-$data['centro_medico']=$querycentro;
-$data['countc']=count($querycentro);
+$admin_position_centro=$this->session->userdata['admin_position_centro'];
+
+if($admin_position_centro){
+  $where_centro = "&& centro = $admin_position_centro";
+  $querycentro = $this->db->query("SELECT id_m_c, name FROM medical_centers WHERE id_m_c=$admin_position_centro");
+  
+  $sqlsss = "select id_patient FROM rendez_vous WHERE fecha_propuesta='$hoy' && centro=$admin_position_centro && cancelar=0 && confirmada=0";
+ $querysss= $this->db->query($sqlsss);
+  $totalrows =$querysss->num_rows();
+  
+  
+}else{
+  $where_centro = "";
+  $querycentro = $this->db->query('SELECT id_m_c, name FROM medical_centers');
 $appointments = $this->model_admin->getConfirmSolicitud();
 $totalrows = count($appointments);
-$countTotalCitaDoc=$this->model_admin->countTotalCitaDoc();
+
+}
+
+
+$data['iduser']=$this->session->userdata['user_id'];
+$data['perfil']=$this->session->userdata['user_perfil'];
+$data['name']=$this->session->userdata['admin_name'];
+
+$query_results_centro = $querycentro->result() ;
+$data['centro_medico']=$query_results_centro;
+$data['countc']=count($query_results_centro);
+
+$countTotalCitaDoc=$this->model_admin->countTotalCitaDoc($admin_position_centro);
+$cnt_tot_cit_doc = count($countTotalCitaDoc);
 $data['countTotalCitaDoc']=$countTotalCitaDoc;
-$countTotalCitaDoc1=count($countTotalCitaDoc);
-$data['countTotalCitaDocNum']="$totalrows cita(s) por hoy de $countTotalCitaDoc1 medico(s)";
+
+$data['countTotalCitaDocNum']="$totalrows cita(s) por hoy de $cnt_tot_cit_doc medico(s)";
 $data['displayTotInfo']='';
  $config = array();
  $config["base_url"] = base_url() . "admin/appointments";
 
-$config["total_rows"] = count($appointments);
+$config["total_rows"] = $totalrows;
 
 $config['full_tag_open']    = "<ul class='pagination'>";
        $config['full_tag_close']   = "</ul>";
@@ -489,12 +1364,17 @@ $config['full_tag_open']    = "<ul class='pagination'>";
 		
         $data["links"] = $this->pagination->create_links();
 
-$data['appointments'] = $this->product->getConfirmSolicitudTestSpeed($config["per_page"], $page);
+$data['appointments'] = $this->product->getConfirmSolicitudTestSpeed($config["per_page"], $page, $admin_position_centro);
 $qt=$this->db->select('id_patient')->where('filter_date',date("Y-m-d"))->get('rendez_vous');
 $data['num_r']=$qt->num_rows();
 $data['area_id']=0;
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 $data['controller']='admin';
+
+$sql = "select id_patient FROM rendez_vous WHERE fecha_propuesta='$hoy' $where_centro && cancelar=0 ORDER BY id_patient DESC ";
+ $query= $this->db->query($sql);
+$data['patientHoyQ'] =$query->result();
+$data['is_phone_update']="";
 $this->load->view('medico/index',$data);
 
 }
@@ -517,41 +1397,6 @@ $this->load->view('medico/refreshCitaHoy',$data);
 
 
 
-public function SeachCitaResult()
-{
-
-	$where = array(
-	'user' =>$this->session->userdata['admin_id']
-	);
-
-	$this->db->where($where);
-	$this->db->delete('detect_user_on_hist');
-
-    $querycentro = $this->account_demand_model->getCentroMedico();
-	$data['centro_medico']=$querycentro;
-	$data['countc']=count($querycentro);
-   $data['perfil']= $this->session->userdata['admin_perfil'];
-	$iduser=$this->session->userdata['admin_id'];
-	$data['iduser'] =$iduser;
-	$data['area_id'] =0;
-	$date1=date("Y-m-d", strtotime($this->input->get('date_from')));
-	$date2=date("Y-m-d", strtotime($this->input->get('date_to')));
-	$datas = array(
-   'date1' => $date1,
-	'date2' => $date2,
-	'centro' =>$this->input->get('centro')
-	);
-	$data['exam']=2;
-	$query = $this->model_admin->get_centro_medico_datepicker($datas);
-	$data['VER_CONFIRMADA_SOLICITUD'] =$query;
-	$data['date1']=$this->input->get('date_from');
-	$data['date2']=$this->input->get('date_to');
-	$data['centro']=$this->input->get('centro');
-	$this->load->view('admin/header_admin',$data);
-	$this->load->view('admin/pacientes-citas/view_get_centro_medico', $data);
-	 //echo json_encode ($query);
-}
-
 
 
 
@@ -561,8 +1406,8 @@ public function SeachCitaResult()
 
 public function patients()
 {
-$iduser=($this->session->userdata['admin_id']);
-	$data['perfil']=($this->session->userdata['admin_perfil']);
+$iduser=($this->session->userdata['user_id']);
+	$data['perfil']=($this->session->userdata['user_perfil']);
 	$data['name']=($this->session->userdata['admin_name']);
 	$data['id_user']=$iduser;
 $this->load->view('admin/pacientes-citas/header_cita',$data);
@@ -578,7 +1423,7 @@ $this->load->view('medico/pacientes-citas/cita-footer');
 
 public function get_centro_medico()
 {
-	$iduser=$this->session->userdata['admin_id'];
+	$iduser=$this->session->userdata['user_id'];
 	$data['id_usr'] =$iduser;
 	$data['area_id'] =0;
 	$centro_medico=$this->input->post('centro_medico');
@@ -644,66 +1489,10 @@ public function Township()
 }
 
 
-public function searchPlazo()
-{
-	 $query ='';
-	 if($this->input->post('query'))
-  {
-   $query = $this->input->post('query');
-  }
-$data['userPlazo'] = $this->model_admin->searchPlazo($query);
-$this->load->view('admin/users/plazo', $data);
-
-}
 
 
 
 
-public function create_cita()
-{
-$data['name']=$this->session->userdata['admin_id'];
-$data['id_user']=$this->session->userdata['admin_id'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
-$data['nec'] = $this->model_admin->getNec();
-$data['countries'] = $this->model_admin->getCountries();
-$data['seguro_medico'] = $this->account_demand_model->getSeguroMedico();
-$data['centro_medico'] = $this->model_admin->display_all_medical_centers();
-$data['especialidades'] = $this->model_admin->getEspecialidades();
-$data['provinces']=$this->model_admin->getProvinces();
-$data['causa']=$this->model_admin->getCausa();
-$data['municipios'] = $this->model_admin->getTownships();
-$last_patient_id=$this->db->select('id_p_a')->order_by('id_p_a','desc')->limit(1)->get('patients_appointments')->row('id_p_a');
-$lidp=$last_patient_id + 1;
-$data['patid']=$lidp;
-$data['is_admin']="yes";
-$ctutor=$this->model_admin->CountTutor($last_patient_id);
-$data['ctutor']=$ctutor;
-$data['tutor']=$this->model_admin->getTutor($last_patient_id);
-
-//-----------EMERGENCIA----------------------------------
-
-$sqlc = "SELECT DISTINCT em_name, id_em_c from emergency_adm_data WHERE id=1";
-$data['queryc']= $this->db->query($sqlc);
-
-
-$sqlrp = "SELECT DISTINCT em_name, id_em_c from emergency_adm_data WHERE id=2";
-$data['queryrp']= $this->db->query($sqlrp);
-
-$sqlml = "SELECT DISTINCT em_name, id_em_c from emergency_adm_data WHERE id=3";
-$data['queryml']= $this->db->query($sqlml);
-
-
-$sqlep = "SELECT DISTINCT em_name, id_em_c from emergency_adm_data WHERE id=4";
-$data['queryep']= $this->db->query($sqlep);
-
-$this->load->view('admin/header_admin',$data);
-$data['controllerUser']='admin';
-$this->load->view('admin/pacientes-citas/search_patient',$data);
-$this->load->view('medico/pacientes-citas/create-cita',$data );
-$this->load->view('admin/pacientes-citas/footer_patient_search');
-$this->load->view('medico/pacientes-citas/cita-footer');
-
-}
 
 
 
@@ -795,6 +1584,7 @@ $logo="";
 
 $save1 = array(
   'nombre'  => $this->input->post('nombre'),
+  'apodo'=> $this->input->post('apodo'),
   'photo'  =>$logo,
   'cedula' => $this->input->post('cedula'),
   'date_nacer' => $this->input->post('date_nacer'),
@@ -921,13 +1711,14 @@ if($this->input->post('orientation')==3){
 'updated' => $this->input->post('creadted_by'),
 'timeinserted' => $insert_date,
 'timeupdated' => $insert_date,
-'cancelar' =>0
+'canceled' =>0
    );
 $this->db->insert("hospitalization_data",$savedas);
 
 //------------------------------------------------------------------------------------------------
- $id_user=$this->input->post('creadted_by');
-redirect("hospitalizacion/hospitalizacion_list/$id_pat/$id_user");
+$id_p_ai = decrypt_url($id_pat);
+$id_useri = decrypt_url($this->input->post('creadted_by'));
+redirect("hospitalizacion/hospitalizacion_list/$id_p_ai/$id_useri");
 }
 
 
@@ -1028,14 +1819,14 @@ redirect("$controller/redirect_fac");
 
 public function patient_paginate()
 {
-  $data['id_user']=$this->session->userdata['admin_id'];
-    $data['user_id']=$this->session->userdata['admin_id'];
-  $data['perfil']=$this->session->userdata['admin_perfil'];
+  $data['id_user']=$this->session->userdata['user_id'];
+    $data['user_id']=$this->session->userdata['user_id'];
+  $data['perfil']=$this->session->userdata['user_perfil'];
   $data['nombre']=$this->input->get('patient_nombres');
     $data['patient_apellido']=$this->input->get('patient_apellido');
     $data['patient_apellido2']=$this->input->get('patient_apellido2');
     $data['controllerUser']='admin';
-    $this->load->view('admin/header_admin',$data);
+    $this->load->view('header',$data);
    $data['backbutton'] = '<a style="color:red"   href="'.base_url().'admin/create_cita/"  >Volver a buscar</a>';
     $this->load->view('admin/pacientes-citas/display-names',$data);
 
@@ -1110,6 +1901,7 @@ public function do_upload_patient_photo()
 
 public function update_centro_medico()
 {
+	$data['admin_centro']=$this->session->userdata['admin_position_centro'];
 	$edit_id= $this->uri->segment(3);
 	$data['id_centro']=$edit_id;
 	$data['EDIT_ID'] = $this->model_admin->edit_centro_medico($edit_id);
@@ -1141,7 +1933,8 @@ public function update_doctor()
 }
 public function new_centro_medico()
 {
-
+$data['controller']='admin';
+$data['inserted_by']=$this->session->userdata['user_id'];
 $data['countries'] = $this->model_admin->getCountries();
 $data['seguro_medico'] = $this->account_demand_model->getSeguroMedico();
 $data['centro_medico'] = $this->account_demand_model->getCentroMedico();
@@ -1149,6 +1942,7 @@ $data['especialidades'] = $this->model_admin->getEspecialidades();
 $data['provinces']=$this->model_admin->getProvinces();
 $data['DOCTORS']=$this->model_admin->display_all_doctors();
 $data['causa']=$this->model_admin->getCausa();
+  $this->load->view('header');
 $this->load->view('admin/centers/create', $data);
 
 }
@@ -1160,122 +1954,6 @@ $data['seguro_medico'] = $this->account_demand_model->getSeguroMedico();
 $this->load->view('admin/health_insurances/new_field', $data);
 
 }
-public function saveCentroMedico(){
-$name=$this->input->post('name');
-$municipio  = $this->input->post('municipio');
-$name_success  = $this->input->post('name');
-$especialidad  = $this->input->post('especialidad');
-//$doctor  = $this->input->post('doctor');
-$seguro_medico  = $this->input->post('seguro_medico');
-$insert_date=date("Y-m-d H:i:s");
-$query = $this->db->get_where('medical_centers',array('name'=>$name));
-	if($query->num_rows() > 0 )
-{
-$msg = "<div class='alert alert-warning' style='text-align:center;font-size:20px' id='deletesuccess'>El centro medico : <span style='color:green'>$name</span> ya existe .</div>";
-$this->session->set_flashdata('success_msg', $msg);
-redirect('admin/new_centro_medico');
-}
-else{
-if(isset($_FILES["picture"]['name']))
-{
-$imgExt = strtolower(pathinfo($_FILES["picture"]['name'],PATHINFO_EXTENSION));
-$extension = explode('.', $_FILES['picture']['name']);
-$logo = rand() . '.' . $extension[1];
-$destination = './assets/img/centros_medicos/' . $logo;
-move_uploaded_file($_FILES['picture']['tmp_name'], $destination);
-
-if($imgExt==""){
-	$logo="";
-}
-}
-//================================================================================
-$save = array(
-  'name'  => $name,
-  'logo'  => $logo,
-  'rnc'=> $this->input->post('rnc'),
-  'primer_tel'=> $this->input->post('primer_tel'),
-  'segundo_tel' => $this->input->post('segundo_tel'),
-  'email' => $this->input->post('email'),
-   'fax' => $this->input->post('fax'),
- 'provincia'=> $this->input->post('provincia'),
-  'municipio' => $this->input->post('municipio'),
-   'barrio' => $this->input->post('barrio'),
-   'calle' => $this->input->post('calle'),
-  'pagina_web'=> $this->input->post('pagina_web'),
-  'created_by'=> $this->session->userdata['admin_id'],
-  'updated_by'=> $this->session->userdata['admin_id'],
- 'insert_date'=> $insert_date,
-  'modify_date' => $insert_date,
-  'type' => $this->input->post('typo')
-  );
-$this->model_admin->save_seguro_medico($save);
-//-------------------------------------------------
-//get last id of medical center
-$id_m_c=$this->db->select('id_m_c')->order_by('id_m_c','desc')->limit(1)->get('medical_centers')->row('id_m_c');
-
-//insert doctor in table doctor_centro_medico
-/*foreach ($doctor as $doc) {
-
-	$saveC= array(
-	'centro_medico' =>$id_m_c,
-	'id_doctor' => $doc
-	);
-
-	$this->model_admin->SaveCentroDoc($saveC);
-}*/
-//-------------------------------------------------------
-
-//delete centro in medial_center_esp
-$this->model_admin->deleteCentroEsp($id_m_c);
-
-//insert doctor in table doctor_centro_medico
-foreach ($especialidad as $esp) {
-
-	$saveE= array(
-	'id_medical_center' =>$id_m_c,
-	'especialidad' => $esp
-	);
-
-	$this->model_admin->SaveCentroEsp($saveE);
-}
-//----------------------------------------------------
-
-//delete centro in medial_center_esp
-$this->model_admin->deleteCentroSeguro($id_m_c);
-
-//insert seguro in table medical_centro_seguro
-foreach ($seguro_medico as $seg) {
-
-	$saveSe= array(
-	'id_medical_center' =>$id_m_c,
-	'seguro_id' => $seg
-	);
-
-	$this->model_admin->SaveCentroSeg($saveSe);
-}
-$msg = "<div  style='text-align:center'>El Centro Medico : <span style='color:green'>$name_success</span> se guada con exito .</div>";
-$this->session->set_flashdata('success_msg', $msg);
-redirect('admin/new_centro_medico');
-}
-}
-
-
-public function check_if_centro_exist()
-{
-$query = $this->db->get_where('medical_centers',array('name'=>$this->input->get('name')));
-	if($query->num_rows() > 0 )
-	{
-		echo "<span style='color:red'>Este centro medico ya existe !</span>";
-		echo "<script>$('.name_centro').val('');</script>";
-
-	} else {
-
-	}
-
-}
-
-
-
 
 
 
@@ -1283,17 +1961,13 @@ $query = $this->db->get_where('medical_centers',array('name'=>$this->input->get(
 
 
 public function medical_centers(){
-$data['all_medical_centers'] = $this->model_admin->display_all_medical_centers();
-
-$this->load->view('admin/centers/medical_centers', $data);
-
-}
-public function users(){
-$data['users'] = $this->model_admin->Users();
-$this->load->view('admin/users/users', $data);
-
+	$this->header_user->headerAdmin($this->ID_USER);
+$data['provinces']=$this->model_admin->getProvinces();
+$this->load->view('medical-center/index',$data);
 
 }
+
+
 
 
 public function userLocation(){
@@ -1322,9 +1996,21 @@ $this->load->view('admin/users/current_login', $data);
 
 public function current_user_login()
 {
-	$user_connected=$this->db->select('is_log_in')->where('is_log_in',1)->where('id_user !=',1)->like('login_time',date("Y-m-d"))->get('users');
-echo $user_connected->num_rows();
+$admin_centro=$this->session->userdata['admin_position_centro'];	
+if($admin_centro){
+	$sqlUsC ="SELECT is_log_in FROM users INNER JOIN user_centro_administrativo
+	ON users.id_user=user_centro_administrativo.id_user 
+	WHERE id_centro =$admin_centro && is_log_in=1";
+$queryUsC= $this->db->query($sqlUsC);
+ $nb=$queryUsC->num_rows();
+}else{
+$user_connected=$this->db->select('is_log_in')->where('is_log_in',1)->where('id_user !=',1)->like('login_time',date("Y-m-d"))->get('users');
+$nb=$user_connected->num_rows();
 }
+		
+echo $nb;
+}
+
 
 public function create_doctor()
 {
@@ -1337,8 +2023,14 @@ $this->load->view('admin/medicos/create');
 
 
 public function doctors(){
+$id_medical_center=$this->session->userdata['admin_position_centro'];
+if($id_medical_center){
+$query= $this->model_admin->get_doctor($id_medical_center);
 
+}else{
 $query = $this->model_admin->display_all_doctors();
+}
+
 
 $data['all_doctor'] =  $query;
 $this->load->view('admin/medicos/doctors', $data);
@@ -1382,24 +2074,23 @@ redirect($_SERVER['HTTP_REFERER']);
 
 
 public function lab(){
-$this->load->view('admin/header_admin');
-$this->load->view('admin/medicos/lab');
+$this->load->view('header');
+ $sqllbb ="SELECT * FROM h_c_groupo_lab WHERE  rmvd=0 GROUP BY groupo ORDER BY id DESC";
+$querylbb= $this->db->query($sqllbb);
+$data['totallab'] = $querylbb->num_rows();
+$data['medico_id']=-1;
+$this->load->view('admin/medicos/lab',$data);
 
 }
 
-
-public function areas(){
-
-$data['all_areas'] = $this->model_admin->display_all_areas();
-$this->load->view('admin/medicos/areas', $data);
-
-}
 public function load_areas(){
 
 $data['all_areas'] = $this->model_admin->display_all_areas();
 $this->load->view('admin/load_areas', $data);
 
 }
+
+
 
 public function diseases(){
 $data['all_reasons'] = $this->model_admin->display_all_reasons();
@@ -1434,7 +2125,6 @@ redirect('admin/health_insurance');
 
 
 public function health_insurances(){
-$data['all_seguro_medico'] = $this->model_admin->display_all_seguro_medico();
 $data['ALL_FIELDS'] = $this->model_admin->all_fields();
 
 $this->load->view('admin/health_insurances/index', $data);
@@ -1606,81 +2296,7 @@ $this->model_admin->delete_field($id);
 $this->model_admin->delete_field_link($id);
 }
 
-public function save_s_m(){
-//if($this->input->post('submitSeguro')){
-$field_id  = $this->input->post('field_id');
-$title  = $this->input->post('title');
-$query = $this->db->get_where('seguro_medico',array('title'=>$title));
-	if($query->num_rows() > 0 )
-	{
-$msg = "<div class='alert alert-warning' style='text-align:center;font-size:20px' id='deletesuccess'>seguro_medico : <span style='color:green'>$seguro_medico</span> ya existe .</div>";
-$this->session->set_flashdata('success_msg', $msg);
-redirect('admin/health_insurances');
-}
-else{
-if(isset($_FILES["picture"]['name']))
-{
-$imgSize = $_FILES['picture']['size'];
-$valid_extensions = array('jpeg', 'jpg', 'png', 'gif');
-$imgExt = strtolower(pathinfo($_FILES["picture"]['name'],PATHINFO_EXTENSION));
-$extension = explode('.', $_FILES['picture']['name']);
-$logo = rand() . '.' . $extension[1];
-$destination = './assets/img/seguros_medicos/' . $logo;
-if(in_array($imgExt, $valid_extensions) && $imgSize < 5000000)
-{
-move_uploaded_file($_FILES['picture']['tmp_name'], $destination);
 
-}
-else {
-	$msg = "<div id='deletesuccess' style='text-align:center;color:green'>Este tipo de archivo no está permitido, la inserción falla.</div>";
-	$this->session->set_flashdata('success_msg', $msg);
-redirect('admin/health_insurances');
-}
-}
-//Check whether user upload picture
-$insert_date=date("Y-m-d H:i:s");
-
-//Prepare array of user data
-$save = array(
-'title'  => $title,
-'logo' => $logo,
-'rnc' => $this->input->post('rnc'),
-'tel' => $this->input->post('tel'),
-'email' => $this->input->post('email'),
-'direccion' =>$this->input->post('direccion'),
-'inserted_time' => $insert_date,
-'inserted_by' =>$this->input->post('user_name'),
-'updated_by' =>$this->input->post('user_name'),
-'updated_time' =>$insert_date
-);
-
-//Pass user data to model
-$insertUserData = $this->model_admin->save_s_m($save);
-$last_id_seguro=$this->db->select('id_sm')->order_by('id_sm','desc')->limit(1)->get('seguro_medico')->row('id_sm');
-foreach ($field_id as $key=>$id_f) {
-   $saveS= array(
-	'medical_insurance_id' =>$last_id_seguro,
-	'field_id' => $id_f
-
-	);
-
-	$this->model_admin->saveSeguroField($saveS);
-}
-//Storing insertion status message.
-if($insertUserData){
-	$msg = "<div id='deletesuccess' style='text-align:center;color:green'>El seguro medico se guada con exito.</div>";
-	$this->session->set_flashdata('success_msg', $msg);
-}else{
-$msger="Hubo algunos problemas, por favor intente de nuevo.";
-$this->session->set_flashdata('error_msg', $msger);
-}
-redirect('admin/health_insurances');
-}
-//}
-//Form for adding user data
-
-
-}
 
 
 public function health_insurance_fields(){
@@ -1690,7 +2306,7 @@ $data['perfil']=$this->db->select('perfil')->where('id_user',$id_user)->get('use
 $data['id_user'] = $id_user ;
 $query = $this->model_admin->all_fields();
 $data['all_fields'] =  $query;
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 
 $this->load->view('admin/health_insurances/fields', $data);
 
@@ -1755,7 +2371,7 @@ redirect($_SERVER['HTTP_REFERER']);
 
 public function relatedDoctor(){
 $id_area= $this->uri->segment(3);
-$data['iduser']=$this->session->userdata['admin_id'];
+$data['iduser']=$this->session->userdata['user_id'];
 $data['idarea']=$id_area;
 $data['area']=$this->db->select('title_area')->where('id_ar',$id_area)->limit(1)->get('areas')->row('title_area');
 $data['relatedDoctor'] = $this->model_admin->relatedDoctor($id_area);
@@ -1872,27 +2488,12 @@ $data = array(
    'calle' => $this->input->post('calle'),
   'pagina_web'=> $this->input->post('pagina_web'),
  'modify_date' => $modify_date,
-  'updated_by'=> $this->session->userdata['admin_id'],
+  'updated_by'=> $this->session->userdata['user_id'],
  'type' => $this->input->post('typo')
   );
 $this->model_admin->SaveUpdateCentroMedico($id_m_c,$data);
 //-------------------------------------------------------
-//delete centro in doctor_centro_medico
-/*$this->model_admin->deleteCentroDoc($id_m_c);
 
-//insert doctor in table doctor_centro_medico
-foreach ($doctor as $doc) {
-
-	$saveC= array(
-	'centro_medico' =>$id_m_c,
-	'id_doctor' => $doc
-	);
-
-	$this->model_admin->SaveCentroDoc($saveC);
-}*/
-//-------------------------------------------------------
-
-//delete centro in medial_center_esp
 $this->model_admin->deleteCentroEsp($id_m_c);
 
 //insert doctor in table doctor_centro_medico
@@ -2001,12 +2602,12 @@ $query = $this->model_admin->DeleteDoctorSeguro($id_d_s);
 
 public function create_user()
 {
+$data['admin_centro'] =$this->session->userdata['admin_position_centro'];
 $data['seguro_medico'] = $this->account_demand_model->getSeguroMedico();
 $data['centro_medico'] = $this->account_demand_model->getCentroMedico();
 $data['especialidades'] = $this->model_admin->getEspecialidades();
 $data['diaries']=$this->model_admin->getDiaries();
 $data['causa']=$this->model_admin->getCausa();
-$data['execuatur'] = $this->model_admin->getExecuatur();
 $data['seguros'] = $this->model_admin->display_all_seguro_medico();
 $this->load->view('admin/users/create', $data);
 }
@@ -2044,8 +2645,8 @@ $passwuser = substr( str_shuffle( $chars ), 0, 8 );
     'correo' => $this->input->post('email'),
 	//'cedula' => $this->input->post('cedula'),
    'user_ars' => $this->input->post('seguro'),
-  'inserted_by' => $this->session->userdata['admin_id'],
-  'updated_by' =>$this->session->userdata['admin_id'],
+  'inserted_by' => $this->session->userdata['user_id'],
+  'updated_by' =>$this->session->userdata['user_id'],
  'insert_date'=> $date,
  'plazo'=> $date,
   'update_date' => $date,
@@ -2086,6 +2687,15 @@ if($this->input->post('perfil1')=='Estudios'){
 	$this->db->insert("user_estudios",$savest);
 }
 
+if($this->input->post('perfil1')=='Farmacia Interna'){
+	
+	$saveucent= array(
+	'id_user' =>$id_user,
+	'id_centro' => $this->input->post('centro')
+	);
+
+	$this->db->insert("internal_drugstores_center",$saveucent);
+}
 
 if($this->input->post('area')=='Optómetra'){
 
@@ -2113,58 +2723,7 @@ redirect("admin/create_user");
 }
 
 
-public function SaveUser(){
-$date=date("Y-m-d H:i:s");
-$seguro_medico=$this->input->post('seguro_medico');
-$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-$passwuser = substr( str_shuffle( $chars ), 0, 8 );
-$save = array(
-  'name'  => $this->input->post('nombre'),
-   'perfil' => $this->input->post('perfil'),
-   'username' => $this->input->post('email'),
-   'password' => md5($passwuser),
-   'correo' => $this->input->post('email'),
-  'exequatur' => $this->input->post('exequatur'),
-   'cedula' => $this->input->post('cedula'),
-   'area' => $this->input->post('especialidad'),
-  'inserted_by' => $this->session->userdata['admin_id'],
-  'updated_by' =>$this->session->userdata['admin_id'],
- 'insert_date'=> $date,
-  'update_date' => $date,
-  'plazo'=> $date,
-   'payment_plan' =>0,
-   'status' => 1
-   );
-$id_doc_user=$this->model_admin->CreateUser($save);
 
-
-for ($i = 0; $i < count($seguro_medico); ++$i ) {
-    $seg = $seguro_medico[$i];
-
-	$saveD= array(
-	'id_doctor' =>$id_doc_user,
-	'seguro_medico' => $seg
-	);
-
-	$this->model_admin->saveDoctorSeguro($saveD);
-}
-
-
-$this->model_admin->delete_doctor_seguro2();
-
-$this->session->set_userdata('passwuser', $passwuser);
-$this->session->set_userdata('user_email', $this->input->post('email'));
-$this->session->set_userdata('user_name', $this->input->post('nombre'));
-$this->session->set_userdata('user_perfil', $this->input->post('perfil'));
-$this->send_message_to_new_user();
-
-
-$msg = "<div  style='text-align:center;font-size:20px' id='deletesuccess'> <span style='color:green'>Usuario esta creado .</div>";
-$this->session->set_flashdata('success_msg_create_user', $msg);
-$this->session->set_userdata('id_doc_user',$id_doc_user);
-$this->newUserNotification();
-	redirect("admin/update_user/$id_doc_user/1");
-}
 
 
 
@@ -2179,12 +2738,12 @@ $passwuser = substr( str_shuffle( $chars ), 0, 8 );
 $save = array(
   'name'  => $this->input->post('nombre'),
    'perfil' => $this->input->post('perfil'),
-   'cedula' => $this->input->post('cedula'),
+   'cell_phone' => $this->input->post('tel_cell'),
    'username' => $this->input->post('email'),
    'password' => md5($passwuser),
    'correo' => $this->input->post('email'),
-  'inserted_by' => $this->session->userdata['admin_id'],
-  'updated_by' =>$this->session->userdata['admin_id'],
+  'inserted_by' => $this->session->userdata['user_id'],
+  'updated_by' =>$this->session->userdata['user_id'],
  'insert_date'=> $date,
   'update_date' => $date,
   'plazo'=> $date,
@@ -2300,6 +2859,12 @@ $this->load->view('admin/medicos/agend_result',$data);
 
 
 
+public function admin_account($id){
+	$this->header_user->headerAdmin($id);
+$editUser = $this->model_admin->editUser($id);
+$data['editUser']=$editUser;
+$this->load->view('admin/account/form', $data);
+}
 
 public function save_edit_agenda(){
 $id_centro=$this->db->select('id_m_c')->where('name',$this->input->post('centro'))->get('medical_centers')->row('id_m_c');
@@ -2552,16 +3117,24 @@ redirect('admin/users');
 
 public function update_user()
 {
+$admin_centro=$this->session->userdata['admin_position_centro'];
+
+if($admin_centro){
+$data['admin_centro']="&& id_m_c =$admin_centro";
+}else{
+$data['admin_centro']= "";
+}
+
 $id= $this->uri->segment(3);
 $data['id_doc']=$id;
 $perfil= $this->uri->segment(4);
+$data['perfil']= $perfil;
 $data['user']=1;
 $data['hide']='';
 $data['seguro_medico'] = $this->account_demand_model->getSeguroMedico();
 $data['centro_medico'] = $this->account_demand_model->getCentroMedico();
 $data['especialidades'] = $this->model_admin->getEspecialidades();
 $data['causa']=$this->model_admin->getCausa();
-$data['execuatur'] = $this->model_admin->getExecuatur();
 $editUser = $this->model_admin->editUser($id);
 $data['editUser']=$editUser;
 $data['DOCTORS'] = $this->model_admin->getDoctorForUpdate($id);
@@ -2570,7 +3143,10 @@ $data['agendaDocCentro']=$this->model_admin->agendaDocCentro($id);
 $data['diaries']=$this->model_admin->getDiaries();
 $data['id_user'] =$id;
 $data['id_doctor'] =$id;
-$data['id_cu_us']=$this->session->userdata['admin_id'];
+$data['id_cu_us']=$this->session->userdata['user_id'];
+ $data['updated_password']= base_url().'password_processing/updated_password_admin';
+$data['hide']="";
+  $this->load->view('header',$data);
  if($perfil==1){
 	 $data['SEGURO_MEDICO_DOCTOR']= $this->model_admin->view_doctor_seguro($id);
 	 $data['SOLICITUDES']= $this->model_admin->view_doctor_solicitud($id);
@@ -2581,11 +3157,16 @@ $data['id_cu_us']=$this->session->userdata['admin_id'];
 
  
   } else if($perfil==4){
-	  $this->load->view('admin/header_admin',$data);
+	
 	  $data['query']=$editUser;
 	$this->load->view('optica/tecnico-de-lentes/account',$data);
  }
- 
+ else if($perfil==3){
+		$id_centro=$this->db->select('id_centro')->where('id_user',$id)->get('internal_drugstores_center')->row('id_centro');
+		 $data['id_centro']=$id_centro;
+	  $data['query']=$editUser;
+	$this->load->view('internal-drugstore/account',$data);
+ } 
 
  else
  {
@@ -2605,64 +3186,38 @@ echo $modal;
 }
 
 
-public function get_centro_medico2()
+
+
+public function bill_()
 {
-$id_centro=$this->input->post('id_centro');
-$id_user=$this->input->post('id_user');
-if($id_centro !=NULL){
+$id = decrypt_url($this->uri->segment(3));
+$identificar = decrypt_url($this->uri->segment(4));				
+redirect("admin/billView/$id/$identificar");		
 
-for ($i = 0; $i < count($id_centro); ++$i ) {
-    $idcentro = $id_centro[$i];
-	$sql ="SELECT id_doctor,id_centro FROM doctor_agenda_test WHERE id_centro =$idcentro group by id_doctor";
- $query= $this->db->query($sql);
- foreach ($query->result() as $row){
-$asdoc= $this->db->select('id_doctor')->where('id_asdoc',$id_user)->where('id_doctor',$row->id_doctor)->get('centro_doc_as')->row('id_doctor');
-		if($row->id_doctor==$asdoc){
-		        $selected="selected";
-		} else {
-		       $selected="";
-	    }	 
-	 
-	 
-$name= $this->db->select('name')->where('id_user',$row->id_doctor)->get('users')->row('name');
-$centro= $this->db->select('name')->where('id_m_c',$row->id_centro)->get('medical_centers')->row('name');
-echo "<option $selected value='$row->id_doctor'>Dr $name - Centro $centro</option>";
- }
-}
-}
 }
 
 
-
-
-
-
-public function disableCitaAgendaDoc()
+public function bill()
 {
-$doc=$this->uri->segment(3);
-$centro=$this->uri->segment(4);
-$data['centro']=$centro;
-$data['doc']=$doc;
-$QuerycountRdv=$this->db->select('id_apoint')->where('doctor',$doc)->where('centro',$centro)->get('rendez_vous');
-$countRdv=$QuerycountRdv->num_rows();
-if($countRdv==0){
-$where = array(
-'id_doctor' =>$doc,
-'id_centro' =>$centro
-);
-$updateData = array(
-'active'  =>1);
-$this->db->where($where);
-$this->db->update("doctor_agenda_test",$updateData);
+$id = $this->uri->segment(3);
+$identificar = $this->uri->segment(4);	
+$this->billView($id,$identificar);
+}
 
-echo'<div class="modal-header "  id="background_">
-<h5 class="modal-title">USTED NO TIENE CITA CON ESTE CENTRO MEDICO, SIN EMBARGO TU AGENDA CON EL HA SIDO INHABILITADA </h5>
-<button type="button" title="Cierra" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times-circle"  style="font-size:48px;color:red"></i></button>
-</div>';
-} else{
-$this->load->view('admin/users/disabled-rvd-doc-agenda',$data);
+
+
+public function billView($idFac,$ident){	
+$data['name']=$this->session->userdata['user_id'];
+$data['is_admin']="yes";
+$data['controller']="admin";
+$this->load->view('header',$data);
+$data['id']=$idFac;
+$data['identificar']=$ident;
+$this->load->view('medico/billing/bill/view-bill-commnun',$data);	
 }
-}
+
+
+
 
 
 
@@ -2674,7 +3229,7 @@ $data = array(
   'name'  => $this->input->post('nombre'),
   'user_ars'=> $this->input->post('seguro'),
   'username' => $this->input->post('user'),
-  'updated_by' =>$this->session->userdata['admin_id'],
+  'updated_by' =>$this->session->userdata['user_id'],
  'update_date' => $modify_date
   );
 $this->model_admin->DeactivarUser($id,$data);
@@ -3277,6 +3832,42 @@ redirect($_SERVER['HTTP_REFERER']);
 }
 
 
+public function newPasswordAsitente(){
+$pass1=$this->input->post('pass1');
+$pass2=$this->input->post('pass2');
+$id_user=$this->input->post('id_user');
+$id_table=$this->input->post('id_table');
+
+if($pass1=='' || $pass2==''){
+ $response['status'] =0;
+$response['message'] = 'los dos campos son obligatorios!'; 
+} elseif($pass1 != $pass2){
+ $response['status'] =2;
+$response['message'] = 'la contraseña no coincide!'; 	
+}
+else{		
+$data = array(
+  'password' => md5($pass1),
+  'updated_by' => $id_user,
+  'update_date' => date("Y-m-d H:i:s")
+  );
+$this->model_admin->DeactivarUser($id_table,$data);
+ $response['status'] =1;
+$response['message'] = 'Cambiada con éxito!.'; 
+$where = array(
+'user_id' =>$id_user
+);
+
+$this->db->where($where);
+$this->db->delete('current_user_info');
+
+}
+echo json_encode($response);
+}
+
+
+
+
 public function cambiarPlazo(){
 $id= $this->input->post('id_user');
 $plazo= $this->input->post('plazo');
@@ -3452,7 +4043,7 @@ public function getMuncipio()
 
  public function pharmaceutical_laboratory()
 { 
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $sql ="SELECT * FROM pharmaceutical_laboratory ORDER BY id DESC";
 $data['query']= $this->db->query($sql);
 $this->load->view('admin/pharmaceutical-laboratory/list-pha-lab', $data);
@@ -3460,7 +4051,7 @@ $this->load->view('admin/pharmaceutical-laboratory/list-pha-lab', $data);
 
 
 public function listOfEstudios(){
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $sql ="SELECT * FROM estudios ORDER BY id DESC";
 $data['query']= $this->db->query($sql);
 $this->load->view('admin/estudios/index',$data);
@@ -3470,7 +4061,7 @@ $this->load->view('admin/estudios/index',$data);
 
  public function newEstudios()
 {
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $this->load->view('admin/estudios/create');
 }
 
@@ -3512,8 +4103,8 @@ $save = array(
   'telefono' => $this->input->post('primer_tel'),
    'pagina_web' => $this->input->post('email'),
    'correo' => $this->input->post('web'),
-  'inserted_by'=> $this->session->userdata['admin_id'],
-  'updated_by'=> $this->session->userdata['admin_id'],
+  'inserted_by'=> $this->session->userdata['user_id'],
+  'updated_by'=> $this->session->userdata['user_id'],
  'inserted_time'=> $insert_date,
   'updated_time' => $insert_date
   );
@@ -3527,13 +4118,13 @@ redirect('admin/newEstudios');
 
  public function newPhaLab()
 {
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $this->load->view('admin/pharmaceutical-laboratory/create-pha-lab');
 }
 
  public function create_lab_lentes()
 {
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $this->load->view('optica/labo/create');
 }
 
@@ -3541,7 +4132,7 @@ $this->load->view('optica/labo/create');
 
  public function updatePhaLab($id)
 {
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $sql ="SELECT * FROM pharmaceutical_laboratory WHERE id=$id";
 $data['query']= $this->db->query($sql);
 $this->load->view('admin/pharmaceutical-laboratory/update-pha-lab',$data);
@@ -3550,7 +4141,7 @@ $this->load->view('admin/pharmaceutical-laboratory/update-pha-lab',$data);
 
  public function updateLabLentes($id)
 {
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $sql ="SELECT * FROM labo_lentes WHERE id=$id";
 $data['query']= $this->db->query($sql);
 $this->load->view('optica/labo/update',$data);
@@ -3561,7 +4152,7 @@ $this->load->view('optica/labo/update',$data);
 
  public function updateEstudios($id)
 {
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $sql ="SELECT * FROM estudios WHERE id=$id";
 $data['query']= $this->db->query($sql);
 $this->load->view('admin/estudios/update',$data);
@@ -3573,7 +4164,7 @@ $this->load->view('admin/estudios/update',$data);
 
  public function viewPhaLab($id)
 {
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $sql ="SELECT * FROM pharmaceutical_laboratory WHERE id=$id";
 $data['query']= $this->db->query($sql);
 $this->load->view('admin/pharmaceutical-laboratory/view-pha-lab',$data);
@@ -3582,7 +4173,7 @@ $this->load->view('admin/pharmaceutical-laboratory/view-pha-lab',$data);
 
  public function viewLabLentes($id)
 {
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $sql ="SELECT * FROM labo_lentes WHERE id=$id";
 $data['query']= $this->db->query($sql);
 $this->load->view('optica/labo/view',$data);
@@ -3590,7 +4181,7 @@ $this->load->view('optica/labo/view',$data);
 
  public function viewEstudios($id)
 {
-$this->load->view('admin/header_admin');
+$this->load->view('header');
 $sql ="SELECT * FROM estudios WHERE id=$id";
 $data['query']= $this->db->query($sql);
 $this->load->view('admin/estudios/view',$data);
@@ -3599,6 +4190,7 @@ $this->load->view('admin/estudios/view',$data);
 
 public function saveLaboLentes(){
 $name=$this->input->post('name');
+$lab_user=$this->input->post('lab_user');
 $insert_date=date("Y-m-d H:i:s");
 $query = $this->db->get_where('labo_lentes',array('nombre_comercial'=>$name));
 	if($query->num_rows() > 0 )
@@ -3632,12 +4224,34 @@ $save = array(
   'telefono' => $this->input->post('primer_tel'),
    'pagina_web' => $this->input->post('email'),
    'correo' => $this->input->post('web'),
-  'inserted_by'=> $this->session->userdata['admin_id'],
-  'updated_by'=> $this->session->userdata['admin_id'],
+  'inserted_by'=> $this->session->userdata['user_id'],
+  'updated_by'=> $this->session->userdata['user_id'],
  'inserted_time'=> $insert_date,
   'updated_time' => $insert_date
   );
 $this->db->insert("labo_lentes",$save);
+$id_m_c=$this->db->insert_id();
+foreach ($lab_user as $adduser) {
+
+	$savelabu= array(
+	'id_lab_lente' =>$id_m_c,
+	'id_user' => $adduser
+	);
+
+	$this->db->insert("user_oftal_lab_lentes",$savelabu);
+	//update lab lentes
+	$savelabl= array(
+	'id_lab_lente' =>$id_m_c
+	);
+	$wherelabl = array(
+      'id_doc' =>$adduser
+     );
+	$this->db->where($wherelabl);
+	$this->db->update("laboratory_lentes",$savelabl);
+}
+
+
+
 $msg = "<div  style='text-align:center'>El Centro Medico : <span style='color:green'>$name_success</span> se guada con exito .</div>";
 $this->session->set_flashdata('success_msg', $msg);
 redirect('admin/lab_lentes');
@@ -3648,6 +4262,7 @@ redirect('admin/lab_lentes');
 
 public function saveUpdateLabLentes(){
 $id_m_c  = $this->input->post('id_m_c');
+$lab_user  = $this->input->post('lab_user');
 //===================================================
 if($_FILES['picture']['tmp_name'] != '')
 {
@@ -3676,7 +4291,7 @@ $data = array(
   'telefono' => $this->input->post('primer_tel'),
    'pagina_web' => $this->input->post('email'),
    'correo' => $this->input->post('web'),
-  'updated_by'=> $this->session->userdata['admin_id'],
+  'updated_by'=> $this->session->userdata['user_id'],
   'updated_time' => date("Y-m-d H:i:s")
   );
 $where = array(
@@ -3686,16 +4301,38 @@ $where = array(
 $this->db->where($where);
 $this->db->update("labo_lentes",$data);
 
+if($lab_user ){
+$wherelab = array(
+'id_lab_lente' =>$id_m_c
+);
+
+$this->db->where($wherelab);
+$this->db->delete('user_oftal_lab_lentes');
+
+//insert seguro in table medical_centro_seguro
+foreach ($lab_user as $adduser) {
+
+	$savelabu= array(
+	'id_lab_lente' =>$id_m_c,
+	'id_user' => $adduser
+	);
+
+	$this->db->insert("user_oftal_lab_lentes",$savelabu);
+	//update lab lentes
+	$savelabl= array(
+	'id_lab_lente' =>$id_m_c
+	);
+	$wherelabl = array(
+      'id_doc' =>$adduser
+     );
+	$this->db->where($wherelabl);
+	$this->db->update("laboratory_lentes",$savelabl);
+	
+}
+}
 
 redirect($_SERVER['HTTP_REFERER']);
 }
-
-
-
-
-
-
-
 
 
 public function savePhaLab(){
@@ -3734,8 +4371,8 @@ $save = array(
   'telefono' => $this->input->post('primer_tel'),
    'pagina_web' => $this->input->post('email'),
    'correo' => $this->input->post('web'),
-  'inserted_by'=> $this->session->userdata['admin_id'],
-  'updated_by'=> $this->session->userdata['admin_id'],
+  'inserted_by'=> $this->session->userdata['user_id'],
+  'updated_by'=> $this->session->userdata['user_id'],
  'inserted_time'=> $insert_date,
   'updated_time' => $insert_date
   );
@@ -4119,16 +4756,16 @@ $this->model_admin->updateMss1($idmssm1,$data);
 
 public function medical_insurance_audit_profile()
 {
-	$data['id_user']=$this->session->userdata['admin_id'];
+	$data['id_user']=$this->session->userdata['user_id'];
 	$data['name']=$this->session->userdata['admin_name'];
-	$data['perfil']=$this->session->userdata['admin_perfil'];
+	$data['perfil']=$this->session->userdata['user_perfil'];
 	$data['model']="model_admin";
 	$data['id_seguro']="";
 $data['codigo']=$this->model_admin->all_codigo_prestador();
 $data['medicos_facturar']=$this->model_admin->medicos_facturar();
 $data['exequatur_medico_factura']=$this->model_admin->exequatur_medico_factura();
 $data['cedula_medico_factura']=$this->model_admin->cedula_medico_factura();
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 $this->load->view('admin/billing/medical_insurance_audit_profile/create',$data);
  $this->load->view('admin/footer');
 }
@@ -4272,8 +4909,7 @@ $this->load->view('admin/tarifarios/doctors/new_doctor_added_to_tarif_result', $
 public function mssm()
 {
 $data['name']=$this->session->userdata['admin_name'];
-//$data['view_doctor_seguro'] = $this->model_admin->view_doctor_seguro($id_user);
-
+$admin_centro=$this->session->userdata['admin_position_centro'];
 $data['tarifarios_grouped'] = $this->model_admin->tarifarios_grouped();
 $data['tarifarios_grouped_seguro'] = $this->model_admin->tarifarios_grouped_seguro();
 $data['especialidades'] = $this->model_admin->getEspecialidades();
@@ -4281,15 +4917,30 @@ $identificar=$this->uri->segment(3);
 $data['privado']=$this->db->select('title')->where('title','PRIVADO')->limit(1)->get('seguro_medico')->row('title');
 $data['tarif_cat']=$this->model_admin->tarif_cat();
 $data['all_seguro'] = $this->model_admin->display_all_seguro_medico();
+
+if($admin_centro){
+$data['DOCTORS']= $this->model_admin->get_doctor($admin_centro);
+
+$querycentro = $this->db->query("SELECT id_m_c,name FROM medical_centers 
+LEFT JOIN centros_tarifarios
+ON medical_centers.id_m_c=centros_tarifarios.centro_id
+WHERE id_m_c=$admin_centro GROUP BY centro_id");
+$all_medical_centers = $querycentro->result();
+}else{
 $data['DOCTORS']=$this->model_admin->display_all_doctors();
+
+$all_medical_centers = $this->model_admin->all_centro_medicos_tarifs();
+}
 $data['message']="";
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 
 if($identificar=="medico"){
 
 $this->load->view('admin/billing/mssm/create',$data);
 } else{
-$data['all_medical_centers'] = $this->model_admin->all_centro_medicos_tarifs();
+	
+$data['all_medical_centers']=$all_medical_centers;	
+	
 $this->load->view('admin/billing/mssm/centro/create-centro',$data);
 }
 }
@@ -4303,19 +4954,7 @@ public function get_category_name()
 }
 
 
-public function getSeguro()
-{
-$id_centro=$this->input->post('id');
-$sql ="SELECT id_sm, title  FROM  seguro_medico
-INNER JOIN codigo_contrato ON seguro_medico.id_sm = codigo_contrato.id_seguro
-WHERE id_centro=$id_centro";
-$query= $this->db->query($sql);
-foreach($query->result() as $row) {
-echo "<option></option>";
-echo "<option value='$row->id_sm'>$row->title</option>";
-}
 
-}
 
 public function mssm_service_data(){
 $id_tarif=$this->input->get('id_tarif');
@@ -4332,10 +4971,10 @@ $this->load->view('admin/tarifarios/doctors/search-by-service-result', $data);
 public function mssm_doc()
 {
 	$data['name']=$this->session->userdata['admin_name'];
-    $data['user_name']=$this->session->userdata['admin_id'];
+    $data['user_name']=$this->session->userdata['user_id'];
 	$data['DOCTORS']=$this->model_admin->display_all_doctors();
 	$data['especialidades'] = $this->model_admin->getEspecialidades();
-	$this->load->view('admin/header_admin',$data);
+	$this->load->view('header',$data);
 	$this->load->view('admin/billing/mssm/create',$data);
 }
 
@@ -4360,10 +4999,6 @@ $this->load->view('admin/tarifarios/doctors/facturarPatNotFound', $data);
 
 }
 }
-
-
-
-
 
 
 
@@ -4407,17 +5042,7 @@ $this->load->view('admin/tarifarios/doctors/loadSeguroTarif', $data);
 
 
 
-public function EditSeguroMedico()
-{
-$data['name']=$this->session->userdata['admin_name'];
-$id_seguro= $this->uri->segment(3);
-$data['id_seguro']= $id_seguro;
 
-$data['ALL_FIELDS'] = $this->model_admin->all_fields();
-$data['EditSeguroMedico'] = $this->model_admin->EditSeguroMedico($id_seguro);
-$this->load->view('admin/health_insurances/modal-update', $data);
-
-}
 
 
 
@@ -4435,42 +5060,30 @@ $this->load->view('admin/health_insurances/RelatedCentro', $data);
 
 
 
-
-public function centro_medico()
-{
-$data['name']=$this->session->userdata['admin_name'];
-	$id_medical_center= $this->uri->segment(3);
-$data['CENTRO_MEDICO'] = $this->model_admin->display_centro_medico($id_medical_center);
-$data['CENTRO_MEDICO_ESPECIALIDADED'] = $this->model_admin->display_centro_medical_esp($id_medical_center);
-$data['CENTRO_MEDICO_SEGURO']= $this->model_admin->display_centro_medical_seguro($id_medical_center);
-$data['RESULT_DOCTOR']= $this->model_admin->get_doctor($id_medical_center);
-$data['RESULT_ASDOCTOR']= $this->model_admin->get_asistente_doctor($id_medical_center);
-$data['CENTRO_PROVINCE']= $this->db->select('title')->join('medical_centers', 'provinces.id = medical_centers.provincia')->where('id_m_c',$id_medical_center)->limit(1)->get('provinces')->row('title');
- $data['CENTRO_MUNICIPIO']= $this->db->select('title_town')->join('medical_centers', 'townships.id_town = medical_centers.municipio')->where('id_m_c',$id_medical_center)->limit(1)->get('townships')->row('title_town');
-$this->load->view('admin/header_admin',$data);
- $data['hide']=0;
- $this->load->view('admin/centers/medical_center', $data);
-
-
-}
-
-
-
 public function import_rates()
 	{
-		$data['name']=$this->session->userdata['admin_id'];
+		$data['name']=$this->session->userdata['user_id'];
 		$data['tarifarios_grouped'] = $this->model_admin->tarifarios_grouped();
 		$data['last_id_doc']=$this->db->select('id_doctor')->order_by('id_tarif','desc')->limit(1)->get('tarifarios')->row('id_doctor');
         $data['especialidades'] = $this->model_admin->getEspecialidades();
         $data['all_seguro'] = $this->model_admin->display_all_seguro_medico();
-       $data['all_medical_centers'] = $this->model_admin->display_all_medical_centers();
-		$this->load->view('admin/header_admin',$data);
+		
+		$admin_position_centro=$this->session->userdata['admin_position_centro'];
+
+		if($admin_position_centro){
+		$querycentro = $this->db->query("SELECT id_m_c, name FROM medical_centers WHERE id_m_c=$admin_position_centro");
+		}else{
+		$querycentro = $this->db->query('SELECT id_m_c, name FROM medical_centers');
+
+		}
+      $data['all_medical_centers'] = $querycentro->result();
+		$this->load->view('header',$data);
 		$this->load->view('admin/tarifarios/excel_import',$data);
 	}
 
 public function load_tarif_doc_form()
 	{
-		$data['user_name']=$this->session->userdata['admin_id'];
+		$data['user_name']=$this->session->userdata['user_id'];
 
 		$data['area']=$this->input->post('area');
 		$data['a_i']=$this->input->post('a_i');
@@ -4500,7 +5113,7 @@ $this->load->view('admin/tarifarios/doctors/check_if_doc_has_tarifarios_for_this
 
 	public function check_if_centro_medico_has_tarifarios_already()
 {
-	$data['updated_by']=$this->session->userdata['admin_id'];
+	$data['updated_by']=$this->session->userdata['user_id'];
 $id_c=$this->input->post('id_c');
 $id_sm=$this->input->post('id_sm');
 $data['id_c']=$id_c;
@@ -4534,49 +5147,27 @@ echo $output;
 
 
 
- public function save_edit_tarifario_centro(){
-$updated_date=date("Y-m-d H:i:s");
-$id  = $this->input->post('id_c_taf');
-$data = array(
-'cups'=>$this->input->post('cups'),
-'simons'=>$this->input->post('simons'),
-'sub_groupo'=>$this->input->post('sub_groupo'),
- 'monto'=>$this->input->post('monto'),
-  'updated_by'=>$this->session->userdata['admin_id'],
-   'updated_date'=>$updated_date
-  );
-$this->model_admin->save_edit_tarifario_centro($id,$data);
-
-
-}
 
 
 
+  public function my_account() {
+	   $this->header_user->headerAdmin($this->ID_USER);
+         $medico_id = $this->session->userdata['user_id'];
+        $data['medico_id'] = $medico_id;
+       
+        $sqllbb = "SELECT * FROM h_c_groupo_lab WHERE id_doc=$medico_id && rmvd=0 GROUP BY groupo ORDER BY id DESC";
+        $querylbb = $this->db->query($sqllbb);
+        $data['totallab'] = $querylbb->num_rows();
+		
+		$sql ="SELECT id_centro FROM  doctor_agenda_test WHERE id_doctor=$medico_id group by id_centro";
+        $query= $this->db->query($sql);
+		$data['agendas'] = $query->result();
+		
+        $this->load->view('medico/account/index', $data);
+    }
 
 
-public function display_tarif_centro_categoria()
-{
-$data['user_name']=$this->session->userdata['admin_id'];
-$id_seguro=$this->input->post('id_seguro');
-$id_centro=$this->input->post('id_centro');
-$results= $this->model_admin->display_tarif_centro_categoria($id_centro,$id_seguro);
-$data['results']=$results;
-$data['id_seguro']=$id_seguro;
-$data['id_centro']=$id_centro;
-$this->load->view('admin/tarifarios/centros/display_tarif_centro', $data);
 
-}
-
-public function display_centro_tarif_cat()
-{
-$id_seguro=$this->input->post('id_seguro');
-$id_centro=$this->input->post('id_centro');
-$results= $this->model_admin->display_tarif_centro_categoria($id_centro,$id_seguro);
-$data['results']=$results;
-$data['count']=count($results);
-$this->load->view('admin/tarifarios/centros/display_centro_tarif_cat', $data);
-
-}
 
 public function check_if_group_exist()
 {
@@ -4586,63 +5177,18 @@ echo json_encode($num);
 
 }
 
-public function centro_categoria_servicios()
-{
-
-$data['categoria']=$this->input->post('categoria');
-$data['id_centro']=$this->input->post('id_centro');
-$data['id_seguro']=$this->input->post('id_seguro');
-
-$this->load->view('admin/tarifarios/centros/centro_categoria_servicios', $data);
-}
 
 
-public function loadCatTarif()
-{
-$data['updated_by']=$this->session->userdata['admin_id'];
-$val = array(
-'categoria'=>$this->input->post('categoria'),
-'id_centro'=>$this->input->post('id_centro'),
-'id_seguro'=>$this->input->post('id_seguro')
- );
-$data['categoria']=$this->input->post('categoria');
-$data['id_centro']=$this->input->post('id_centro');
-$data['id_seguro']=$this->input->post('id_seguro');
-$results= $this->model_admin->centro_categoria_servicios($val);
-$data['results']=$results;
-$data['count']=count($results);
-$this->load->view('admin/tarifarios/centros/loadCatTarif', $data);
-}
 
-public function saveNewTarifCentro()
-{
-if($this->input->post('cups') !="" && $this->input->post('simons') !="" && $this->input->post('categoria') !=""){
-$save = array(
-'cups'  => $this->input->post('cups'),
-'simons' => $this->input->post('simons'),
-'sub_groupo' => $this->input->post('consulta'),
-'groupo' => $this->input->post('categoria'),
-'monto' =>$this->input->post('monto'),
-'centro_id' =>$this->input->post('id_centro'),
-'seguro_id' =>$this->input->post('id_seguro'),
-'inserted_date' => date("Y-m-d H:i"),
-'inserted_by' =>$this->session->userdata['admin_id'],
-'updated_by' =>$this->session->userdata['admin_id'],
-'updated_date' =>date("Y-m-d H:i")
-);
-
-$this->model_admin->saveNewTarifCentro($save);
-}
-}
 //==============================FACTURA=============================================
 
 
 public function billing_report()
 {
 $data['name']=($this->session->userdata['admin_name']);
-$data['user_id']=$this->session->userdata['admin_id'];
+$data['user_id']=$this->session->userdata['user_id'];
 $data['controller']="admin";
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 $this->load->view('admin/billing/bill/all-billings');
 
 }
@@ -4668,20 +5214,6 @@ $data= array(
 );
 $query = $this->model_admin->block_factura2($id,$data);
 $query = $this->model_admin->block_factura1($id,$data);
-}
-
-
-
-
-public function bill()
-{
-$data['name']=$this->session->userdata['admin_id'];
-$data['is_admin']="yes";
-$data['id']=$this->uri->segment(3);
-$data['identificar']=$this->uri->segment(4);
-$this->load->view('admin/header_admin',$data);
-$this->load->view('medico/billing/bill/view-bill-commnun',$data);
-
 }
 
 
@@ -5083,7 +5615,35 @@ $id_rdv =$this->model_admin->save_rendevous($save2);
 $this->session->set_userdata('sessionIdNewCitaAgain', $id_rdv);
 $this->session->set_userdata('id_esp',$this->input->post('especialidad'));
 redirect('admin/gh0rtgkrr4g5');
-} else{
+
+}elseif($this->input->post('orientation')==3){
+ $savedas = array(
+'centro'=> $this->input->post('hosp_centro'),
+'esp'  => $this->input->post('hosp_esp'),
+'doc'=> $this->input->post('hosp_doctor'),
+'causa' =>$this->input->post('hosp_causa'),
+'via' =>$this->input->post('hosp_ingreso'),
+'id_patient' => $id_pat,
+'sala' => $this->input->post('hosp_sala'),
+'servicio' => $this->input->post('hosp_servicio'),
+'cama' => $this->input->post('hosp_cama'),
+'hosp_auto' => $this->input->post('hosp_auto'),
+'hosp_auto_por' => $this->input->post('hosp_auto_por'),
+'inserted' => $this->input->post('id_user'),
+'updated' => $this->input->post('id_user'),
+'timeinserted' => $insert_date,
+'timeupdated' => $insert_date,
+'canceled' =>0
+   );
+$this->db->insert("hospitalization_data",$savedas);
+
+//------------------------------------------------------------------------------------------------
+$id_p_ai = decrypt_url($id_pat);
+$id_useri = decrypt_url($this->input->post('id_user'));
+redirect("hospitalizacion/hospitalizacion_list/$id_p_ai/$id_useri");
+}
+
+ else{
 $this->session->set_userdata('id_cm',$this->input->post('factura-centro'));
 $this->session->set_userdata('id_d',$this->input->post('facturar-doc'));
 $this->session->set_userdata('id_p_a',$id_pat);
@@ -5110,7 +5670,7 @@ $data['photo']=$patient['photo'];
 $data['ced1']=$patient['ced1'];
 $data['ced2']=$patient['ced2'];
 $data['ced3']=$patient['ced3'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
+$data['perfil']=$this->session->userdata['user_perfil'];
 $data['id_dd']=$this->session->userdata['sessionIdDocNewCita'];
 $data['id_cm']=$this->session->userdata['sessionIdCentNewCita'];
 $data['id_rdv']=$this->session->userdata['sessionIdNewCitaAgain'];
@@ -5127,7 +5687,7 @@ $query_doc  = $this->model_admin->RendezVousDoc($val);
 $data['area']=0;
 $data['is_admin']="yes";
 $data['number_cita']=count($query);
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 
 $this->load->view('admin/pacientes-citas/tutor/124gh0rtgkrr4g5',$data);
 $data['id_usr']=$this->session->userdata['id_user'];
@@ -5146,19 +5706,27 @@ redirect('admin/redirect_fac');
 }
 
 
-public function editPrivateBill()
-{
-$inserted_by=$this->input->get('inserted_by');
-$is_admin=$this->input->get('is_admin');
-$lastInsert=$this->db->select('idfacc,centro_medico')->order_by('idfacc','desc')->limit(1)->get('factura2')->row_array();
-$data['id']=$lastInsert['idfacc'];
-$data['identificar']=$this->db->select('type')->where('id_m_c',$lastInsert['centro_medico'])->get('medical_centers')->row('type');
-$data['name']=$inserted_by;
-$data['is_admin']=$is_admin;
-$this->load->view('admin/header_admin',$data);
-$this->load->view('medico/billing/bill/seguro-privado/view-bill-commnun',$data);
+
+
+
+public function editPrivateBill(){
+$this->session->set_userdata('id_fac_private',$this->uri->segment(3));
+$this->session->set_userdata('centro_fac_id',$this->uri->segment(4));
+redirect('admin/billingProcess');
 }
 
+
+public function billingProcess(){
+$idfac=$this->session->userdata['id_fac_private'];
+$centro_id=$this->session->userdata['centro_fac_id'];
+$data['id']=$idfac;
+$this->load->view('header',$data);
+$data['name']=$this->session->userdata['user_id'];
+$data['is_admin']="yes";
+$data['identificar']=$this->db->select('type')->where('id_m_c',$centro_id)->get('medical_centers')->row('type');
+$data['controller']="admin";
+$this->load->view('medico/billing/bill/seguro-privado/view-bill-commnun',$data);
+}
 
 
 
@@ -5166,53 +5734,101 @@ $this->load->view('medico/billing/bill/seguro-privado/view-bill-commnun',$data);
 
 public function redirect_fac()
 {
-$data['id_cm'] = $this->session->userdata['id_cm'];
-$data['id_d']=$this->session->userdata['id_d'];
-$data['id_p_a']=$this->session->userdata['id_p_a'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
-$data['name']=$this->session->userdata['admin_id'];
-$data['is_admin']="yes";
-$data['id_seg']=$this->session->userdata['id_seg'];
-$this->load->view('admin/header_admin',$data);
-$this->load->view('medico/billing/bill/redirect_fac',$data);
+$identificar_=$this->db->select('type')->where('id_m_c',$this->session->userdata['id_cm'])->get('medical_centers')->row('type'); 
+$id_apoint=decrypt_url('fac');
+$id_cm=decrypt_url($this->session->userdata['id_cm']);
+$identificar=decrypt_url($identificar_);
+$id_d=decrypt_url($this->session->userdata['id_d']);
+$id_seg=decrypt_url($this->session->userdata['id_seg']);
+$id_p_a=decrypt_url($this->session->userdata['id_p_a']);
+redirect("admin/patient_billing/$identificar/$id_apoint/$id_d/$id_cm/$id_seg/$id_p_a");
 
 }
 
+
+
+
 public function patient_billing_()
 {
+$identificar=$this->uri->segment(3);
+$id_apoint=$this->uri->segment(4);
+$id_d=$this->uri->segment(5);
+$id_cm=$this->uri->segment(6);
+$id_seg=$this->uri->segment(7);
+$id_p_a=$this->uri->segment(8);
+redirect("admin/patient_billing/$identificar/$id_apoint/$id_d/$id_cm/$id_seg/$id_p_a");
+
+}
+
+
+
+
+
+public function patient_billing($identificar,$id_apoint,$id_d,$id_cm,$id_seg,$id_p_a)
+{
+$identificar=decrypt_url($identificar);
+$id_apoint=decrypt_url($id_apoint);
+$id_d=decrypt_url($id_d);
+$id_cm=decrypt_url($id_cm);
+$id_seg=decrypt_url($id_seg);
+$id_p_a=decrypt_url($id_p_a);
+
+if($identificar=="" || $id_apoint=="" || $id_d=="" || $id_cm=="" || $id_seg==""){
+redirect('admin/billing_medicos');
+}			
 $data['is_admin']="yes";
-$data['identificar']=$this->uri->segment(3);
-$data['id_apoint']=$this->uri->segment(4);
-$data['id_d']=$this->uri->segment(5);
-$data['id_cm']=$this->uri->segment(6);
-$data['id_seg']=$this->uri->segment(7);
-$data['name']=$this->session->userdata['admin_id'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
-$this->load->view('admin/header_admin',$data);
+$data['identificar']=$identificar;
+$data['id_apoint']=$id_apoint;
+$data['id_d']=$id_d;
+$data['id_cm']=$id_cm;
+$data['id_seg']=$id_seg;
+$data['id_p_a']=$id_p_a;
+$data['perfil']=$this->session->userdata['user_perfil'];
+$data['name']=$this->session->userdata['user_id'];
+$this->load->view('header',$data);
 $this->load->view('medico/billing/bill/billing-commun',$data);
 
 }
 
-public function viewPrivateBill()
-{
-$idbill=$this->uri->segment(3);
-$centroId=$this->db->select('centro_medico')->where('idfacc',$idbill)->get('factura2')->row('centro_medico');
-$data['id']=$idbill;
-$data['identificar']=$this->db->select('type')->where('id_m_c',$centroId)->get('medical_centers')->row('type');
-$data['name']=$this->session->userdata['admin_id'];
-$data['is_admin']="yes";
-$this->load->view('admin/header_admin',$data);
-$this->load->view('medico/billing/bill/seguro-privado/view-bill-commnun',$data);
 
+
+
+public function viewPrivateBill_()
+{
+$id = decrypt_url($this->uri->segment(3));
+$identificar = decrypt_url($this->uri->segment(4));				
+redirect("admin/privateBillView/$id/$identificar");
 }
 
 
+public function viewPrivateBill()
+{
+$id=$this->uri->segment(3);
+$identificar=$this->uri->segment(4);
+$this->privateBillView($id,$identificar);
+}
+
+
+function privateBillView($idbill,$identificar){
+$data['id']=$idbill;
+$data['identificar']=$identificar;
+$data['name']=$this->session->userdata['user_id'];
+$data['is_admin']="yes";
+$this->load->view('header',$data);
+$data['controller']="admin";
+$this->load->view('medico/billing/bill/seguro-privado/view-bill-commnun',$data);		
+}
+
+
+
+
+
 public function get_seguro_date_range(){
-$data['perfil']=$this->session->userdata['admin_perfil'];
+$data['perfil']=$this->session->userdata['user_perfil'];
 $data['name']=$this->session->userdata['admin_name'];
-$id_user=$this->session->userdata['admin_id'];
+$id_user=$this->session->userdata['user_id'];
 $data['id_user'] = $id_user;
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 $data['seguro']=$this->input->post('seguro');
 $data['desde']=$this->input->post('desde');
 $data['hasta']=$this->input->post('hasta');
@@ -5220,19 +5836,60 @@ $data['centro']=$this->input->post('centro');
 $this->load->view('admin/billing/bill/get_seguro_date_range',$data);
 }
 
+public function citas_hoy(){
+$admin_centro=$this->session->userdata['admin_position_centro'];	
+if($admin_centro){
+$query_citas=$this->db->select('confirmada')->where('confirmada',0)->where('cancelar',0)->where('centro',$admin_centro)->where('fecha_propuesta',date("d-m-Y"))->get('rendez_vous');
+
+}else{
+$query_citas=$this->db->select('confirmada')->where('confirmada',0)->where('cancelar',0)->where('fecha_propuesta',date("d-m-Y"))->get('rendez_vous');
+}
+echo $query_citas->num_rows();
+
+}
+
+public function cola_de_solicitud(){
+$admin_centro=$this->session->userdata['admin_position_centro'];
+if($admin_centro){
+$query_sol=$this->db->select('id_apoint')->where('centro',$admin_centro)->where('confirmada',1 )->get('rendez_vous');	
+}else{
+$query_sol=$this->db->select('id_apoint')->where('confirmada',1 )->get('rendez_vous');
+}
+echo $query_sol->num_rows();
+
+}
 
 public function billing_medicos()
 {
+$admin_centro=$this->session->userdata['admin_position_centro'];
 $data['name']=$this->session->userdata['admin_name'];
-$id_user=$this->session->userdata['admin_id'];
-$perfil=$this->session->userdata['admin_perfil'];
+$id_user=$this->session->userdata['user_id'];
+$perfil=$this->session->userdata['user_perfil'];
 $data['perfil']=$perfil;
 $data['contler']='admin';
 $data['id_user']=$id_user;
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 $search_patients_factura=$this->model_admin->search_patients_factura();
+
 $data['centro']=$this->model_admin->report_bill_by_date_centro($id_user,$perfil);
+
+
+if($admin_centro){
+$querycentro1 = $this->db->query("SELECT id_m_c, name FROM medical_centers WHERE id_m_c=$admin_centro");
+$queryAm= $this->model_admin->get_doctor($admin_centro);	
+$data['centro']=$this->model_admin->billCentroAdministrativo($admin_centro);
+$data['admin_centro']= $admin_centro;
+}else{
+$data['admin_centro']= 0;
+$data['centro']=$this->model_admin->report_bill_by_date_centro($id_user,$perfil);
+$querycentro1 = $this->db->query('SELECT id_m_c, name FROM medical_centers');
+$sqlAm ="SELECT id_user, name FROM users WHERE perfil ='Medico' ORDER BY  name ASC";
+$queryt= $this->db->query($sqlAm);
+$queryAm=$queryt->result();
+}
+$data['queryAm']= $queryAm;
 $data['search_patients_factura']= $search_patients_factura;
+$data['querycentro1']= $querycentro1;
 $data['count']=count($search_patients_factura);
 $data['search_date_range_seguro_factura']=$this->model_admin->search_date_range_seguro_factura_adm();
 $this->load->view('admin/billing/bill/create-bill',$data);
@@ -5255,7 +5912,7 @@ $mpdf = new \Mpdf\Mpdf(['tempDir' => __DIR__ . '/custom/temp/dir/path']);
 	'hasta' => $hasta,
 	'id_user' => $id_user,
     'checkval' => $checkval,
-    'perfil' => $this->session->userdata['admin_perfil']
+    'perfil' => $this->session->userdata['user_perfil']
 	);
 $mpdf->AddPage('L');
 $mpdf->setFooter("Página {PAGENO} de {nb}");
@@ -5291,7 +5948,7 @@ public function print_billing()
 $print= $this->uri->segment(3);
 $last_bill_id=$this->db->select('idfacc,paciente')->order_by('idfacc','desc')->limit(1)->get('factura2')->row_array();
 $data['last_bill_id']=$last_bill_id['idfacc'];
-$id_usr=$this->session->userdata['admin_id'];
+$id_usr=$this->session->userdata['user_id'];
 $data['show_diagno_pat']=$this->model_admin->show_diagno_pat($last_bill_id['paciente'],$id_usr);
 $data['show_diagno_pro_pat'] = $this->model_admin->show_diagno_pro_pat($last_bill_id['paciente']);
 $data['billing1']=$this->model_admin->showBilling1($last_bill_id['idfacc']);
@@ -5319,7 +5976,7 @@ public function invoice_ars_claim()
 {
 	$data['name']=($this->session->userdata['admin_name']);
    $data['results']=$this->model_admin->invoice_ars_claim();
-	$this->load->view('admin/header_admin',$data);
+	$this->load->view('header',$data);
 	$this->load->view('admin/billing/invoice_ars_claim/view-all',$data);
 }
 
@@ -5327,17 +5984,19 @@ public function invoice_ars_claim()
 
 public function create_invoice_ars_claim()
 {
+	$admin_position_centro=$this->session->userdata['admin_position_centro'];
+	$data['admin_position_c']=$admin_position_centro;
 	$data['option']="";
 	$sql1 ="SELECT filter_date FROM factura2 WHERE seguro_medico !=11 GROUP BY filter_date";
     $data['query1'] = $this->db->query($sql1);
 	$sql2 ="SELECT filter_date FROM factura2 WHERE seguro_medico !=11 GROUP BY filter_date ORDER BY filter_date DESC";
     $data['query2'] = $this->db->query($sql2);
     $data['is_admin']="yes";
-	$data['perfil']=$this->session->userdata['admin_perfil'];
-	$data['name']=$this->session->userdata['admin_id'];
+	$data['perfil']=$this->session->userdata['user_perfil'];
+	$data['name']=$this->session->userdata['user_id'];
 	$data['date_range1']=$this->model_admin->date_range1();
-	$data['centro']=$this->model_admin->display_all_medical_centers();
-	$this->load->view('admin/header_admin',$data);
+	
+	$this->load->view('header',$data);
 	$data['where_report']="";
 	$this->load->view('medico/billing/invoice_ars_claim/create',$data);
 }
@@ -5361,9 +6020,9 @@ $this->load->view('admin/billing/invoice_ars_claim/get_fac_ars_patient_adm', $da
 
 
 public function facturas_borradas(){
-$data['user']=$this->session->userdata['admin_id'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
-$this->load->view('admin/header_admin',$data);
+$data['user']=$this->session->userdata['user_id'];
+$data['perfil']=$this->session->userdata['user_perfil'];
+$this->load->view('header',$data);
 $this->load->view('medico/billing/bill/view-facturas-borradas',$data);
 }
 
@@ -5435,81 +6094,7 @@ $this->model_admin->saveInvoiceArsClaim($save);
 
 
 
-public function UpdateSeguroField(){
-//if($this->input->post('submitSeguro')){
-$id_seguro  = $this->input->post('id_seguro');
-$title  = $this->input->post('title');
-$active  = $this->input->post('activo');
 
-if($_FILES['picture']['tmp_name'] != '')
-{
-$imgSize = $_FILES['picture']['size'];
-$valid_extensions = array('jpeg', 'jpg', 'png', 'gif');
-$imgExt = strtolower(pathinfo($_FILES["picture"]['name'],PATHINFO_EXTENSION));
-$extension = explode('.', $_FILES['picture']['name']);
-$logo = rand() . '.' . $extension[1];
-$destination = './assets/img/seguros_medicos/' . $logo;
-if(in_array($imgExt, $valid_extensions) && $imgSize < 5000000)
-{
-move_uploaded_file($_FILES['picture']['tmp_name'], $destination);
-
-}
-else {
-	$msg = "<div id='deletesuccess' style='text-align:center'>Este tipo de archivo no está permitido, la inserción falla.</div>";
-	$this->session->set_flashdata('success_msg', $msg);
-redirect('admin/health_insurance');
-}
-}
-else {
-	$old_logo=$this->db->select('logo')->where('id_sm',$id_seguro)->get('seguro_medico')->row('logo');
-$logo = $old_logo;
-
-	}
-//Check whether user upload picture
-$insert_date=date("Y-m-d H:i:s");
-
-//Prepare array of user data
-$save = array(
-'title'  => $this->input->post('title'),
-'logo' => $logo,
-'rnc' => $this->input->post('rnc'),
-'tel' => $this->input->post('tel'),
-'email' => $this->input->post('email'),
-'direccion' =>$this->input->post('direccion'),
-'inserted_time' => $insert_date,
-'updated_by' =>$this->session->userdata['admin_id'],
-'updated_time' =>$insert_date
-);
-
-//Pass user data to model
-$insertUserData = $this->model_admin->updateSeguro($id_seguro,$save);
-//---------------------------------seguro_field
-$this->model_admin->deleteSeguroField($id_seguro);
-$this->model_admin->deleteSeguroFieldInPatient($id_seguro);
-foreach ($active as $key=>$id_f) {
-   $saveS= array(
-	'medical_insurance_id' =>$id_seguro,
-	'field_id' => $id_f
-
-	);
-
-	$this->model_admin->saveSeguroField($saveS);
-}
-//Storing insertion status message.
-if($insertUserData){
-$msgs="seguro medico se guada con exito.";
-$this->session->set_flashdata('success_msg',$msgs);
-}else{
-$msger="Hubo algunos problemas, por favor intente de nuevo.";
-$this->session->set_flashdata('error_msg', $msger);
-}
-//redirect('admin/health_insurances');
-redirect($_SERVER['HTTP_REFERER']);
-//}
-//Form for adding user data
-
-
-}
 
 
 
@@ -5529,7 +6114,7 @@ $sql ="SELECT id_asdoc FROM centro_doc_as WHERE id_doctor =$id_doctor group by i
  $data['query']= $this->db->query($sql);
 $data['ALLAGENDAS']= $this->model_admin->Agendas();
 $data['name']=($this->session->userdata['admin_name']);
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 $this->load->view('admin/medicos/doctor', $data);
 
 
@@ -5539,11 +6124,11 @@ $this->load->view('admin/medicos/doctor', $data);
 
 
 public function lab_lentes(){
-$data['perfil']=$this->session->userdata['admin_perfil'];
+$data['perfil']=$this->session->userdata['user_perfil'];
 $data['name']=$this->session->userdata['admin_name'];
-$user_id=$this->session->userdata['admin_id'];
+$user_id=$this->session->userdata['user_id'];
 $data['user_id']=$user_id;
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 
 $sql ="SELECT * FROM labo_lentes ORDER BY id DESC";
 
@@ -5555,13 +6140,11 @@ $this->load->view('optica/labo/list', $data);
 }
 
 
-
-
-public function patient()
+public function patientfsdfsdfds()
 {
 $data['name']=$this->session->userdata['admin_name'];
-$data['id_user']=$this->session->userdata['admin_id'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
+$data['id_user']=$this->session->userdata['user_id'];
+$data['perfil']=$this->session->userdata['user_perfil'];
 $data['area']=0;
 $idpatient= $this->uri->segment(3);
 $data['id_cm'] =$this->uri->segment(4);
@@ -5598,10 +6181,9 @@ $data['is_admin']="yes";
 $patient_admitas= $this->model_emergencia->emergency_patient($idpatient);
 $data['patient_admitas']=$patient_admitas;
 $data['number_patient_admitas']=count($patient_admitas);
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 $data['is_historial']=$this->model_admin->countAnte1($idpatient);
 $this->load->view('admin/pacientes-citas/patient', $data);
-$this->load->view('admin/footer');
  $this->load->view('admin/pacientes-citas/footer_patient_search');
 $this->load->view('medico/pacientes-citas/cita-footer');
 }
@@ -5683,14 +6265,14 @@ redirect($_SERVER['HTTP_REFERER']);
 public function create_new_patient_from_padron($ced1,$ced2,$ced3)
 {
 	$data['name']=$this->session->userdata['admin_name'];
-   $data['perfil']=$this->session->userdata['admin_perfil'];
-   $data['id_user']=$this->session->userdata['admin_id'];
-      $this->load->view('admin/header_admin',$data);
+   $data['perfil']=$this->session->userdata['user_perfil'];
+   $data['id_user']=$this->session->userdata['user_id'];
+      $this->load->view('header',$data);
    $data['is_admin']="yes";
    $data['ced1'] = $ced1;
    $data['ced2'] = $ced2;
    $data['ced3'] = $ced3;
-  $data['doc'] =$this->session->userdata['admin_id'];
+  $data['doc'] =$this->session->userdata['user_id'];
   $data['area']=0;
   $result=$this->db->select('id_p_a')->where('ced1',$this->uri->segment(3))->where('ced2',$this->uri->segment(4))->where('ced3',$this->uri->segment(5))->get('patients_appointments')->row('id_p_a');
 $data['result']=$result;
@@ -5698,14 +6280,17 @@ $data['result']=$result;
 $data['patient_admitas']=$patient_admitas;
 $data['number_patient_admitas']=count($patient_admitas);
 $this->load->view('admin/pacientes-citas/redirect_patient_result', $data);
+$data['id_p_ai'] = decrypt_url($result);
+$data['id_useri'] = decrypt_url($this->session->userdata['user_id']);
+$this->load->view('hospitalizacion/create_new_hosp_footer', $data );
 }
 
 
 public function cita_patient_padron()
 {
-$data['perfil']=$this->session->userdata['admin_perfil'];
-$data['name']=$this->session->userdata['admin_id'];
-$data['id_user']=$this->session->userdata['admin_id'];
+$data['perfil']=$this->session->userdata['user_perfil'];
+$data['name']=$this->session->userdata['user_id'];
+$data['id_user']=$this->session->userdata['user_id'];
 $data['is_admin']="yes";
 $val = array(
   'MUN_CED' => $this->uri->segment(3),
@@ -5730,7 +6315,7 @@ $data['patid']=$lidp;
 $ctutor=$this->model_admin->CountTutor($lidp);
 $data['ctutor']=$ctutor;
 $data['tutor']=$this->model_admin->getTutor($lidp);
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 //$this->load->view('admin/pacientes-citas/search_patient',$data);
 $this->load->view('medico/pacientes-citas/patient-found-in-padron', $data);
 $this->load->view('admin/pacientes-citas/footer_patient_search');
@@ -5766,50 +6351,12 @@ public function import_rates_fac_centro()
 {
 $data['id_c']=$this->uri->segment(3);
 $data['id_seg']=$this->uri->segment(4);
-$data['created_by']=$this->session->userdata['admin_id'];
+$data['created_by']=$this->session->userdata['user_id'];
 $this->load->view('admin/tarifarios/excel_import_fac_centro',$data);
 }
 
 
 
-
-
-
-public function patient_billing()
-{
-$data['is_admin']="yes";
-$identificar=$this->uri->segment(3);
-$id_user=$this->uri->segment(4);
-$data['id_user'] = $id_user ;
-	$user=$this->db->select('name,perfil')->where('id_user',$id_user)->get('users')->row_array();
-	$data['name'] = $user['name'] ;
-	$data['perfil'] = $user['perfil'] ;
-
-$id_p_a=$this->db->select('id_p_a')->order_by('id_p_a','desc')->limit(1)->get('patients_appointments')->row('id_p_a');
-$data['id_apoint']=$id_p_a;
-$val=$this->db->select('centro,doctor')->where('id_patient',$id_p_a)->get('rendez_vous')->row_array();
-$data['patient_data']=$this->model_admin->historial_medical($id_p_a);
-$data['rdv_data']=$this->model_admin->getPatientId($id_p_a);
-$data['serv']=$this->model_admin->Serviciomssm($val['doctor']);
-$data['serv_centro']=$this->model_admin->Service_centro($val['centro']);
-$show_diagno_pat = $this->model_admin->show_diagno_pat($id_p_a,$id_user);
-$data['show_diagno_pat']=$show_diagno_pat;
-$data['show_diagno_pro_pat'] = $this->model_admin->show_diagno_pro_pat($id_p_a);
-$this->load->view('admin/header_admin',$data);
-$data['billing']="FACTURACION";
-if($identificar=="medico"){
-if(empty($show_diagno_pat))
-{ echo "<h4 class='h4' style='color:#B18904;margin-left:30%'>Este paciente no puede factura, no tiene CIE10 ! <a target='_blank' href='".base_url()."admin/historial_medical/$id_p_a' title='Ve a la historia clinica'>Crear</a></h4>";}
-else {
-
-$this->load->view('admin/billing/bill/factura-table',$data);
-}
-$this->load->view('admin/billing/bill/get-patient-name-for-billing-after-create-new-cita',$data);
-} else{
-$this->load->view('admin/billing/bill/centro/get-patient-name-for-billing-after-create-new-cita',$data);
-}
-
-}
 
 
 
@@ -5949,15 +6496,15 @@ $this->load->view('admin/chart/bar6',$data);
 
 public function emergency_triaje_data($id_em)
 {
-$data['id_ur']=$this->session->userdata['admin_id'];
+$data['id_ur']=$this->session->userdata['user_id'];
 $data['idpat']=$id_pat;
 $data['id_em']=$id_em;
-$data['iduser']=$this->session->userdata['admin_id'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
+$data['iduser']=$this->session->userdata['user_id'];
+$data['perfil']=$this->session->userdata['user_perfil'];
 $data['name']=$this->session->userdata['admin_name'];
 $data['controller']="admin";
 $data['patient_data']=$this->db->select('*')->where('id_ep',$id_em)->get('emergency_patients')->row_array();
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 $sql = "SELECT * from emergency_triaje where id_em=$id_em";
 $data['query']= $this->db->query($sql);
 $this->load->view('admin/emergencia/triage',$data);
@@ -5965,15 +6512,15 @@ $this->load->view('admin/emergencia/triage',$data);
 }
 public function emergency_triaje($id_pat,$id_em)
 {
-$data['id_ur']=$this->session->userdata['admin_id'];
+$data['id_ur']=$this->session->userdata['user_id'];
 $data['idpat']=$id_pat;
 $data['id_em']=$id_em;
-$data['iduser']=$this->session->userdata['admin_id'];
-$data['perfil']=$this->session->userdata['admin_perfil'];
+$data['iduser']=$this->session->userdata['user_id'];
+$data['perfil']=$this->session->userdata['user_perfil'];
 $data['name']=$this->session->userdata['admin_name'];
 $data['controller']="admin";
 $data['patient_data']=$this->db->select('*')->where('id_ep',$id_em)->get('emergency_patients')->row_array();
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 $sql = "SELECT * from emergency_triaje where id_em=$id_em";
 $data['query']= $this->db->query($sql);
 $this->load->view('admin/emergencia/triage',$data);
@@ -5985,10 +6532,11 @@ $this->load->view('admin/emergencia/triage',$data);
 
 	public function almacen_general()
 	{
-	$data['iduser']=$this->session->userdata['admin_id'];
-	$data['perfil']=$this->session->userdata['admin_perfil'];
+	$data['admin_centro']=$this->session->userdata['admin_position_centro'];
+	$data['iduser']=$this->session->userdata['user_id'];
+	$data['perfil']=$this->session->userdata['user_perfil'];
 	$data['name']=$this->session->userdata['admin_name'];
-    $this->load->view('admin/header_admin',$data);
+    $this->load->view('header',$data);
 	$this->load->view('admin/emergencia/almacen_general/index',$data);
 
 	}
@@ -5997,23 +6545,25 @@ $this->load->view('admin/emergencia/triage',$data);
 
 	public function internal_drugstores()
 	{
-	$data['iduser']=$this->session->userdata['admin_id'];
-	$data['perfil']=$this->session->userdata['admin_perfil'];
+	$data['iduser']=$this->session->userdata['user_id'];
+	$data['perfil']=$this->session->userdata['user_perfil'];
 	$data['name']=$this->session->userdata['admin_name'];
-    $this->load->view('admin/header_admin',$data);
-	$this->load->view('admin/emergencia/internal-drugstore/index',$data);
+    $this->load->view('header',$data);
+	$data['id_centro']= -1;
+	$this->load->view('internal-drugstore/index',$data);
 
 	}
 
 
 public function payment_received()
 {
-$perfil=$this->session->userdata['admin_perfil'];
+$perfil=$this->session->userdata['user_perfil'];
+$admin_centro=$this->session->userdata['admin_position_centro'];
 $data['perfil']=$perfil;
 $data['name']=$this->session->userdata['admin_name'];
-$id_doctor=$this->session->userdata['admin_id'];
+$id_doctor=$this->session->userdata['user_id'];
 
-$this->load->view('admin/header_admin',$data);
+$this->load->view('header',$data);
 
 $sql ="SELECT * FROM payments  ORDER BY payment_id DESC";
  $data['query']= $this->db->query($sql);
@@ -6021,6 +6571,24 @@ $sql ="SELECT * FROM payments  ORDER BY payment_id DESC";
 $this->load->view('medico/payment/payment_received',$data);
 
 }
+
+public function affiliated_codes()
+{
+$perfil=$this->session->userdata['user_perfil'];
+$data['perfil']=$perfil;
+$data['name']=$this->session->userdata['admin_name'];
+
+$this->load->view('header',$data);
+
+$sql ="SELECT * FROM payments  ORDER BY payment_id DESC";
+ $data['query']= $this->db->query($sql);
+ $data['id_user']=$this->session->userdata['user_id'];
+ $data['especialidades'] = $this->model_admin->getEspecialidades();
+$this->load->view('admin/affilated/affiliated_codes',$data);
+
+}
+
+
 
 
 }

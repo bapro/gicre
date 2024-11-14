@@ -1,35 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display|Spectral">
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/mpdf.css">
-<style>
- table { border-collapse: collapse; witdh:100%;font-size: 10px}
-    tr { border-top: solid 1px black border-bottom: solid 1px black; }
-    td { border-right: none; border-left: none; }
- 
-	 div.footer-firma {
-      position: absolute;
-      width: 80%;
-      bottom: 80px;
-    }
- 
- .center-pat-img {
-   width:75px;
-   height:75px;
-   object-fit:cover;
-   object-position:50% 50%;
-  }
-  .im-bg tr td{font-size:12px}
-</style>
-</head>
-<h3 style='text-align:center'>HOSPITALIZACION</h3>
+<h3 style='text-align:center'><?=$title?></h3>
 <table style='width:100%;' class='im-bg' >
 <tr>
 <td class='sidetable'></td>
 <td class='sidetable'><strong>Nombres</strong> </td>
 <td class='sidetable'><strong>Edad</strong> </td>
-<td class='sidetable'><strong>Numero</strong></td>
+<td class='sidetable'><strong>NEC</strong></td>
 <td class='sidetable'><strong>Cedula</strong> </td>
 <td class='sidetable'><strong>Seguro</strong> </td>
 <td class='sidetable'><strong>Fecha De Ingreso</strong> </td>

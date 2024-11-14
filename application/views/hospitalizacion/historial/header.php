@@ -13,18 +13,35 @@
 <link href="<?=base_url();?>assets/css/custom.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <link href="<?=base_url();?>assets/css/historial_clinical.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="<?=base_url();?>assets/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+<script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
 <!-- Custom styles for this template -->
 <style>
+ .tooltip.bottom .tooltip-inner {
+        background-color: white;
+        border-radius: 10px;
+        border: 1px solid #0063dc;
+    }
+    .tooltip.bottom .tooltip-arrow {
+        border: none;
+    }
+    .tooltip .tooltip-inner {
+        text-align: left;
+        font-size: 13px;
+        text-shadow: none;
+        color: #202020;
+    }
 #paginationh{
-overflow-x:auto;
-
+overflow-y:auto;
+width:100%
 }
+
 
 .paginationh{
 	width:100%;
 	display: flex;
+	
 }
 
 
@@ -49,16 +66,7 @@ li.paninate-li:hover{
 	cursor: pointer;
 }
 
-@media (min-width: 992px){
-.modal-lg
-{ width: auto;
-}
-}
-.modal-lg
-{
-width: 1200px;
-height: 900px; /* control height here */
-}
+
 .im-bg{
 box-shadow: inset 0 0 30px #428bca;
 }
@@ -74,14 +82,7 @@ box-shadow: inset 0 0 30px #428bca;
 
 }
 
-.fade {
-    transform:rotate(180deg);
-    transition:all 0.1s;
-}
-.fade.in {
-    transform:rotate(1800deg);
-    transition:all 0.2s;
-}
+
 
 .navbar-doublerow > .navbar{
 	display: block;
@@ -94,6 +95,7 @@ box-shadow: inset 0 0 30px #428bca;
 #hosp-header
 {
     border-collapse: collapse; /* 'cellspacing' equivalent */
+	   margin: 0 auto
 }
 
 #hosp-header td, table th
@@ -166,39 +168,51 @@ interval = setInterval(function() {
 
 </script>
 </head>
-
+<?php 
+$camaNum=$this->db->select('num_cama')->where('id',$cama)
+   ->get('mapa_de_cama')->row('num_cama');
+   ?>
 <body>
 <nav class="navbar navbar-default navbar-doublerow navbar-trans navbar-fixed-top" style='background:#C6DEE6'> 		<!-- Master nav -->
  <table id='hosp-header'> 
         <thead> 
             <tr> 
-                <td><strong>Nombres</strong><br/> <?=$nombre;?></td> 
+			<td><a class="btn btn-xs btn-danger" href="<?php echo base_url("hospitalizacion/hospitalizacion_list/0/$id_user_")?>"><i class="fa fa-angle-double-left" ></i> Volver</a></td> 
+			 <td><strong>Nombres</strong><br/> <?=$nombre;?></td> 
                 <td><strong>Edad</strong><br/> <?=getPatientAge($date_nacer)?></td> 
                 <td><strong>NEC</strong><br/> <?=$patient_id?></td>
                  <?php if($cedula){?>				
                 <td><strong>Cedula</strong><br/> <?=$cedula?></td> 
 				 <?php } ?>
 				<td><strong>Seguro</strong><br/> <?=$seguro_medico_name?></td> 
-                <td><strong>Fecha Ingreso</strong><br/> <?=$fecha_ingreso?></td> 
+                <td><strong>Fecha Ingreso</strong><br/> <?=date("d-m-Y H:i:s", strtotime($fecha_ingreso))?></td> 
                 <td><strong>Diagnostico de Ingreso</strong><br/> <?=$causa?></td> 
                 <td><strong>Sala</strong><br/> <?=$sala?></td>
-				<td><strong>Cama</strong><br/> <?=$cama?></td>
+				<td><strong>Cama</strong><br/> <?=$camaNum?></td>
 				
 				<td>
 				<ul class="nav navbar-nav">
 				<li class="dropdown">
 				<a href="#" style="color:#2B436A" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-plus" aria-hidden="true" style=''></i> Mas <span class="caret"></span></a>
 				<ul class="dropdown-menu" style='background:#C6DEE6'>
-				<li > <a  data-toggle="modal" data-target="#hos-notas" href="<?php echo base_url("hospitalizacion/hosp_notas/$id_hosp/$user_id/$patient_id")?>"><i class="fa fa-angle-double-right" ></i> Notas</a></li >
+				<li > <a  data-toggle="modal" data-target="#hos-notas" href="<?php echo base_url("hospitalizacion/hosp_notas/$id_hosp/$user_id/$patient_id/$centro")?>"><i class="fa fa-angle-double-right" ></i> Notas</a></li >
 				<li > <a data-toggle="modal" data-target="#sol-inter" href="<?php echo base_url("hospitalizacion/solicitud_inter_con/$id_hosp/$user_id/$patient_id")?>"><i class="fa fa-angle-double-right" ></i> Interconsultas</a></li >
 				<li > <a  data-toggle="modal" data-target="#orden-medico" href="<?php echo base_url("hospitalizacion/orden_medica/$user_id/$patient_id/$centro/$id_hosp/$id_seguro")?>"><i class="fa fa-angle-double-right" ></i> Orden Medica</a></li >
 				<li >  <a  data-toggle="modal" data-target="#quirurgia" href="<?php echo base_url("hospitalizacion/des_quirurgica/$user_id/$patient_id/$centro/$id_hosp")?>"><i class="fa fa-angle-double-right" ></i> Descripcion Quirurgica</a></li >
 
-
+                </ul>
 				</ul>
+				</td> 
+				<td class="general-btn guardarSinAlta">
+				<button type='button' id='guardarSinAlta' class="btn btn-sm btn-primary">Guardar</button>
 				</td>
-				<td><a href="#" class="btn btn-sm btn-primary">Guardar</a></td>
-				<td><a href="#" class="btn btn-sm btn-success"> Guardar Alta Med.</a></td>
+				<td class="general-btn guardarConAlta" style="display:none">
+				<button type='button'  id='guardarConAlta' class="btn btn-sm btn-success"> Guardar Alta Med.</button>
+				
+				</td>
+				<td style="display:none" class="show-save-ev-con">
+				  <button type='button' id='saveEvaCond' class="btn btn-sm btn-success">Guardar Eva. Cond.</button>
+				</td>
 				</tr> 
         </thead>
 </table> 		

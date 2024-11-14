@@ -40,15 +40,15 @@ font-size:larger;
 </div>
 </div>
  <div class="form-group">
-<label class="control-label col-sm-2" >Cedula</label>
+<label class="control-label col-sm-2" >Telé. celular  <i class="fa fa-whatsapp" style='color:green' aria-hidden="true"></i></label>
 <div class="col-sm-5">
-<input type="text" class="form-control required"   name="cedula"   >
+<input type="text" class="form-control required" id="tel_cell"  name="tel_cell"   >
 </div>
 </div>
 <div class="form-group ">
 <label class="control-label col-sm-2">Centro médico</label>
 <div class="col-sm-10">
-<!--<input type="checkbox" id="checkbox2"> Seleccionar todo-->
+<input type="checkbox" id="salud-ocupacional"> Salud ocupacional
 <select class="form-control select2 required loadDoc" id="e2" multiple="multiple"  name="centro_medico[]">
 <?php 
 
@@ -90,4 +90,10 @@ echo '<option value="'.$row->id_m_c.'">'.$row->name.'</option>';
 <br/><br/>
 
 </form>
+<script>
+document.getElementById('tel_cell').addEventListener('input', function (e) {
+  var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+  e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+});
+</script>
 

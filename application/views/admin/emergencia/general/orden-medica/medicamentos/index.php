@@ -14,7 +14,7 @@ $querymedal = $this->db->query($sqladf);
 
 <div class="col-md-12 move_left" style="background:#E6E6FA"  >
 <h4 class="h4 his_med_title">I- Indicaciones Medicamentos</h4>
-<?=$id_emergency?>
+
 </div>
 <div class="col-md-4" >
 Elegir medicamentos del almacen <em style='font-size:11px'>(<?=$querymedal->num_rows();?> registros)<input id='select-medicamentos' type="checkbox"/> 

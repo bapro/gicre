@@ -43,8 +43,7 @@ $(".show_modif_enf_act").on('click', function (e) {
 	$(".save_enf_act_hide").slideDown();
 	$(".disable-all :input").prop("disabled", false);
 	
-}
-)
+})
 
 
 

@@ -80,9 +80,23 @@
 <input type="text" class="form-control" id="web"  name="web"   >
 </div>
 </div>
+ <div class="form-group">
+<label class="control-label col-sm-4" >OFTALMOLOGOS AFECTADOS</label>
+<div class="col-sm-7">
+<select class="form-control select2 required"  multiple="multiple"  id='lab_user' name="lab_user[]">
+<?php 
+$sql = "select id_user, name FROM users WHERE area=32 ORDER BY name DESC";
+ $querylb= $this->db->query($sql);
+ foreach($querylb->result()  as $afec){
+		
+echo "<option value='$afec->id_user' $selected>$afec->name</option>";
+}
+?>
+</select>
+</div>
+</div>
 
-
- <input type="submit"  class="btn btn-primary btn-xs col-md-offset-4" value="Gaurdar" id="save" >
+ <input type="submit"  class="btn btn-primary btn-xs col-md-offset-4" value="Gaurdar" id="save" disabled>
 <br/><br/>
  </form>
 </div>
@@ -138,40 +152,25 @@ $("#municipio_dropdown").focus();
 return false;
 }
 
-
-
-})
-
-
-
-
-$("#logo").change(function(){
-$("#save").prop("disabled", false);
-	
-})
-
-
-
-
-$("#doc").change(function(){
-
-$(this).find("option:selected").each(function(){
-
-var optionValue = $(this).attr("value");
-
-if(optionValue=="cdoc"){
-
-$('#doctor-modal').modal('show');
-
-
-} else{
-
-$('#doctor-modal').modal('hide');
-
+if($("#lab_user").val() == ""){
+alert("Seleccione un oftalmologo ?");
+$("#lab_user").focus();
+return false;
 }
 
-});
-});
+})
+
+
+
+
+
+$("#lab_user").change(function(){
+	if($(this).val()){
+$("#save").prop("disabled", false);
+	}else{
+		$("#save").prop("disabled", true);
+	}
+})
 
 
 

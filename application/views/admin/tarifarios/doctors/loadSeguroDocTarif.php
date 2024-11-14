@@ -19,16 +19,14 @@ $planOcentro="($plan)";
 $centro=$this->db->select('name')->where('id_m_c',$id_plan)->get('medical_centers')->row('name');
 $planOcentro="<br/>$centro";
 }
-$u1=$this->db->select('name')->where('id_user',$codigo_contrato['inserted_by'])->get('users')->row('name');
-$u2=$this->db->select('name')->where('id_user',$codigo_contrato['updated_by'])->get('users')->row('name');
 
-
-
-
-$updated_time = date("d-m-Y H:i:s", strtotime($codigo_contrato['updated_time']));
-$inserted_time = date("d-m-Y H:i:s", strtotime($codigo_contrato['inserted_time']));
 foreach($results as $cat)
+$u1=$this->db->select('name')->where('id_user',$cat->inserted_by)->get('users')->row('name');
+$u2=$this->db->select('name')->where('id_user',$cat->updated_by)->get('users')->row('name');
 
+
+$updated_time = date("d-m-Y H:i:s", strtotime($cat->updated_date));
+$inserted_time = date("d-m-Y H:i:s", strtotime($cat->inserted_date));
  ?>
 
 <div class="loadf"></div>
@@ -106,7 +104,7 @@ $colorBg = "#E0E5E6";
 </td>
 <td >
 <span class="editSpan procedimiento-n"><?=$row->procedimiento?></span>
- <input style="display: none;width:100%" class="editInput  form-control input-sm procedimiento"  type="text"  name="procedimiento" value="<?=$row->procedimiento?>"  />
+  <textarea style="display: none;width:100%" class="editInput  form-control input-sm procedimiento"  type="text"  name="procedimiento" rows='5'><?=$row->procedimiento?></textarea>
 </td>
 <td>
 <span class="editSpan monto-n"><?=$row->monto?></span>

@@ -1,16 +1,7 @@
 <?php
-$where = array(
-  'id_p'=>$patient_id,
-  'id_doc'=>$user_id,
-  'id_cm'=>$this->uri->segment(5),
-  'origine'=>1
-);
-
-$this->db->where($where);
-$this->db->delete('hc_save_cied_doc'); 
-
 $data['patient_id']=$patient_id;
 $data['user_id']=$user_id;
+$data['id_hosp']=$id_hosp;
 
 $data['GinecOb']=$this->model_admin->GinecOb();
 $data['selectOne']=$this->model_admin->selectOne();
@@ -28,6 +19,7 @@ $rows=$this->model_admin->countAnte1($patient_id);
 $data['rows']=$rows;
 $data['antege']=$rows;
 $data['operator']=$user_id;
+$data['user_medico_name']=$this->db->select('name')->where('id_user',$user_id)->get('users')->row('name');
 $data['emergency_id']=1;
 $this->load->view('hospitalizacion/historial/js-links');
 $this->load->view('hospitalizacion/historial/header',$data);
@@ -43,19 +35,13 @@ $data['droa'] = $this->model_admin->showDrug($patient_id);
 $data['estudios'] = $this->model_admin->estudios();
 $data['cuerpo'] = $this->model_admin->cuerpo();
 $data['IndicacionesPreviasEstudios'] = $this->model_admin->IndicacionesPreviasEs($patient_id);
-$data['idg'] =1;
-
-$sql ="SELECT *  FROM  hosp_orden_medica_recetas WHERE historial_id=$patient_id && kardex=0 order by id_i_m desc";
-$query=$this->db->query($sql);
-$data['queryexneu'] =$query;
-$data['nb_ex_neu'] =$query->num_rows();
-//-----------------------------------------------------------------------------------
-$sqlkx ="SELECT *  FROM  hosp_orden_medica_recetas WHERE historial_id=$patient_id && kardex=1 order by id_i_m desc";
-$querykx=$this->db->query($sqlkx);
-$data['querykardex'] =$querykx;
-$data['nb_kardex'] =$querykx->num_rows();
-
-
+$data['signo_id'] =3;
+$data['id_patient'] =$patient_id;
+//------------------------------------------------------------------------------------------------------
+$sqlce ="SELECT *  FROM  hosp_conclusion_ingreso WHERE id_patient=$patient_id  order by id desc";
+$querycs=$this->db->query($sqlce);
+$data['queryce'] =$querycs;
+$data['nb_ce'] =$querycs->num_rows();
 
 $this->load->view('hospitalizacion/historial/hospitalizacion-general', $data);
 //$this->load->view('admin/emergencia/general/emergency-general-data', $data);
@@ -63,6 +49,9 @@ $this->load->view('hospitalizacion/historial/hospitalizacion-general', $data);
 //}
 
 $data['num_count_es']=$this->model_admin->hist_count_es($patient_id);
+$this->load->view('hospitalizacion/historial/exam-fisico/footer', $data);
+
+$this->load->view('hospitalizacion/historial/save-no-discharge', $data);
 
 $this->load->view('hospitalizacion/historial/footer', $data);
 

@@ -182,7 +182,7 @@ $where1 = array(
 );
 $this->db->where($where1);
 
-$this->db->update($ord_med_gen, $data1);
+$this->db->update('ord_med_med_gen', $data1);
 //----------------------------------------------------------------------------
 $data2 = array(
  'printing' =>0
@@ -194,7 +194,7 @@ $where2 = array(
 );
 $this->db->where($where2);
 
-$this->db->update($orden_medcia_lab, $data2);
+$this->db->update('orden_medcia_lab', $data2);
 
 //----------------------------------------------------------------------------
 $data3 = array(
@@ -207,7 +207,7 @@ $where3 = array(
 );
 $this->db->where($where3);
 
-$this->db->update($orden_medica_estudios, $data3);
+$this->db->update('orden_medica_estudios', $data3);
 //-----------------------------------------------------------------------------------
 
 $data4 = array(
@@ -220,6 +220,6 @@ $where4 = array(
 );
 $this->db->where($where4);
 
-$this->db->update($orden_medica_recetas, $data4);
+$this->db->update('orden_medica_recetas', $data4);
 //-----------------------------------------------------------------------------------
 ?>

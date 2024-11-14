@@ -1,0 +1,92 @@
+<script>
+ var id_sig= $("#id_sig").val();
+loadSigno();
+function loadSigno(){
+$.ajax({
+url:"<?php echo base_url(); ?>urologo/loadSigno",
+data: {id_exam_fis:id_sig,idpatient:<?=$idpatient?>},
+method:"POST",
+success:function(data){
+$('#reload-table-signo').html(data);
+}
+});
+}
+
+
+function formUpdate(){
+$.ajax({
+url:"<?php echo base_url(); ?>urologo/formUpdate",
+data: {id_exam_fis:id_sig},
+method:"POST",
+success:function(data){
+$('#uroFrmUpdate').html(data);
+}
+});
+}
+
+
+
+
+$('#saveEditUrology').on('click', function(event) {
+event.preventDefault();
+
+ var id= $("#id_urology").val();
+ //------Signos vitales--------------------------
+var peso = $("#pesoex").val();
+var kg = $("#kgex").val();
+var talla = $("#tallaex").val();
+var pulgada = $("#pulgada-exf1").val();
+var imc = $("#imcex").val();
+var ta = $("#taex").val();
+var fr = $("#frex").val();
+var fc = $("#fcex").val();
+var hg = $("#hgex").val();
+var tempo = $("#tempoex").val();
+var pulso = $("#pulsoex").val();
+var glicemiae = $("#glicemiae").val();
+var radio_signo= $("input[name='radio_signoex']:checked").val();
+
+
+  var uro_tacto_rectal_done = [];
+ $("input[name='uro_tacto_rectal_done']:checked").each(function(){
+            uro_tacto_rectal_done.push(this.value);
+ })
+ 
+
+var uro_pene = $("#uro_pene").val();
+ var uro_testicule = $("#uro_testicule").val();
+ var uro_epididimos = $("#uro_epididimos").val();
+ var uro_tato_rec_pros = $("#uro_tato_rec_pros").val();
+  var uro_vejiga = $("#uro_vejiga").val();
+  var uro_geni_mujer = $("#uro_geni_mujer").val();
+var uro_loins = $("#uro_loins").val();
+ var uro_otros = $("#uro_otros").val();
+    var id_user = $("#urology_user_id").val();
+ $.ajax({
+type: "POST",
+url: "<?=base_url('save_urology/updateUrology')?>",
+data: {uro_pene:uro_pene, uro_testicule:uro_testicule, uro_epididimos:uro_epididimos, uro_tato_rec_pros:uro_tato_rec_pros,
+       uro_tacto_rectal_done:uro_tacto_rectal_done,peso:peso,kg:kg,talla:talla, imc:imc, ta:ta,pulgada:pulgada, fr:fr, fc:fc, hg:hg,
+       tempo:tempo, pulso:pulso,radio_signo:radio_signo,glicemiae:glicemiae,id_sig:id_sig,
+       uro_geni_mujer:uro_geni_mujer, uro_vejiga:uro_vejiga, uro_loins:uro_loins, uro_otros:uro_otros, id_user:id_user, id:id
+      },
+dataType: 'json',
+cache: true,
+
+success:function(response){
+	loadSigno();
+	formUpdate();
+$("#load-urology").show().html('<p style="width:100%">'+response.message+'</p>').delay(3000).fadeOut(2500);
+$( "#disabled-all-urology input" ).prop( "disabled", true );
+	   $( "#disabled-all-urology textarea" ).prop( "disabled", true );
+	   $('#showEditUrology').slideDown();
+  $('#saveEditUrology').hide();	
+$( "#disabled-all-urology button" ).slideUp();  
+  
+}  
+});
+
+
+
+ });
+ </script>

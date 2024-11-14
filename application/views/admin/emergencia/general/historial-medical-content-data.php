@@ -1,4 +1,5 @@
 <div class="col-md-12">
+<div id="new_indication_ord_med"></div>
   <input type="hidden" id="hist_id" value="<?=$id_historial?>" > 
   <br/>
 <p class="h4 his_med_title" id="click_antg" style="cursor:pointer;background:#E6E6FA;">Antecedentes personales, familiares y patologicos</p>

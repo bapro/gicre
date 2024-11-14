@@ -121,7 +121,7 @@ $seguro_ingo=$this->db->select('input_name,inputf')->where('patient_id',$id_p_a)
 ?>
 
 <tr>
-<td><?=$row->nec1 ?><input id="patient_id" type="hidden" value="<?=$id_p_a;?>"/></td>
+<td><?=$id_p_a?><input id="patient_id" type="hidden" value="<?=$id_p_a;?>"/></td>
 
 
 <td id="paciente" style="text-transform:uppercase"><?=$row->nombre;?></td>

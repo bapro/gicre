@@ -1,0 +1,273 @@
+:root{
+    --first-color:rgb(0,151,56);
+    --first-alpha-color:rgb(4, 121, 47);
+    --second-color:rgb(204,219,226);
+    --third-color:rgb(227,255,243);
+    --third-alpha-color: rgba(225,255,243);
+    
+    --for-color-letra: rgb(0,108,208);
+    --alpha-color-letra: rgb(84,102,129);
+    
+    --bg-color-letra: RGB(84,102,129);
+    --bg-alpha-color-letra: rgb(161,161,161);
+}
+
+header{
+    z-index: 2;
+}
+
+.first-header{
+    background-color: white;
+    border-bottom: 1px solid rgba(196, 194, 194, 0.862);
+    font-size: 14px;
+}
+
+.btn_Solicita_Cita{
+    text-decoration: none;
+    font-size: 14px;
+    color: white;
+    background-color: var(--first-color);
+    padding: 9px;
+}
+
+.navbar-brand > img{
+    width: 140px;
+    height: 55px;
+}
+
+.nav-item-login > a{
+    color: var(--first-color);
+    border: 1px solid var(--first-color);
+    border-radius: 10px;
+}
+
+.nav-item-probar{
+    background-color: var(--first-color);
+}
+
+
+/* inicio carousel */
+
+.inicio_principal{
+    margin-top: 116px;
+    height: 491px;
+    background-color: var(--second-color);
+    overflow: hidden;
+}
+
+.inicio_principal_bloc_1{
+    height: 490px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.inicio_principal_bloc_1_bienvenido{
+    color: var(--first-color);
+}
+
+.inicio_principal_bloc_1_historia{
+    font-size: 60px;
+}
+
+.solicita_cita{
+    border: 5px solid var(--third-color);
+    margin-top: 70px;
+    margin-bottom: 70px;
+    width: 80%;
+}
+
+.inicio_principal_bloc_2_imag{
+    height: 550px;
+    width: 550px;
+    border-radius: 50%;
+}
+
+.nav-item-ver_servicios{
+    background-color: var(--first-color);
+    width: 170px;
+}
+
+/* fin  */
+
+.btn_realizar_cita{
+    background-color: var(--first-color);
+    color: white;
+}
+
+.btn_realizar_cita:hover{
+    background-color: var(--first-alpha-color);
+    color: white;
+}
+
+.formulario_solicita_cita:hover{
+    background-color: var(--third-color);
+    color: var(--first-color) ;
+    font-weight: bold;
+}
+
+.historia_desarrollo{
+    font-size: 18px;
+}
+
+.escribenos_whatsapp{
+    border: 5px solid var(--third-color);
+    height: 55px;
+    width: 75%;
+    border-radius: 10px 10px 10px 10px;
+}
+
+/* inicio centro medicos  */
+
+.link_centros_medicos{
+    width: 100%;
+    height: 40px;
+    background-color: var(--first-color);
+}
+
+.btn_modal_centro_medico{
+    background-color: var(--first-color) !important;
+    color: white;
+}
+
+/* fin centro medicos  */
+
+
+
+
+
+/* // `sm` applies to x-small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+    .inicio_principal_bloc_1_historia{
+        font-size: 35px !important;
+    }
+
+    .first-header{
+        font-size: 10px;
+    }
+
+    .btn_Solicita_Cita{
+        font-size: 10px;
+        padding: 6px;
+    }
+
+    .bi-clock, .bi-telephone-outbound{
+       width: 10px !important;
+       height: 10px !important;
+    }
+
+    .horario{
+        display:none;
+    }
+ }
+
+/* // `md` applies to small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) { 
+    .inicio_principal{
+        height: auto;
+    }
+
+    .inicio_principal_bloc_1{
+        height: 340px;
+    }
+
+    .inicio_principal_bloc_2{
+        display: none;
+    }
+
+    .inicio_principal_bloc_2_imag{
+        display: none !important;
+    }
+
+    .inicio_principal_bloc_1_historia{
+        font-size: 50px;
+    }
+
+    .br-1, .br-2{
+        display: none;
+    }
+
+    .inicio_principal_bloc_2_imag2{
+        display: block;
+        margin-bottom: 20px;
+    }
+
+    .carousel_inicio_principal_bloc_2{
+        display: none;
+    }
+
+    .contenedor_btn_realizar_cita{
+        display: flex;
+        justify-content: center;
+    }
+
+    .btn_realizar_cita{
+        margin-top: 10px !important;
+        margin-bottom: 30px !important;
+    }
+
+    .escribenos_whatsapp{
+        width: 100% !important;
+    }
+
+}
+
+/* // `lg` applies to medium devices (tablets, less than 992px) */
+@media (max-width: 991.98px) { 
+    .imagen_historia > .img-thumbnail{
+        height: auto !important;
+    }
+}
+
+/* // `xl` applies to large devices (desktops, less than 1200px) */
+@media (max-width: 1199.98px) { 
+
+}
+
+/* // `xxl` applies to x-large devices (large desktops, less than 1400px) */
+@media (max-width: 1399.98px) { 
+
+    .btn_realizar_cita{
+        margin-top: 24px;
+    }
+
+    .escribenos_whatsapp{
+        width: 77%;
+    }
+
+    .imagen_historia > .img-thumbnail{
+        height: 460px;
+    }
+}
+
+                           /************* minimo  @media ****************/
+
+@media (min-width: 1399.98px) { 
+
+    .btn_realizar_cita{
+        margin-top: 24px;
+    }
+}
+
+@media (min-width: 991.98px) { 
+    .span_btn_Solicita_Cita{
+        margin-right: 30px;
+    }
+}
+
+@media (min-width:  768.98px) { 
+
+
+    .carousel_inicio_principal_bloc_2{
+        height: 650px;
+        width: 650px;
+        border:  50px solid white;
+        position: relative;
+        left: 20px;
+        bottom: 80px;px;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+    
+   
+}

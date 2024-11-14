@@ -44,9 +44,9 @@ $name=$this->session->userdata['tec_lent_name'];
 $perfil=$this->session->userdata['tec_lent_perfil'];
 $id_tecnico_lentes=$this->db->select('id_tecnico_lentes')->where('id_user',$id_usr)->get('user_tecnico_lentes')->row('id_tecnico_lentes');
 
-$query_entregado=$this->db->select('id')->where('enviado',2)->get('laboratory_lentes');
-$query_propuesto=$this->db->select('id')->where('enviado',1)->get('laboratory_lentes');
-$query_lentes=$this->db->select('id')->where('enviado',0)->get('laboratory_lentes');
+$query_entregado=$this->db->select('id')->where('enviado',2)->where('id_lab_lente',$id_tecnico_lentes)->get('laboratory_lentes');
+$query_propuesto=$this->db->select('id')->where('enviado',1)->where('id_lab_lente',$id_tecnico_lentes)->get('laboratory_lentes');
+$query_lentes=$this->db->select('id')->where('enviado',0)->where('id_lab_lente',$id_tecnico_lentes)->get('laboratory_lentes');
 
 $labo= $this->db->select('nombre_comercial')->join('user_tecnico_lentes', 'labo_lentes.id = user_tecnico_lentes.id_tecnico_lentes')->where('id_user',$id_usr)->get('labo_lentes')->row('nombre_comercial');
  

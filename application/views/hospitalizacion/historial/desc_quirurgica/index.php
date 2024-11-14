@@ -320,7 +320,7 @@ function doneTyping () {
 
 function paginationNumberQ(){
 $.ajax({
-url:"<?php echo base_url(); ?>admin_medico/showQuirurcaTabulation",
+url:"<?php echo base_url(); ?>historialHeader/showQuirurcaTabulation",
 data: {id_user:<?=$user_id?>,id_patient:<?=$id_historial?>,centro_medico:"<?=$centro_medico?>"},
 method:"POST",
 success:function(data){
@@ -336,7 +336,7 @@ e.preventDefault();
 $('#save-quirurgica-btn').prop("disabled",true);
 $('#save-quirurgica-btn').text("guardando...");
 $.ajax({
-url:'<?php echo base_url();?>admin_medico/saveQuirurgico',
+url:'<?php echo base_url();?>historialHeader/saveQuirurgico',
 method:"POST",
 data:new FormData(this),
 contentType:false,

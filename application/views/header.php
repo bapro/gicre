@@ -1,165 +1,230 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-<meta charset="utf-8">
-<meta name="robots" content="admedicall">
-<meta name="googlebot" content="admedicall">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  <link href="<?= base_url();?>assets_new/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="<?= base_url();?>assets_new/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+  <link href="<?= base_url();?>assets_new/vendor/simple-datatables/style.css" rel="stylesheet">
+  <link href="<?= base_url();?>assets_new/vendor/bootstrap-select-1.14.0-beta2/css/bootstrap-select.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+  <!-- Template Main CSS File  <link href="<?= base_url();?>assets_new/css/style.css" rel="stylesheet"> -->
+ <link href="<?= base_url();?>assets2/css/style.css?rnd=3" rel="stylesheet">
+  <link rel="shortcut icon" href="<?= base_url();?>assets/img/logo.png" type="image/x-icon" />
+   <link href='//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
 
-<title>ADMEDICALL</title>
-
-<meta name="keywords" content="">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display|Spectral">
-
-
-<!-- Bootstrap and Font Awesome css -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="shortcut icon" href="<?= base_url();?>assets/img/adms.png" type="image/x-icon" />
-
-<!-- Theme stylesheet, if possible do not edit this stylesheet -->
-<link href="<?php echo base_url('assets/css/style.default.css');?>" rel="stylesheet" >
-	 
-<!-- Custom stylesheet - for your changes 
-//<link href="<?=base_url();?>assets/css/custom.css" rel="stylesheet">-->
-<link href="<?php echo base_url('assets/css/custom.css');?>" rel="stylesheet" >
-
-<link href="<?php echo base_url('assets/css/themes.css');?>" rel="stylesheet" >
-
-<!-- Responsivity for older IE -->
-<!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
-
+ <title>GICRE</title>
+	<style>
+	body{padding-bottom: 90px;}
+.fs-7 { font-size: .5rem!important; }
+.btn-back{left:0; top: 22px;}
+@media screen and (max-width: 768px) {
+    .btn-back{left:auto; right:50%}
+  }
+  
+  
+  
+	</style>
 
 </head>
- 
- 
- 
- 
- 
- 
- 
- 
- <header>
 
-            <!-- *** TOP ***
-_________________________________________________________ -->
-        <div id="top">
-                <div class="container">
-                    <div class="row">
-                       
-                        <div class="col-xs-12">
-                            <div class="social" style="margin-top:12px">
-                                <a href="https://www.facebook.com/admedicall.agendas" class="external facebook" data-animate-hover="pulse" target="_blank"><i class="fa fa-facebook"></i></a>
-								 <a href="https://www.youtube.com/channel/UCpbc6Fs_F7GdWYZ689EwBZQ" class="youtube" data-animate-hover="pulse" target="_blank"><i class="fa fa-youtube"></i></a>
-                                <a href="https://www.youtube.com/channel/UCpbc6Fs_F7GdWYZ689EwBZQ" class="external twitter" data-animate-hover="pulse" target="_blank"><i class="fa fa-twitter"></i></a>
-								 <a href="https://plus.google.com/108872676854313618688" class="external gplus" data-animate-hover="pulse"><i class="fa fa-google-plus" target="_blank"></i></a>
-                               
-								<!--<a href="#" class="external instagram" data-animate-hover="pulse"><i class="fa fa-instagram"></i></a>-->
-                               
+<body>
+<?php
+$zero=encrypt_url(0);
+$one=encrypt_url(1);
+?>
+     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top ">
+        <a onclick="window.history.go(-1); return false;" class="btn btn-sm btn-outline-primary position-absolute btn-back ms-2"><i
+                class="bi bi-arrow-left"></i></a>
+        <div class="container ">
+            <a class="navbar-brand" href="#">
+                 <img src="<?=base_url();?>assets/img/logo.png" alt="GICRE">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 hide-all-nav">
+                    <li class="nav-item ">
+                        <!--<a class="nav-link active" aria-current="page" href="#">Citas por hoy</a>-->
+						<a class="nav-link " href="<?php echo site_url("$controller/appointments");?>">Citas de hoy <span id="citas_hoy"></span></a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="<?php echo site_url("$controller/patient_appointment_requests");?>">Solicitudes <span id="citas_request"></span></a>
+                    </li>
+                   
+                    <li class="nav-item dropdown  ">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Facturación
+                        </a>
+                        <ul class="dropdown-menu  shadow-lg p-3 mb-5 bg-body-tertiary rounded" aria-labelledby="navbarDropdown" >
+                            <li><a class="dropdown-item" href="<?php echo site_url("$controller/tariffs");?>">Tarifarios</a></li>
+                             <li><a class="dropdown-item" href="<?php echo site_url("$controller/invoice_report");?>">Reporte de factura</a></li>
+                            <!--<li><a class="dropdown-item" href="#">Facturas Borradas</a></li>-->
+                            <li><a class="dropdown-item" href="<?php echo site_url("$controller/invoice_ars_claim_reports");?>">Crear factura para reclamar ARS</a></li>
 							
-                            </div>
+							<?php if($user_perfil!="Admin"){?>
 							
-							<form class="navbar-form" role="search" style="float:right;margin-top:5px" >
-							<div class="input-group " style="float:right;">
-                             
-                              
-                               <input style="border-radius:10px" class="form-control" placeholder="Buscar" name="srch-term" id="srch-term" type="text">
-                               <div class="input-group-btn ">
-                              <button  id="bttn"  class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-                              </div>
-                              
-						</div>
-						</form>
-                    </div>
-                </div>
-            </div>
-			</div>
-             <br/>
-            <!-- *** TOP END *** -->
-
-            <!-- *** NAVBAR ***
-    _________________________________________________________ -->
-
-           <div class="navbar-affixed-top" data-spy="affix" data-offset-top="200">
-
-                <div class="navbar navbar-default yamm" role="navigation" id="navbar">
-
-                    <div class="container">
-                        <div class="navbar-header">
-
-                            <a class="navbar-brand home" href="<?php echo site_url('welcome');?>">
-							<span style="position:absolute;z-index:3000px;top:1px"><img src="<?=base_url();?>assets/img/aaaadd.png" width="70" alt="Universal logo" class="hidden-xs hidden-sm" ></span>
-                                <img src="<?= base_url();?>assets/img/adms.png" alt="Admedicall" class="visible-xs visible-sm"><span class="sr-only">Admedicall</span>
-                              </a>
-                            <div class="navbar-buttons">
-                                <button type="button" class="navbar-toggle btn-template-main" data-toggle="collapse" data-target="#navigation">
-                                    <span class="sr-only">Toggle navigation</span>
-                                    <i class="fa fa-align-justify"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <!--/.navbar-header -->
-                        
-                        <div class="navbar-collapse collapse" id="navigation">
-
-                            <ul class="nav navbar-nav navbar-right" >
-							
-                                <li >
-                                    <a href="<?php echo site_url('welcome');?>" style="text-decoration:none;">Inicio </a>
-                                  
-                                </li>
-                                <li>
-                               <a   style="text-decoration:none" href="<?php echo site_url('welcome');?>#top1" id="t"  >descripción</a>
-                                   
-                                </li>
-								 <li>
-                                   <a href="<?php echo site_url('welcome');?>#modulos" id="t1">modulos </a>
-                                    
-                                </li>
-                                <li>
-                                 <a href="<?php echo site_url('welcome');?>#top3" id="t2">clientes </a>
-                                  
-                                </li>
-                              <li>
-                                 <a href="<?php echo site_url('welcome');?>#contacto" id="t3">contacto </a>
-                                    
-                                </li>
-								 <li class="dropdown">
-                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">mas <b class="caret"></b></a>
-                                 <ul class="dropdown-menu" style="color:black">
-                                 <li><a href="<?php echo site_url('navigation/AddRequest');?>"><img src="<?= base_url();?>assets/img/citaxxx.png">  CITA </a></li>
-                                 <li><a href="#"><img src="<?= base_url();?>assets/img/amx.png">  ASISTENTE</a></li>
-                                 <li><a href="#"><img src="<?= base_url();?>assets/img/mdx.png">  MEDICOS</a></li>
-								 <li><a href="#"><img src="<?= base_url();?>assets/img/notx.png">  NOTICIAS</a></li>
-                                 </ul>
-                                  </li> 
-								
-								 <li class="" >
-                                <a href="<?php echo site_url('login');?>"><i class="fa fa-sign-in"></i> <span class="hidden-xs text-uppercase">Login</span></a>
-                              <!--  <a href="customer-register.html"><i class="fa fa-user"></i> <span class="hidden-xs text-uppercase">Registrarse</span></a>-->
-                               </li>
+							<li><a class="dropdown-item" href="<?php echo site_url("$controller/exchange_rate");?>">Crear tasa de cambio</a></li>
+							<?php } ?>
+                        </ul>
+                    </li>
+			
+				   <li class="nav-item dropdown  ">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Paciente
+                        </a>
+                        <ul class="dropdown-menu shadow-lg p-3 mb-5 bg-body-tertiary rounded" aria-labelledby="navbarDropdown">
+						<?php 
+						if($this->session->userdata('CURRENT_PATIENT')){?>
+						<li class="nav-item">Paciente Actual: 
+						<a class="dropdown-item" style="font-size:15px" href="<?php echo site_url($this->session->userdata('CURRENT_PATIENT'));?>"><?=$this->session->userdata('current_patient_name');?></a>
+						</li>
+						<li><hr class="dropdown-divider"></li>
+						<?php }?>
+						
+						 <li class="nav-item show-bucador-show">
+				<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#searchPatientBtn" style="cursor:pointer" id="show-search-patient"><i class="bi bi-search"></i> Buscar Paciente</a>
+				</li>
+                  <li class="nav-item show-bucador-show">
+				<a class="dropdown-item" href="<?php echo site_url("$controller/create_patient");?>" ><i class="bi bi-person-plus"></i> Crear Paciente</a>
+				</li>
+                    </ul>
+                    </li>
+			
+				  <li class="nav-item dropdown  ">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Hospitalización
+                        </a>
+                        <ul class="dropdown-menu shadow-lg p-3 mb-5 bg-body-tertiary rounded" aria-labelledby="navbarDropdown">
+						<li>
+                        <a class="dropdown-item" href="<?php echo site_url("hospitalization/patients_record/$zero");?>">Ingreso</a>
+                        </li>
+                         <li><a class="dropdown-item" href="<?php echo site_url("hospitalization/patients_record/$one");?>">Egreso</a></li>
+                         </ul>
+                    </li>
+					  <li class="nav-item dropdown  ">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Emergencia
+                        </a>
+                        <ul class="dropdown-menu shadow-lg p-3 mb-5 bg-body-tertiary rounded" aria-labelledby="navbarDropdown">
+						<li>
+                        <a class="dropdown-item" href="<?php echo site_url("emergency/patients_record/$zero");?>">Ingreso</a>
+                        </li>
+                         <li><a class="dropdown-item" href="<?php echo site_url("emergency/patients_record/$one");?>">Egreso</a></li>
+                         </ul>
+                    </li>
+					 
+					<?php	if($user_perfil=='Admin'){ ?>
+				
+					 <li class="nav-item dropdown  ">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Mas
+                        </a>
+                        <ul class="dropdown-menu shadow-lg p-3 mb-5 bg-body-tertiary rounded" aria-labelledby="navbarDropdown">
+						<li>
+                        <a class="dropdown-item" href="<?php echo site_url("$controller/users");?>">Usuarios</a>
+						 <li><a class="dropdown-item" href="<?php echo site_url("admin/medical_centers");?>">Centro Médico</a></li> 
+						 <li>
+                        <a class="dropdown-item" href="<?php echo site_url("report_general/");?>">Reporte de Pacientes Atendidos</a>
 					
-                            </ul>
-
-                        </div>
-                        <!--/.nav-collapse -->
-
-                       
-                        <!--/.nav-collapse -->
-
-                    </div>
-
-
-                </div>
-                <!-- /#navbar -->
-
+                        </li>
+                        </li>
+						<?php 
+						if($this->session->userdata('admin_position_centro')==''){ ?>
+                         <li><a class="dropdown-item" href="<?php echo site_url("admin/areas");?>">Areas</a></li>
+						 <li><a class="dropdown-item" href="<?php echo site_url("admin/health_insurance");?>">Seguro Médico</a></li>
+						   <li><a class="dropdown-item" href="<?php echo site_url("admin/api_connection");?>">Integración API</a></li> 
+						   <li><a class="dropdown-item" href="<?php echo site_url("admin/create_default_general_report");?>">Crear Reporte General Por Defecto</a></li> 
+						<?php }?>
+                         
+                        </ul>
+                    </li>
+					<?php }  ?>
+					<?php	if($user_perfil !='Admin'){ ?>
+				
+					 <li class="nav-item dropdown  ">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Mas
+                        </a>
+                        <ul class="dropdown-menu shadow-lg p-3 mb-5 bg-body-tertiary rounded" aria-labelledby="navbarDropdown">
+						<li>
+                        <a class="dropdown-item" href="<?php echo site_url("report_general/");?>">Reportes</a>
+					
+                        </li>
+						
+                         
+                        </ul>
+                    </li>
+					<?php }  ?>
+                </ul>
+				
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-user text-primary"></i> <?=$user_name?> (<?=$user_perfil?>)
+							<input type="hidden" value="<?=$user_perfil;?>" id="user_perfil"  />
+                        </a>
+                        <ul class="dropdown-menu " aria-labelledby="navbarDropdown">
+						<?php
+						$id_userad=$this->session->userdata('user_id');
+								if($user_perfil=="Medico"){
+								$page_account = "doctor_account";
+								}elseif($user_perfil=="Asistente Medico"){
+								$page_account = "medical_assistent";
+								}else{
+								$page_account = "admin_account/$id_userad";		
+								}
+								?>
+                             <li><a class="dropdown-item" href="<?php echo site_url("$controller/$page_account");?>"><i class="bi bi-gear-fill"></i> Mi Cuenta</a></li>
+							   <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="<?php echo site_url('login/logout');?>"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
+							
+                        </ul>
+                    </li>
+                </ul>
             </div>
-    
-            <!-- *** NAVBAR END *** -->
-
-        </header>
-		<br/>
+        </div>
+		 <div id="pation-nombres-data" class="position-absolute top-100 start-50 "></div>
+        <div class="position-absolute bottom-0 w-100">
+            <div class="d-flex">
+                <div class="flex-fill bg-primary pt-1"></div>
+                <div class="flex-fill bg-warning pt-1"></div>
+                <div class="flex-fill bg-success pt-1"></div>
+                <div class="flex-fill bg-danger pt-1"></div>
+            </div>
+        </div>
+    </nav>
+	
+<?php $this->load->view("patient/search/patient-seeker-form"); ?>
+	
+	
+	<input id="link-to-cita" type="hidden" value="<?php echo base_url("general_controller/citas_hoy") ?>"  />
+	<input id="link-to-request" type="hidden" value="<?php echo base_url("general_controller/cola_de_solicitud") ?>"  />
+	<script>
+	
+	setInterval(function(){
+	$("#citas_hoy").load("<?php echo base_url("general_controller/citas_hoy") ?>").fadeIn("slow");
+	 $('#citas_request').load("<?php echo base_url('general_controller/cola_de_solicitud')?>").fadeIn("slow");
+	
+	},5000);
+	</script>
+	

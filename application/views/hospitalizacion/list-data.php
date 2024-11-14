@@ -1,3 +1,19 @@
+<style>
+.label.label-default{background:none;color:black;font-weight:bold;border:1px solid #38a7bb;}
+td,th{text-align:left}
+td{font-size:13px}
+.box-tooltip {
+    color: black;
+   background:white;
+   border-radius:4px;
+   padding:9px;
+  border: 1px solid #C0C0C0;
+   z-index:100000
+}
+
+
+</style>
+
 <?php
 	function getPatientAge($birthday) {
 
@@ -16,7 +32,10 @@
     }
     return trim($age);
 }
+
+$id_doc = encrypt_url($id_user); 
 ?>
+<div style='overflow-x:auto;'>
 <table id="example" class="table table-striped" style="margin:auto" >
 <thead>
 <tr style="background:#5957F7;color:white">
@@ -32,7 +51,7 @@
 <th>Sala</th>
 <th>Servicio</th>
 <th>Cama</th>
-<th>Acciones</th>
+<th style="<?=$isFromDrug?>">Acciones</th>
 </tr>
 </thead>
 <tbody id='tbody'>
@@ -41,6 +60,9 @@ $this->padron_database = $this->load->database('padron',TRUE);
 
  foreach($query->result() as $row)
 {
+	$id_hosp = encrypt_url($row->id);
+	
+	$id_cent = encrypt_url($row->centro);
  $paciente=$this->db->select('nombre,photo,ced1,ced2,ced3,date_nacer,nec1,seguro_medico,plan,afiliado')->where('id_p_a',$row->id_patient)
  ->get('patients_appointments')->row_array(); 
   if($paciente['photo']=="padron"){
@@ -61,7 +83,7 @@ else{
 $imgpat='<img  style="width:50px;" src="'.base_url().'/assets/img/patients-pictures/'.$paciente['photo'].'"  />';		
 }
 ?>
-<tr>
+<tr id="<?=$row->id_patient?>">
 <td><?=date("d-m-Y H:i:s", strtotime($row->timeinserted));?></td>
 <td><?=$imgpat?></td>
 <td><?=$paciente['nombre']?></td>
@@ -104,6 +126,11 @@ $doctor=$this->db->select('name,area')->where('id_user',$row->doc)
    
    $area=$this->db->select('title_area')->where('id_ar',$doctor['area'])
    ->get('areas')->row('title_area');
+   
+   
+     $cama=$this->db->select('num_cama')->where('id',$row->cama)->get('mapa_de_cama')->row('num_cama');
+   
+   
  ?>
 <div class='raya'>
 <strong><?=$centro?></strong> 
@@ -121,10 +148,23 @@ $doctor=$this->db->select('name,area')->where('id_user',$row->doc)
 <td><?=$row->via?></td>
 <td><?=$row->sala?></td>
 <td><?=$row->servicio?></td>
-<td><?=$row->cama?></td>
-<td style="font-size:17px">
+<td><?=$cama?></td>
+<td style="font-size:17px;<?=$isFromDrug?>"> 
 <a target="_blank"  href="<?php echo base_url("printings/print_hosp1/$row->id/$row->id_patient/$id_seg/$row->doc/$row->centro")?>" style="cursor:pointer" title="Imprimir  "><i  class="fa">&#xf02f;</i></a>
-<a  href="<?php echo base_url("hospitalizacion/hospitalizacion_historial/$row->id/$row->doc")?>" style="cursor:pointer" title="Hospitalizacion  " ><i class="fa fa-hospital-o" aria-hidden="true"></i></a>
+<a  href="<?php echo base_url("hospitalizacion/hospitalizacion_historial/$id_hosp/$id_doc/$id_cent")?>" style="cursor:pointer" title="Hospitalizacion  " ><i class="fa fa-hospital-o" aria-hidden="true"></i></a>
+
+
+<div class="pagination" style='font-size:13px'>
+ <span class="glyphicon glyphicon-plus"></span>
+<div class="box-tooltip" style="display: none;position:absolute;">
+
+<a data-toggle="modal"   data-target="#hospitol" href="<?php echo base_url("hospitalizacion/create_new_hospital/$row->id_patient/$id_user/$row->id/$row->centro")?>" style="cursor:pointer" title="Editar  " ><i class="fa fa-pencil" aria-hidden="true"></i> Editar</a>
+
+<hr/>
+<a class="cancelar-data" id="<?=$row->id; ?>" style="color:red" title="Eliminar  " ><i class="fa fa-times" aria-hidden="true"></i> Eliminar</a>
+
+</div>
+</div>
 
 </td>
 </tr>
@@ -134,6 +174,15 @@ $doctor=$this->db->select('name,area')->where('id_user',$row->doc)
 ?>
 </tbody>    
 </table>
+</div>
+<div class="modal fade" id="hospitol"  role="dialog"  >
+<div class="modal-dialog modal-lg" >
+<div class="modal-content" >
+<div class="modal-body">
+</div>
+</div>
+</div>
+</div>
 <script>
 $(".pagination").hover(function () {
     $(this).find('.box-tooltip').show();
@@ -141,4 +190,7 @@ $(".pagination").hover(function () {
  function () {
         $(this).find('.box-tooltip').hide();
       });
+	  
+	  
+
 </script>

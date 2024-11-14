@@ -148,7 +148,6 @@ $esp_id_d=$this->db->select('area')->where('id_user',$id_user)->get('users')->ro
 
 $('#send_data_cita').on('submit', function(event){
 event.preventDefault();
-
 if($("#causa1").val() == "" ){
 $("#causa1").focus();
 $("#erBox").html("Selecionne una causa.");
@@ -174,12 +173,20 @@ else if($('#fecha_propuesta1').val() == ""){
 $("#fecha_propuesta1").focus();
 $("#erBox").html("Ingrese la fecha de la cita");
 
-} else{
+} 
+
+else if($('#hora_de_cita').val() == ""){
+$("#hora_de_cita").focus();
+$("#erBox").html("Cual es la hora de la cita?");
+
+}
+
+else{
 $('#btn-twice').prop("disabled",true);
 //$("#btn-twice").fadeIn().html('<span style="font-size:10px" class="glyphicon glyphicon-refresh glyphicon-refresh-animate load"></span>');	
 $("#btn-twice").text("Guardando...");
 $.ajax({
-url:"<?php echo base_url(); ?>admin_medico/add_new_cita",
+url:"<?php echo base_url(); ?>cita/add_new_cita",
 method:"POST",
 data:new FormData(this),
 contentType:false,
@@ -217,7 +224,7 @@ var centro_medico=$('#centro_medico').val();
 var id_patient="<?=$id_patient?>";
 $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/daySelected')?>",
+url: "<?=base_url('cita/daySelected')?>",
 data: {day:day,doc:doc,fecha_propuesta1:fecha_propuesta1,centro_medico:centro_medico,id_patient:id_patient},
 cache: true,
 success:function(data){ 

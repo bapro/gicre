@@ -1,30 +1,27 @@
+<?php foreach($results as $rw)?>
 <p><a id='<?=$rw->centro_id?>' title='Borrar los tarifarios de este centro medico' class='deletem' style='color:red;cursor:pointer' >Borrar <i class="fa fa-trash-o"></i></a> <?=$count?> categorías</p>
 
-<table class="table table-striped table-bordered"  >
 
-<tr >
-<?php
-$i = 1;
-$cpt="";
-foreach($results as $row)
-{
-if ( $cpt==0 ) {
-$cpt=1;
-$colorBg = "";
-} 
-else {
-$cpt=0;
-$colorBg = "#E0E5E6";
-}
-?>
+	<ul class="list-group list-group-horizontal-sm agenda-list">
+	<?php foreach($results as $row){
 
-<td style='background:<?=$colorBg?>'><a href="" class="view-servicios" title="Ver sus servicos" id="<?=$row->groupo?>"><?=$row->groupo?></a></td>
-<?php
-}
-?>
+	?>
+	<li class="list-group-item view-servicios" style='cursor:pointer' id="<?=$row->groupo?>"> <?=$row->groupo?> </li>
 
-</tr>
-</table>
+	<?php } ?>
+	</ul>
+
+
+
+
+
+
+
+
+
+
+
+
 <?php foreach($results as $rw)?>
 <script>
 $(".deletem").click(function(e){
@@ -46,14 +43,14 @@ $(".deletem").click(function(e){
  });
 //=======================================================================================
 $('.view-servicios').click(function(){
-$(".loadf").fadeIn().html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate load"></span>');
+$(this).addClass('active').siblings().removeClass('active');
 $("#servicios").hide();	
 var categoria = $(this).attr('id');
 var id_centro = "<?=$rw->centro_id?>"; 
 var id_seguro = "<?=$rw->seguro_id?>";
 $.ajax({
 type: "POST",
-url: "<?=base_url('admin/centro_categoria_servicios')?>",
+url: "<?=base_url('tarifarios_centro/centro_categoria_servicios')?>",
 data: {categoria:categoria,id_centro:id_centro,id_seguro:id_seguro},
 cache: true,
  success:function(data){

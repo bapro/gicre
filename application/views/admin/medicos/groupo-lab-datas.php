@@ -13,7 +13,7 @@
 <td><button id="btn-nuevob" class="btn btn-primary btn-xs"> Agregar Nuevo</button></td>
 </tr>
 <tr style="background:#5957F7;color:white">
-<th style="width:5px">Laboratorios</th>
+<th style="width:5px">Laboratorios (<?=$total_g_d?>)</th>
 <th style="width:1px">Editar</th>
 </tr>
 
@@ -29,14 +29,14 @@ foreach($query->result() as $row)
 <tr id="<?=$row->id?>">
 
 <td  style="text-transform:uppercase">
-<span class="editSpan lab-n"><?=$row->lab_name;?></span>
+<span class="editSpan lab-n"><?=$row->lab_name;?></span> 
  <input style="display: none;" class="editInput  form-control input-sm edit-lab" name="edit-lab"  type="text"   value="<?=$row->lab_name?>"  />
  </td>
 
 <td style="width:1px" >
-<button type="button"  class="btn btn-sm btn-success editBtn " style="float: none;" ><span class="glyphicon glyphicon-pencil"></span></button>
+<button type="button"  class="btn btn-sm btn-success editBtn " style="float: none;" ><span class="bi bi-pencil-square"></span></button>
 
-<button type="button"  class="btn btn-sm btn-success saveBtn" style="float: none; display: none;"><span class="glyphicon glyphicon-ok-sign"></span></button>
+<button type="button"  class="btn btn-sm btn-success saveBtn" style="float: none; display: none;"><span class="bi bi-save2"></span></button>
 <a class="st delete-lab" id="<?=$row->id; ?>"  style="color:red;background:white"  title="Eliminar"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
 
 </td>
@@ -64,6 +64,7 @@ function listarLab(){
 	$.ajax({
 type: "POST",
 url: "<?=base_url('admin_medico/listarLab')?>",
+data: {id_user:<?=$id_user?>},
 success:function(data){
 $('#list-lab').html(data);
 
@@ -85,7 +86,7 @@ $('#btn-nuevob').prop('disabled',true);
 $.ajax({
 type: "POST",
 url: "<?=base_url('admin_medico/nuevoLab')?>",
-data: {nuevolab:nuevolab,groupo:nuevogroupo},
+data: {nuevolab:nuevolab,groupo:nuevogroupo,id_user:<?=$id_user?>},
 success:function(data){
 $('#nuevo-lb').val('');
 $('#btn-nuevob').prop('disabled',false);

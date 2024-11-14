@@ -112,7 +112,6 @@ echo $service;
 </td>
 <td>
 RD$ <?=$rf->preciouni?>
-</div>
 </td>
 <td>
 RD$ <?=$rf->subtotal?>
@@ -134,7 +133,7 @@ RD$ <?=$rf->totpapat?>
 <td>
 <!--<button class="btn btn-sm button_delete_tarifarios"  type="button" style='color:red' ><i class="fa fa-trash"></i> <span style='display:none'><?=$rf->idfac?></span></button>
 -->
-<a style='background:red' href="<?php echo base_url("admin_medico/deleted_fac/$rf->idfac/$user/$identificar/$count")?>" data-toggle="modal" data-target="#button_delete_tarifarios" class="btn btn-primary btn-xs"><i class="fa fa-trash"></i></a>
+<a style='background:red' href="<?php echo base_url("factura/deleted_fac/$rf->idfac/$user/$identificar/$count")?>" data-toggle="modal" data-target="#button_delete_tarifarios" class="btn btn-primary btn-xs"><i class="fa fa-trash"></i></a>
 
 </td>
 <td><i class="fa fa-info-circle" title="Creado por <?=$crt1?> (<?=$inserted_time?>) &#013 Modificado por <?=$updt1?> (<?=$updated_time?>) "></i> </td>
@@ -194,11 +193,8 @@ $tpat=number_format($tpat,2);
 </tr>
 </table>
 </div>
-
-
-<i>
-
-<?php  foreach($billings2 as $row)
+<?php
+  foreach($billings2 as $row)
 
 $crt=$this->db->select('name')->where('id_user',$row->inserted_by)->get('users')->row('name');
 $updt=$this->db->select('name')->where('id_user',$row->updated_by)->get('users')->row('name');
@@ -207,18 +203,17 @@ $updt=$this->db->select('name')->where('id_user',$row->updated_by)->get('users')
  $insert_date = date("d-m-Y H:i:s", strtotime($row->inserted_time));
  $update_date = date("d-m-Y H:i:s", strtotime($row->update_date));
 
-
-
 ?>
 <div class="col-md-10" >
+<i>
 Creado por <?=$crt?> - Modificado por <?=$updt?><br/>
 fecha de creacion  <?=$insert_date?> - fecha de modificacion <?=$update_date?>
 </i>
 </div>
 <div class="col-md-2" >
-<a class="btn btn-sm btn-primary"  href="<?php echo base_url("printings/print_billing_seguro_privado/$idfacc/$identificar")?>" ><i class="fa fa-print"></i>Imprimir</a>
+<a class="btn btn-sm btn-primary" id='closeImpBtn' target="_blank" href="<?php echo base_url("printings/print_billing_seguro_privado/$idfacc/$identificar")?>"  >Imprimir</a>
 </div>
-<br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/>
 <div class="modal fade" id="button_delete_tarifarios"  role="dialog" >
 <div class="modal-dialog" style="width: 80%;margin: auto;" >
 <div class="modal-content" >
@@ -226,9 +221,16 @@ fecha de creacion  <?=$insert_date?> - fecha de modificacion <?=$update_date?>
 </div>
 </div>
 </div>
-<!-- *************************************************************************-->
+
 
 <script>
+
+/*
+$('#closeImpBtn').on('click', function () {
+window.close();
+	})*/
+
+
 
 
 $('#button_delete_tarifarios').on('hidden.bs.modal', function () {
@@ -301,7 +303,7 @@ $('.button_edit_tarifarios').on('click', function(event) {
    
  $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/updateBillTable')?>",
+url: "<?=base_url('factura/updateBillTable')?>",
 data: {id_fact:id_fact,id_facc:id_facc,is_admin:is_admin,user:user,identificar:identificar},
 cache: true,
 success:function(data){
@@ -325,7 +327,7 @@ $("#edit_this_tarif").html(data);
 function getSegName(dropDown) {
 $.ajax({
 type: "POST",
-url: '<?php echo site_url('admin_medico/get_service_precio_centro');?>',
+url: '<?php echo site_url('factura/get_service_precio_centro');?>',
 data:{id_mssm1:dropDown.value},
 success: function(data){
 $($(dropDown).parents('tr')[0]).find('input.precio').val(data);
@@ -339,7 +341,7 @@ function getSegNamePrivado(dropDown) {
 
 $.ajax({
 type: "POST",
-url: '<?php echo site_url('admin_medico/get_service_precio');?>',
+url: '<?php echo site_url('factura/get_service_precio');?>',
 data:{id_mssm1:dropDown.value},
 success: function(data){
 $($(dropDown).parents('tr')[0]).find('input.precio').val(data);
@@ -455,7 +457,7 @@ var area_id = "<?=$area_id?>";
 var action=1;
 $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/updateBill1')?>",
+url: "<?=base_url('factura/updateBill1')?>",
 data: {service:service,cantidad:cantidad,preciouni:precio,id_patient:id_patient,area_id:area_id,
 subtotal:total,totalpaseg:totalpaseg,descuento:descuento,totpapat:totpapat,idfacc:idfacc,
 idfac:idfac,updated_by:updated_by,action:action,medico:medico,seguro:seguro,centro:centro},
@@ -496,7 +498,7 @@ var rowElement = $(this).parent().parent(); //grab the row
 
 $.ajax({
 type:'POST',
-url:'<?=base_url('admin_medico/delete_factura')?>',
+url:'<?=base_url('factura/delete_factura')?>',
 data: {id : del_id},
 success:function(response) {
 

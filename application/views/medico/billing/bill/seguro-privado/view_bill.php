@@ -50,45 +50,12 @@ $controller="medico";
 </div>
     
 <div class="col-sm-12 showdown3 searchb" >
-<div class="col-sm-8" ></div>
-<div class="col-sm-4" >
+<div class="col-sm-7" ></div>
+<div class="col-sm-5" >
 <br/>
-<div class="input-group">
-  <span class="input-group-addon">
-<?php
+<div class="input-group" id='load-select-comprobante'>
 
-$comprobante_name= $this->db->select('name')->join('comprobante_fiscal_name', 'comprobante_fiscal_paciente.id_comprobante = comprobante_fiscal_name.id')->where('id_fac',$row->idfacc)->limit(1)->get('comprobante_fiscal_paciente')->row('name');
-if($comprobante_name){
-$comp_option=$comprobante_name;	
-}else{
-$comp_option='Comprobante Fiscal';		
-}
-?>
-  <select class='form-control select2' id='comprobante-fiscal-selected' style='width:100%'>
-<option value=''> <?=$comp_option?>  </option>
-<?php
-$sqlcf= "SELECT * FROM comprobante_fiscal_name";
-$cfdata= $this->db->query($sqlcf);
-foreach($cfdata->result() as $rowcf){
-?>
-<option value="<?=$rowcf->id?>"><?=$rowcf->name?></option>
-<?php
-}
-?>
-</select>
-<div id='comprobante-value'  style='font-weight:bold'>
-<?php
-$comproPat=$this->db->select('comprobante')
-->where('id_fac',$row->idfacc)
-->where('id_paciente',$id_p_a)
-->get('comprobante_fiscal_paciente')->row('comprobante');
-echo $comproPat;
-?>
-
-</div>
-  </span>
-
-    </div>
+ </div>
 
 <a  class='bono-comp show-bono-comp' data-toggle="modal" href="" data-target="#abono" >Abono</a>
 </div>
@@ -139,12 +106,17 @@ echo $comproPat;
 </div>
 
 
- <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
 <script type="text/javascript" src="<?=base_url();?>assets/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
  <script>
+
+
 
 $('.show-bono-comp').on('click', function () {
  listarFacturaAbono();
@@ -158,7 +130,7 @@ $('.show-bono-comp').on('click', function () {
 $("#list-abono").fadeIn().html('<span style="font-size:24px" class="glyphicon glyphicon-refresh glyphicon-refresh-animate load"></span>');
 $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/listarFacturaAbono')?>",
+url: "<?=base_url('factura/listarFacturaAbono')?>",
 data: {id_facc:<?=$row->idfacc?>},
 success:function(data){ 
 $("#listarFacturaAbono").html(data);
@@ -189,7 +161,7 @@ if(fecha != ""  &&  bono !="")
  $("#bono-result").fadeIn().html('guardando...').css('font-style','italic').css('color','gray');
 $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/saveFacturaBono')?>",
+url: "<?=base_url('factura/saveFacturaBono')?>",
 data: {fecha:fecha,bono:bono,id_facc:<?=$row->idfacc?>,id_user:<?=$name?>,bonoResta:bonoResta},
 success:function(data){
 $("#bono-result").html(data);
@@ -240,7 +212,7 @@ $("#load_factura_table_view").fadeIn().html('<span style="font-size:24px" class=
   var id_patient = <?=$id_p_a?>;
 $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/factura_table_view_privado')?>",
+url: "<?=base_url('factura/factura_table_view_privado')?>",
 data: {id_facc:id_facc,is_admin:is_admin,user:user,identificar:identificar,id_patient:id_patient},
 cache: true,
 success:function(data){ 
@@ -267,7 +239,7 @@ else
 $('#change-header-fac').prop("disabled",true);
 	$.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/UpdateBillHead')?>",
+url: "<?=base_url('factura/UpdateBillHead')?>",
 data: {user:user,id_facc:id_facc,comment:comment,fechaEdit:fechaEdit},
 cache: true,
 success:function(data){
@@ -283,19 +255,34 @@ return false;
  })
 
 
-$('#comprobante-fiscal-selected').on('change', function(event) {
+
+ 
+	 
+
+function loadComprobanteSelect(){
 $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/comprobanteFiscalValue')?>",
-data: {id:$(this).val(),id_facc:<?=$row->idfacc?>,id_patient:<?=$id_p_a?>,id_user:<?=$name?>},
-cache: true,
-success:function(data){
-$('#comprobante-value').html(data);
+url: "<?=base_url('factura/loadComprobanteSelect')?>",
+data: {id_p_a:<?=$id_p_a?>,idfacc:<?=$row->idfacc?>,id_user:<?=$name?>},
+success:function(data){ 
+$('#load-select-comprobante').html(data);
+
 },
- 
-});
- });
- 
+error: function(jqXHR, textStatus, errorThrown) {
+alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
+
+$('#load-select-comprobante').html('<p>status code: '+jqXHR.status+'</p><p>errorThrown: ' + errorThrown + '</p><p>jqXHR.responseText:</p><div>'+jqXHR.responseText + '</div>');
+console.log('jqXHR:');
+console.log(jqXHR);
+console.log('textStatus:');
+console.log(textStatus);
+console.log('errorThrown:');
+console.log(errorThrown);
+},
+})	
+	
+}
+loadComprobanteSelect();
 
 </script>
 

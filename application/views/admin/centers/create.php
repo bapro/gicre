@@ -1,18 +1,14 @@
-<?php
-        $this->load->view('admin/header_admin');
- ?>
-
 <div class="container">
-
-
- <div class="row" id="background_">
+<div class="row" id="background_">
   <div class="col-md-offset-3">
  <h3 class="h3">Nuevo Centro Medico </h3>
  <br/>
  </div>
  
 <?php echo $this->session->flashdata('success_msg'); ?>
-<form   class="form-horizontal" id="form-save" enctype="multipart/form-data" method="post"  action="<?php echo site_url('admin/saveCentroMedico');?>" > 
+<form   class="form-horizontal" id="form-save" enctype="multipart/form-data" method="post"  action="<?php echo site_url('admin_medico/saveCentroMedico');?>" > 
+<input value="<?=$inserted_by?>" type='hidden' name="inserted_by"/>
+<input value="<?=$controller?>" type='hidden' name="controller"/>
 <div class="form-group">
 <label class="control-label col-sm-4" ><span style="color:red">*</span> Nombre</label>
 <div class="col-sm-4">
@@ -39,25 +35,27 @@
 <div class="form-group">
 <label class="control-label col-sm-4" >Tipo</label>
 <div class="col-sm-4">
-   <label class="radio-inline">
-      <input type="radio" class="id_radio1" name="typo" value="publico" checked> publico
-    </label>
-	
-	   <label class="radio-inline">
-      <input type="radio" class="id_radio1" name="typo" value="privado"> privado
-    </label>
+<label class="radio-inline">
+<input type="radio" name="typo" value="privado" checked> privado
+</label>
+<label class="radio-inline">
+<input type="radio" name="typo" value="publico" > publico
+</label>
+<label class="radio-inline">
+<input type="radio" name="typo" value="Salud ocupacional" > Salud ocupacional
+</label>
 </div>
 </div>
 <div class="form-group">
 <label class="control-label col-sm-4"><span style="color:red">*</span> Primer telefono</label>
 <div class="col-sm-4">
-<input type="text" class="form-control" id="primer_tel" name="primer_tel"  >
+<input type="text" class="form-control phone" id="primer_tel" name="primer_tel"  >
 </div>
 </div>
 <div class="form-group">
 <label class="control-label col-sm-4" >Segundo telefono</label>
 <div class="col-sm-4">
-<input type="text" class="form-control" id="segundo_tel" name="segundo_tel"   >
+<input type="text" class="form-control phone" id="segundo_tel" name="segundo_tel"   >
 </div>
 </div>
 <div class="form-group">
@@ -94,7 +92,7 @@
 <div class="form-group">
 <label class="control-label col-sm-4"><span style="color:red">*</span> Provincia</label>
 <div class="col-sm-4">
-<select class="form-control select2"  name="provincia" id="provincia"  onchange="selectProvincia(this.options[this.selectedIndex].value)">
+<select class="form-control select2"  name="provincia" id="provincia"  onchange="getMun(this.options[this.selectedIndex].value)">
 <option value="">Selecionne la provincia</option>
 <?php
 foreach($provinces as $listElement){
@@ -135,26 +133,7 @@ foreach($provinces as $listElement){
 <input type="text" class="form-control bfh-phone"   name="pagina_web" >
 </div>
 </div>
-<!--
-<div class="form-group">
-<label class="control-label col-sm-4"><span style="color:red">*</span> Doctor</label>
-<div class="col-sm-4">
-<button type="button" class="chosen-toggle select col-xs-6">Seleccionar todo</button>
-<button type="button" class="chosen-toggle deselect col-xs-6">Deselecionar todo</button>
 
-<select id="doc" class="form-control chosen-select" data-placeholder="Comienza a escribir un nombre para filtrar." multiple  name="doctor[]" required="true" >
-<?php 
-
-foreach($DOCTORS as $row)
-{ 
-echo "<option value='$row->first_name'>$row->name</option>";
-}
-?>
-<!--<option value="cdoc">Registrar doctor</option>
-</select>
-<div class="doct"></div>
-</div>
-</div>-->
 <div class="form-group">
 <label class="control-label col-sm-4"><span style="color:red">*</span> Seguro médico</label>
 <div class="col-sm-4">
@@ -176,40 +155,13 @@ echo '<option value="'.$row->id_sm.'">'.$row->title.'</option>';
  </form>
 </div>
  </div>
- <div class="modal fade" id="doctor-modal" tabindex="-1" role="dialog" aria-labelledby="Login" aria-hidden="true">
-<div class="modal-dialog modal-sm">
 
-<div class="modal-content">
-<div class="modal-header">
-<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-<h4 class="modal-title" id="Login">Create new doctor</h4>
-</div>
-<div class="modal-body">
-
-<form name="cD" id="cD" method="post" action="<?php echo base_url();?>Admin/save_doc" > 
-
-<div class="form-group">
-<input type="text"  name="name" placeholder="first name">
-</div>
-<div class="form-group">
-<input type="text"  name="last_name" placeholder="last name" >
-</div>
-<p class="text-center">
-<input type="submit" name="Save" value="save"   />
-
-</p>
-
-</form>
-</div>
-</div>
-</div>
-</div>
 </div>
 
  <?php
         $this->load->view('footer');
  ?>
-   </body>
+ 
 
 
         <!-- *** FOOTER END *** -->
@@ -226,6 +178,14 @@ _________________________________________________________ -->
   <script src="<?=base_url();?>assets/js/custom.js"></script> 
   <script type="text/javascript" src="<?=base_url();?>assets/js/validation-jq.js" charset="UTF-8"></script>
 <script>
+
+document.querySelectorAll('.phone').forEach(input => {
+  input.addEventListener('input', e => {
+    var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+  })
+})
+
 
 
 $("#checkbox1").click(function(){
@@ -301,27 +261,6 @@ $("#save").prop("disabled", false);
 
 
 
-$("#doc").change(function(){
-
-$(this).find("option:selected").each(function(){
-
-var optionValue = $(this).attr("value");
-
-if(optionValue=="cdoc"){
-
-$('#doctor-modal').modal('show');
-
-
-} else{
-
-$('#doctor-modal').modal('hide');
-
-}
-
-});
-});
-
-
 
 
 $('.select2').select2({ 
@@ -354,12 +293,34 @@ var centro= $(".name_centro").val();
 if(centro == "") {
 $("#Info").hide();
 }else {
-$.get( "<?php echo base_url();?>admin/check_if_centro_exist?name="+centro, function( data ){
+$.get( "<?php echo base_url();?>admin_medico/check_if_centro_exist?name="+centro, function( data ){
 $( "#userInfo" ).html( data ); 
  		   
 });
 }
 };
-</script>
 
+
+function getMun(val) {
+$("#municipio_loader").fadeIn().html('<span style="font-size:24px" class="glyphicon glyphicon-refresh glyphicon-refresh-animate load"></span>');
+ $.ajax({
+	type: "POST",
+	url: '<?php echo site_url('admin_medico/getMuncipio');?>',
+	data:'id_mun='+val,
+	success: function(data){
+	$("#municipio_dropdown").prop("disabled",false);
+	$("#municipio_dropdown").html(data);
+	$("#municipio_loader").hide();
+	},
+	});
+}
+
+    function reloadPage(){
+
+        location.reload(true);
+
+    }
+
+</script>
+  </body>
 </html>

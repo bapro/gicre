@@ -18,7 +18,10 @@ td{text-align:left;font-size:14px}
    $centro=0;
   }
       ?>
-   <a target="_blank" class="btn btn-primary btn-sm" href="<?php echo base_url("$controller/print_billing_report/$desde/$hasta/$checkval/$id_user/$doctor/$centro")?>"><i class="fa fa-print"></i>  Imprimir</a>
+<form method="get" target="_blank"  action="<?php echo base_url("$controller/print_billing_report/$desde/$hasta/$checkval/$id_user/$doctor/$centro")?>">
+<!--<a target="_blank" class="btn btn-primary btn-sm" href="<?php echo base_url("$controller/print_billing_report/$desde/$hasta/$checkval/$id_user/$doctor/$centro")?>"><i class="fa fa-print"></i>  Imprimir</a>-->
+<button type="submit" class="btn btn-primary btn-sm" ><i class="fa fa-print"></i>  Imprimir</button>
+</form>
   </p>
 <table id="report-fac-table" class="table table-striped" width="100%;" style="font-size:13px" cellspacing="0">
 <thead>
@@ -48,7 +51,11 @@ $total_price = 0;$total_desc = 0;$total_paga= 0;$totalpaseg=0;
  foreach($display_report as $row)
 
 {
- $paciente=$this->db->select('nombre,photo,ced1, ced2, ced3, nec1,plan')->where('id_p_a',$row->pat_id)
+	
+$fac_time =date("d-m-Y", strtotime($row->fecha_fac));
+$get_hour_from_update_time = date("H:i:s", strtotime($row->updated_time));		
+	
+ $paciente=$this->db->select('nombre,photo,ced1, ced2, ced3, id_p_a,plan')->where('id_p_a',$row->pat_id)
  ->get('patients_appointments')->row_array();
  $type=$this->db->select('type')->where('id_m_c',$row->center_id)->get('medical_centers')->row('type');
  $factura=$this->db->select('numfac,numfac2,numauto,autopor,area')->where('idfacc',$row->id2)->get('factura2')->row_array();
@@ -72,8 +79,8 @@ $plan=$this->db->select('name')->where('id',$paciente['plan'])->get('seguro_plan
 }
 ?>
 <tr style="background:<?=$color?>">
-<td><?=$row->fecha_fac;?></td>
-<td><?=$paciente['nec1'];?></td>
+<td><?=$fac_time;?> <?=$get_hour_from_update_time?></td>
+<td>NEC-<?=$paciente['id_p_a'];?></td>
 <!--<td>
 <?php
 if($paciente['photo']=="padron"){
@@ -99,7 +106,7 @@ else{
 <td><?=$center_name;?></td>
 <td><?=$procedimiento;?></td>
 <td><?=$area;?></td>
-<td><?=$centro;?>-<?=$i;$i++;?></td>
+<td><?=$numfac;?></td>
 <td <?=$display?>><?=$seguro?>-<?=$plan?></td>
 <td <?=$display?>><?=$factura['numauto']?></td>
 <td <?=$display?>><?=$factura['autopor']?></td>
@@ -124,7 +131,7 @@ $total_paga += $row->totpapat;
 <tr style="background:#cde2b2">
 <th colspan="<?=$thnum?>"><span  style="margin-left: 520px;">TOTAL</span></th>
 <th <?=$display?>>RD$<?=number_format($totalpaseg,2)?></th>
-<!--<th>$RD <?=number_format($total_price,2)?></th>-->
+<th></th>
 <th>RD$<?=number_format($total_desc,2) ?></th>
 <th>RD$<?=number_format($total_paga,2) ?></th>
 <th></th>

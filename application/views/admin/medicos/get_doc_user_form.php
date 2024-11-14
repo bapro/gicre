@@ -27,7 +27,7 @@ font-size:larger;
 <h3 style="text-align:center;color:red"  id="errorBox2"></h3>
 
 <!-- left column -->
-<div class="row">
+<div class="col-sm-12">
 
 <div class="form-group" id="hide_this_nombre">
 <label class="control-label col-sm-2"  >Perfil</label>
@@ -42,21 +42,13 @@ font-size:larger;
 <div class="form-group ">
 <label class="control-label col-sm-2">Exequatur</label>
 <div class="col-sm-2">
-<select class="form-control select2 required"  name="exequatur"  id="exequatur">
-<option value="" hidden></option>
-  <?php 
+<input type="text" class="form-control required"   name="exequatur"  id="exequatur"  >
 
- foreach($execuatur as $row)
- { 
- echo '<option>'.$row->code.'</option>';
- }
- ?>
- </select>
  </div>
  </div>
 <div class="form-group" id="show_this_nombre">
 <label class="control-label col-sm-2" >Nombres</label>
-<div class="col-sm-7">
+<div class="col-sm-10">
 <span   id="nombre"   ></span>
 </div>
 </div>
@@ -68,7 +60,7 @@ font-size:larger;
 </div>
 <div class="form-group ">
 <label class="control-label col-sm-2">Especialidad</label>
-<div class="col-sm-4">
+<div class="col-sm-3">
 <select class="form-control select2 required"  name="especialidad"  id="especialidad">
  <option value="" hidden></option>
  <?php 
@@ -82,7 +74,12 @@ font-size:larger;
  
  </div>
  </div>	
-
+ <div class="form-group">
+<label class="control-label col-sm-2" >Telé. celular  <i class="fa fa-whatsapp" style='color:green' aria-hidden="true"></i></label>
+<div class="col-sm-5">
+<input type="text" class="form-control required" id="tel_celld"  name="tel_cell"   >
+</div>
+</div>
  <div class="form-group">
 <label class="control-label col-sm-2" >Correo electronico</label>
 <div class="col-sm-4">
@@ -130,13 +127,31 @@ foreach($query->result() as $row)
 </table>
 </div>
 </div>
+<div class="form-group">
+<label class="control-label col-sm-2" >Enlace de pago</label>
+<div class="col-sm-9">
+<input type="text" class="form-control"  name="link_pago"    >
+</div>
+</div>
 
+<div class="form-group">
+<label class="control-label col-sm-2" >Enlace de video de conf.</label>
+<div class="col-sm-9">
+<input type="text" class="form-control"  name="link_video_conf"    >
+</div>
+</div>
 
  </div>
 
-<div class="row">
+<div class="col-sm-12">
 <button type="button" class="btn btn-default" id="Reset">Reiniciar</button>
 <button type="submit" id="senduserdoc"  class="btn btn-primary">Crear registro</button>
 <br/><br/>
  </div>
 </form>
+<script>
+document.getElementById('tel_celld').addEventListener('input', function (e) {
+  var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+  e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+});
+</script>

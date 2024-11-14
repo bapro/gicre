@@ -34,7 +34,7 @@ $this->load->view('admin/emergencia/general/menu-aside',$data);
 $data['count_pedia']=$this->model_admin->countant_pedia($patient_id);
 $data['how_exam_fis_title']='';
 $data['nota_nombre']='none';
-$data['nota_signo_vitales']="Hallazgo Positivo";
+$data['nota_signo_vitales']="<strong style='color:red'>*</strong>Hallazgo Positivo";
 $data['pedia']=$this->model_admin->Getpedia($patient_id);
 $data['row_ant'] = $this->model_admin->showAnte($patient_id);
 $data['desa'] = $this->model_admin->showDesarollo($patient_id);

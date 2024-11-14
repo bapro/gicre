@@ -7,6 +7,7 @@ parent::__construct();
 $this->load->model("alcade");
 $this->load->model("padron_model");
 $this->padron_database = $this->load->database('padron',TRUE);
+ $this->load->library("pagination");
 }
 
 
@@ -23,189 +24,52 @@ $this->padron_database = $this->load->database('padron',TRUE);
 	public function listCoordonador()
 	{
 	$this->load->view('alcade/header');
-	$this->load->view('alcade/listCoordonador');
+	 $config = array();
+	 $count = $this->alcade->showCoordinadores();
+ $config["base_url"] = base_url() . "alcalde/listCoordonador";
+
+$config["total_rows"] = count($count);
+
+$config['full_tag_open']    = "<ul class='pagination'>";
+       $config['full_tag_close']   = "</ul>";
+       $config['num_tag_open']     = '<li>';
+       $config['num_tag_close']    = '</li>';
+       $config['cur_tag_open']     = "<li class='disabled'><li class='active'><a href='#'>";
+       $config['cur_tag_close']    = "<span class='sr-only'></span></a></li>";
+       $config['next_tag_open']    = "<li>";
+       $config['next_tagl_close']  = "</li>";
+       $config['prev_tag_open']    = "<li>";
+       $config['prev_tagl_close']  = "</li>";
+       $config['first_tag_open']   = "<li>";
+       $config['first_tagl_close'] = "</li>";
+       $config['last_tag_open']    = "<li>";
+       $config['last_tagl_close']  = "</li>";
+       $config['first_link'] = 'Primero';
+       $config['last_link'] = 'Último';
+        $config["per_page"] = 10;
+        $config["uri_segment"] = 3;
+
+        $this->pagination->initialize($config);
+
+		
+		$page = ($this->uri->segment(3))? $this->uri->segment(3) : 0;
+		
+        $data["links"] = $this->pagination->create_links();
+
+$data['memData'] = $this->alcade->getCoordinadores($config["per_page"], $page);
+	$this->load->view('alcade/listCoordonador', $data);
 	
 	}
 	
 	
-	/* public function listCoord(){
-     
-     // POST data
-     $postData = $this->input->post();
-
-     // Get data
-     $data = $this->padron_model->getCoordonadores($postData);
-
-     echo json_encode($data);
-  }
-  
-  */
-   public  function listCoord(){
-        $data = $row = array();
-        
-        // Fetch member's records
-        $memData = $this->alcade->getRows($_POST);
-        
-        $i = $_POST['start'];
-        foreach($memData as $member){
-            $i++;
-         $vced1 = substr($member->cedula, 0, 3);
-		$vced2 = substr($member->cedula, 3, 7);
-		$vced3 = substr($member->cedula, -1);
-
-		if($member->photo=="padron"){
-		$photo=$this->padron_database->select('IMAGEN')
-		->where('MUN_CED',$vced1)
-		->where('SEQ_CED',$vced2)
-		->where('VER_CED',$vced3)
-		->get('fotos')->row('IMAGEN');
-		if($photo){
-			$imgpat='<img  style="display:inline-block;width:70px;" src="data:image/jpeg;base64,'. base64_encode($photo) .'"  />';	
-			}else{
-			$imgpat='<img  style="display:inline-block;width:70px;" src="'.base_url().'/assets/img/user.png"  />';	
-			}
-
-		} 
-		else if($member->photo==""){
-      $imgpat='<img  style="display:inline-block;width:70px;" src="'.base_url().'/assets/img/user.png"  />';	
-           }
-			
-		  $data[] = array($imgpat, $member->nombres, $member->cedula, $member->telefono, $member->mesa,$member->sector,$member->recinto);
-        }
-        
-        $output = array(
-            "draw" => $_POST['draw'],
-            "recordsTotal" => $this->alcade->countAll(),
-            "recordsFiltered" => $this->alcade->countFiltered($_POST),
-            "data" => $data,
-        );
-        
-        // Output to JSON format
-        echo json_encode($output);
-    }
   
   
   
-  /*
-	public function listCoord()
-    {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
-        $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
-        $search = $search['value'];
-        $col = 0;
-        $dir = "";
-        if(!empty($order))
-        {
-            foreach($order as $o)
-            {
-                $col = $o['column'];
-                $dir= $o['dir'];
-            }
-        }
-
-        if($dir != "asc" && $dir != "desc")
-        {
-            $dir = "desc";
-        }
-        $valid_columns = array(
-            0=>'photo',
-            1=>'nombres',
-            2=>'cedula',
-            3=>'telefono',
-            4=>'mesa',
-            5=>'sector',
-			5=>'recinto',
-        );
-        if(!isset($valid_columns[$col]))
-        {
-            $order = null;
-        }
-        else
-        {
-            $order = $valid_columns[$col];
-        }
-        if($order !=null)
-        {
-            $this->db->order_by($order, $dir);
-        }
-        
-        if(!empty($search))
-        {
-            $x=0;
-            foreach($valid_columns as $sterm)
-            {
-                if($x==0)
-                {
-                    $this->db->like($sterm,$search);
-                }
-                else
-                {
-                    $this->db->or_like($sterm,$search);
-                }
-                $x++;
-            }                 
-        }
-        $this->db->limit($length,$start);
-        $employees = $this->db->get("soto_coordinador");
-        $data = array();
-        foreach($employees->result() as $rows)
-        {
-			  $vced1 = substr($rows->cedula, 0, 3);
-		$vced2 = substr($rows->cedula, 3, 7);
-		$vced3 = substr($rows->cedula, -1);
-
-		if($rows->photo=="padron"){
-		$photo=$this->padron_database->select('IMAGEN')
-		->where('MUN_CED',$vced1)
-		->where('SEQ_CED',$vced2)
-		->where('VER_CED',$vced3)
-		->get('fotos')->row('IMAGEN');
-		 $imgpat='<img  style="display:inline-block;width:70px;"  src="data:image/jpeg;base64,'. base64_encode($photo) .'"  />';	
-		} 
-		else{
-
-		$imgpat='<img  style="display:inline-block; width:70%;"" src="'.base_url().'/assets/img/user.png/"  />';
-
-
-		}
-
-            $data[]= array(
-			    $imgpat,
-                $rows->nombres,
-                $rows->cedula,
-                $rows->telefono,
-                $rows->mesa,
-                $rows->sector,
-                $rows->recinto
-            );     
-        }
-        $total_employees = $this->totalEmployees();
-        $output = array(
-            "draw" => $draw,
-            "recordsTotal" => $total_employees,
-            "recordsFiltered" => $total_employees,
-            "data" => $data
-        );
-        echo json_encode($output);
-        exit();
-    }
-    public function totalEmployees()
-    {
-        $query = $this->db->select("COUNT(*) as num")->get("soto_coordinador");
-        $result = $query->row();
-        if(isset($result)) return $result->num;
-        return 0;
-    }
-	*/
-	
-	
 	
 		public function printListCoordonador()
 	{
-	$this->load->view('alcade/printListCoordonador');
+
+	$this->load->view('alcade/printListCoordonador',$data);
 	
 	}
 	

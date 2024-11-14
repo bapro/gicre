@@ -7,7 +7,7 @@
   }
   .im-bg tr td{font-size:12px}
   </style>
-<table style='width:100%;' class='im-bg' >
+<table style='width:100%;' class='im-bg table' >
 <tr>
 <td>	
 <?php
@@ -23,7 +23,7 @@ $patient_id=$patient['id_p_a'];
 $sexo=$patient['sexo'];
 $photo=$patient['photo'];
 $nombre=$patient['nombre'];
-//$date_nacer=$patient['date_nacer'];
+$date_nacer=$patient['date_nacer'];
 $cedula=$patient['cedula'];
 $ced1=$patient['ced1'];
 $ced2=$patient['ced2'];

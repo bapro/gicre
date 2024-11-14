@@ -1,6 +1,6 @@
 <br/>
 <style>
-
+<style>
 .paginationh{
 	float:left;
 	width:100%;
@@ -26,7 +26,7 @@ li.paninate-li:hover{
 	color:#FF0084;
 	cursor: pointer;
 }
-
+</style>
 <h4 class="h4 his_med_title">Orden medica  (<?=$enviado_name?>)</h4>
 <div id="paginationNumberOrdenMedica"></div>
   <hr class="prenatal-separator"/>

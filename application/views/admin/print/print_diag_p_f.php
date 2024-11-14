@@ -1,29 +1,27 @@
 
 <style>
  #fac { border-collapse: collapse; witdh:100%;font-size: 11px}
-    p { font-size: 11px }
+    .header-div, p, span { font-size: 11px }
     td { border-right: none; border-left: none;padding: 1em; }
   
 </style>
-
+<br/>
 <?php
 
+ if($id_cd >0){
 foreach($print_cond as $row)
-$sello_doc=$this->db->select('sello')->where('doc',$row->id_user)->where('dist',0)->get('doctor_sello')->row('sello');
+ ?>
+<div class="header-div"><strong>SIGNOPSIS</strong> </div>
+<span><?=$signopsis?></span>
 
-if ($sello_doc) {
-$sello='<td style="border:none"><img  style="width:150px;" src="'.base_url().'/assets/update/'.$sello_doc.'"  /></td>';
-}else{
-$sello='';	
-}
-
+<?php
 $queryo = $this->db->query("SELECT diagno_def FROM h_c_diagno_def_link
  where con_id_link=$row->id_cdia");
 $rowone = $queryo->row_array();;
 if($rowone['diagno_def'] !=""){
 ?>
 
-<h5>CONCLUCION DIAGNOSTICA </h5>
+<div class="header-div"><strong>CONCLUSION DIAGNOSTICA </strong> </div>
 
 <?php
 $sql ="SELECT diagno_def FROM h_c_diagno_def_link
@@ -36,7 +34,8 @@ $diagno_def=$this->db->select('description')
 ->where('idd',$dr->diagno_def)
 ->get('cied')->row('description');
 ?>
-<p><?php echo $i;$i++;?>-<?=$diagno_def;?><p/>
+<span><?php echo $i;$i++;?>-<?=$diagno_def;?></span>
+<br/><br/>
 <?php
 }
 
@@ -44,18 +43,25 @@ $diagno_def=$this->db->select('description')
 
 if($otros_diagnos !=""){?>
 
-<h5>OTRO DIAGNOSTICO</h5>
+<div class="header-div"><strong>OTRO DIAGNOSTICO</strong> </div>
 
-<p><?=$otros_diagnos?></p>
-
+<span><?=$otros_diagnos?></span>
+<br/><br/>
 <?php
 }
+ }else{
+$conclucion_diag=$this->db->select('conclucion_diag')->where('autoNomber',$id)->where('id_cd',0)->get('h_c_procedimiento_tarif')->row('conclucion_diag');
+?>
+<div class="header-div"><strong>CONCLUSION DIAGNOSTICA </strong> </div>
 
+<span><?=$conclucion_diag?></span>
+<?php	 
+	 
+ }
 
  if($tarif_proced->result() !=NULL)
 {?>
-<br/></br>
-<h5>COTIZACION DE PROCEDIMENTOS</h5>
+
 <table id='fac'>
 
 <?php
@@ -63,12 +69,27 @@ $tot=0;
  foreach($tarif_proced->result() as $r)
 {
 $time = date("d-m-Y H:i:s", strtotime($r->time_created));
+if($id_cd >0){
  $fac_val=$this->db->select('procedimiento,monto')->where('id_tarif',$r->id_tarif)->get('tarifarios')->row_array();
- $tot += $fac_val['monto'];
+}else{
+$fac_val=$this->db->select('procedimiento,monto')->where('id_tarif',$r->procedimiento)->get('tarifarios')->row_array();	
+}
+ if($r->precio){
+	 $precio=$r->precio;
+ }else{
+	 $precio=$fac_val['monto'];
+ }
+ $tot += $precio;
+ if (is_numeric($r->procedimiento)){
+	 $procedimiento = $fac_val['procedimiento'] ;
+ }else{
+	 $procedimiento = $r->procedimiento; 
+ }
+
 ?>
 <tr>
-<td><?=$fac_val['procedimiento']?></td>
-<td>RD$<?=number_format($fac_val['monto'],2)?></td>
+<td><?=$procedimiento?></td>
+<td>RD$<?=number_format($precio,2)?></td>
 </tr>
 
 <?php } ?>
@@ -79,13 +100,13 @@ $time = date("d-m-Y H:i:s", strtotime($r->time_created));
 </table>
 <?php } ?>
 
-<br/>
-<div class="footer-firma">
+<br/><br/>
+<div >
 <table class='r-b' align="center" >
 <tr>
 <td style="text-align:center">
 <?php
-$firma_doc="$row->id_user-1.png";
+$firma_doc="$id_doc-1.png";
 
 $signature = "assets/update/$firma_doc";
 
@@ -95,11 +116,24 @@ if (file_exists($signature)) {?>
 } else {
 
 }
+
+$sello_doc=$this->db->select('sello')->where('doc',$id_doc)->where('dist',0)->get('doctor_sello')->row('sello');
+
+if ($sello_doc) {
+$sello='<td style="border:none"><img  style="width:150px;" src="'.base_url().'/assets/update/'.$sello_doc.'"  /></td>';
+}else{
+$sello='';	
+}
+
+
 ?>
 <hr />
-<span style="font-size:11px" title="sdfsdf"><strong>Firma autorizada y sello del medico</strong></span>
+<div style="font-size:11px" title="sdfsdf"><strong>Firma autorizada y sello del medico</strong></div>
+<br/><br/>
+<strong><?=$docInfo?></strong>
 </td>
 <?=$sello?>
 </tr>
+
 </table>
 </div>

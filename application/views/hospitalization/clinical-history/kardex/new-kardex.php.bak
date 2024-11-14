@@ -1,0 +1,256 @@
+<?php
+$sqlkx ="SELECT *, id AS id_med FROM  hosp_orden_medica_recetas_hosp WHERE NEC_PRO='{$this->session->userdata('NEC_PRO')}' && kardex=1 order by kardex_fecha desc";
+$querykardex=$this->db->query($sqlkx);
+ if($querykardex->result() !=NULL){
+
+$nb_kardex=$querykardex->num_rows();
+	 ?>
+
+
+<div class="card">
+<div class="card-body">
+<ul class="nav nav-tabs nav-tabs-bordered d-flex" id="borderedTabJustified" role="tablist">
+<li class="nav-item flex-fill" role="presentation">
+<button class="nav-link w-100 active" id="home-tab" data-bs-toggle="tab" data-bs-target="#bordered-justified-home" type="button" role="tab" aria-controls="home" aria-selected="true"><strong>Kardex realizado(s)</strong> (<i><?=$querykardex->num_rows()?></i>)</button>
+</li>
+<li class="nav-item flex-fill" role="presentation">
+<button class="nav-link w-100" id="profile-tab" data-bs-toggle="tab" data-bs-target="#listreturn" type="button" role="tab" aria-controls="profile" aria-selected="false">Listado de devolucion</strong> (<i id="count_kar_dev"></i>)</button>
+</li>
+
+</ul>
+<div class="tab-content pt-2" id="borderedTabJustifiedContent">
+<div class="tab-pane fade show active" id="bordered-justified-home" role="tabpanel" aria-labelledby="home-tab">
+                  <div style='overflow-x:auto;'>
+<table  class="table table-striped" style="width:100%"  id='new-kardex-table'>
+
+	<thead>
+	<!--<tr>
+
+	<td colspan='8'>
+	<div id="show-text-area-reason-cancel"></div>
+	
+	</td>
+	</tr>-->
+    <tr style="background:#428bca;">
+	<th style="color:white"><strong>#</strong></th>
+	   <th style="color:white"><strong>Medicamento</strong></th>
+	   <th style="color:white"><strong>Cantidad</strong></th>
+	   <th style="color:white">Dosis</th>
+	    <th style="color:white">Via</th> 
+		<th style="color:white">Usuario</th> 
+		<th style="color:white">Fecha</th> 
+		<th style="color:white">Accion</th> 
+		<th></th>
+     </tr>
+	
+    </thead>
+    <tbody>
+    <?php
+
+	 foreach($querykardex->result() as $row)
+     {
+	$op=$this->db->select('name')->where('id_user',$row->kardex_user)->get('users')->row('name');
+	$fecha = date("d-m-Y H:i:s", strtotime($row->kardex_fecha));
+	$kardex_left=$this->db->select('resta')->where('id_i_m',$row->id_med)->get('devolucion_almacen_lab')->row('resta');
+	if($kardex_left){
+		$cantidad = $kardex_left;
+	}else{
+		$cantidad = $row->cantidad;
+	}
+	if(is_numeric($row->medica)){		
+		$medica=$this->db->select('name')->where('id',$row->medica)->get('emergency_medicaments')->row('name'); 
+		 }else{
+			$medica=$row->medica; 
+		 }
+	 ?>
+	<tr id="<?=$row->id_med; ?>" >
+	<td><?=$row->id_med;?></td>
+	<td><?=$medica;?></td>
+    <td class="hide-cancel-td-kardex">
+	<span class="editSpanKardex lab-n"><?=$cantidad;?></span>
+	
+	<input style="display: none;" class="editInputKardex  form-control input-sm edit-cant-k" name="edit-lab"  type="text"   value="<?=$cantidad?>"  />
+	</td>
+     <td class="hide-cancel-td-kardex"><?=$row->dosis;?></td>
+	<td class="hide-cancel-td-kardex"><?=$row->via?></td>
+	<td class="hide-cancel-td-kardex"><?=$op?></td>
+	<td  class="hide-cancel-td-kardex"><?=$fecha?></td>
+		<td  class="hide-cancel-td-kardex">
+		<div class="d-flex">
+		<div class="flex-fill p-1">
+		<button type="button" title="Devolucionar"  class="return-kardex btn btn-primary btn-sm" id="<?=$row->id_med; ?>"  ><i class="bi bi-arrow-return-left"></i></button>
+		</div>
+		<div class="flex-fill p-1">
+		<button type="button" title="Cancelar kardex" class="cancelar-kardex btn btn-outline-primary btn-sm" id="<?=$row->id_med; ?>" data-bs-toggle="modal" data-bs-target="#myModalCancelKardex" ><i class="bi bi-x"></i></button>
+		</div>
+		</div>
+		<button type="button" title="guardar" class="btn btn-sm btn-success saveReturnKardex" style="float: none; display: none;"><i class="bi bi-save2"></i> </button>
+		
+		<button type="button" title="volver por atras" class="btn btn-sm btn-default cancel-kardex" style="float: none; display:none ;"><i class="bi bi-x-square-fill"></i></button>
+		
+		 </td>
+		 <td colspan='7'>
+	<div class="show-text-area-reason-cancel-kardex" style="display:none">
+	
+	<div class='form-floating mb-3'>
+<textarea class='form-control cl-ord-med-study reasonToCancelRegisterTableKardex'  placeholder='Escribir porque quiere cancelar este registro' style='width: 100%'></textarea>
+<label for='ordenMedicaEstNota'>Porque lo quiere cancelar?</label>
+</div>
+<button class='btn btn-sm btn-danger float-end m-1 anular-cancel-kardex'>Anular</button>
+<button class='btn btn-sm btn-success float-end m-1 save-cancel-kardex' id='<?=$row->id_med; ?>'>Guardar</button>
+
+	
+	</div>
+	
+	</td>
+       </tr>
+
+	 <?php
+	 }
+	 ?>
+    </tbody>
+</table>
+</div>
+                </div>
+                <div class="tab-pane fade" id="listreturn" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="devolucion-list-pat"></div>
+                </div>
+               
+              </div><!-- End Bordered Tabs Justified -->
+
+            </div>
+          </div>
+
+
+ <?php
+	 }else{
+		$nb_kardex=0; 
+	 }
+	 ?>
+
+<script>
+
+
+$('.cancelar-kardex').on('click',function(){
+onclickElimiarBtnTableRegister($(this), 'kardex');
+
+	});	
+	
+ $(document).on('click', '.anular-cancel-kardex', function(event){ 	
+onclickNotElimiarBtnTableRegister($(this), 'kardex');
+}) 
+
+
+ $(document).on('click', '.save-cancel-kardex', function(event){ 
+
+ var reasonToCancelRegisterTableKardex=$(this).closest("tr").find(".reasonToCancelRegisterTableKardex").val();
+
+if (reasonToCancelRegisterTableKardex !="")
+{ 
+$(this).closest("tr").find(".show-text-area-reason-cancel-kardex").hide();
+	 $('.hide-cancel-td-kardex').show();
+var el = this;
+var del_id = $(this).attr('id');
+
+ var tableName='hosp_orden_medica_recetas_hosp';
+ var field = 'kardex';
+  var value = 0;
+saveReasonToCancelTable(el, del_id, reasonToCancelRegisterTableKardex, tableName, field, value);
+}
+}) 
+	
+	
+	
+	
+   $('.return-kardex').on('click',function(){
+
+         //hide edit button
+
+        $(this).closest("tr").find(".return-kardex").hide();
+
+        $(this).closest("tr").find(".saveReturnKardex").show();
+
+		  $(this).closest("tr").find(".editSpanKardex").hide();
+
+        //show edit input
+        $(this).closest("tr").find(".editInputKardex").show();
+		 $(this).closest("tr").find(".cancel-kardex").show();
+
+    });	
+
+  $('.cancel-kardex').on('click',function(){
+         //hide edit button
+        $(this).closest("tr").find(".return-kardex").show();
+
+        $(this).closest("tr").find(".saveReturnKardex").hide();
+
+		  $(this).closest("tr").find(".editSpanKardex").show();
+
+        //show edit input
+        $(this).closest("tr").find(".editInputKardex").hide();
+		 $(this).closest("tr").find(".cancel-kardex").hide();
+
+    });
+
+
+
+
+	$('.saveReturnKardex').on('click',function(){
+var ID = $(this).closest("tr").attr('id');
+var cant = parseFloat($(this).closest("tr").find(".editInputKardex").val());
+
+ var cantInit=parseFloat($(this).closest("tr").find(".editSpanKardex").text());
+ if(cant > cantInit){
+	 alert("No puede devolucionar mas que la cantidad inicial: "+ cantInit);
+	return false; 
+ }
+   if(cant !=""){
+  $(this).closest("tr").find(".editBtnKardex").show();
+$(this).hide();
+ $(this).closest("tr").find(".return-kardex").show();
+
+   $(this).closest("tr").find(".editInputKardex").hide();
+   	  $(this).closest("tr").find(".editSpanKardex").show();
+$(this).closest("tr").find(".cancel-kardex").hide();
+//---------------------------------------------------------------------------------
+//--------------------------------AFECT NEW VALUES-------------------------------------------------
+    $(this).closest("tr").find(".editSpanKardex").text(cantInit - cant);
+
+//------------------------------------------------------------------------------------
+$.ajax({
+url:"<?php echo base_url(); ?>hosp_kardex/devolucionAlmacenMed",
+data: {id_i_m: ID, dev: cant, cantInit: cantInit},
+method:"POST",
+success:function(data){
+
+devolucionMedicamentos(0,2);
+},
+
+});
+   }
+});
+
+
+
+
+function devolucionMedicamentos(id,where){
+$.ajax({
+url:"<?php echo base_url(); ?>hosp_kardex/devolucionMedicamentos",
+data: {id:id,where:where},
+method:"POST",
+success:function(data){
+$('.devolucion-list-pat').html(data);
+
+},
+
+});
+
+}
+
+
+
+
+devolucionMedicamentos(0,2);
+
+
+</script>

@@ -10,6 +10,7 @@ li.registro-li{
 </style>
 <?php
 $per_page = 1;
+$regis_pages='';
 if($perfil=="Admin"){
 $contition="";	
 }else{
@@ -20,9 +21,9 @@ $query= $this->db->query($sql);
 $count= $query->num_rows();
 $pages = ceil($count/$per_page);
 if($pages > 0){
-$regis_pages='registros:';
+$regis_pages="<li class='load-cirugia registro-li' >$regis_pages</li>";
 }else{
-$regis_pages='no hay registro';	
+$regis_pages='<em style="color:red">no hay registro en el examen fisico</em>';	
 }
 ?>
 
@@ -44,9 +45,8 @@ foreach($querytr->result() as $row)
 }
 	
 }
-?>
-<li class="load-cirugia registro-li" ><i><?=$regis_pages?></i></li>
-<?php
+echo $regis_pages;
+if($pages > 0){
 //Pagination Numbers
 for($i=1; $i<=$pages; $i++)
 {
@@ -54,6 +54,7 @@ echo '<li class="paninate-li" id="'.$i.'">'.$i.'</li>';
 }
 ?>
 <li class="load-cirugia"></li>
+<?php } ?>
 </ul>
 
 <br/>

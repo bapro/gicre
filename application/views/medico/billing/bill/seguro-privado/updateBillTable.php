@@ -112,7 +112,7 @@ function getSegName(dropDown) {
 var centro_id ="<?=$centro?>";
 $.ajax({
 type: "POST",
-url: '<?php echo site_url('admin_medico/get_service_precio_centro');?>',
+url: '<?php echo site_url('factura/get_service_precio_centro');?>',
 data:{id_mssm1:dropDown.value,centro_id:centro_id},
 success: function(data){
 //$($(dropDown).parents('tr')[0]).find('input.total-pag-seg').val(data);
@@ -128,7 +128,7 @@ function getSegNamePrivado(dropDown) {
 
 $.ajax({
 type: "POST",
-url: '<?php echo site_url('admin_medico/get_service_precio');?>',
+url: '<?php echo site_url('factura/get_service_precio');?>',
 data:{id_mssm1:dropDown.value},
 success: function(data){
 //$($(dropDown).parents('tr')[0]).find('input.total-pag-seg').val(data);
@@ -268,7 +268,7 @@ var action=2;
 
 $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/updateBill1')?>",
+url: "<?=base_url('factura/updateBill1')?>",
 data: {service:service,cantidad:cantidad,preciouni:precio,
 tsubtotal:tsubtotal,totsubdesc:totsubdesc,totpagpa:totpagpa,
 subtotal:total,descuento:descuento,totpapat:totpapat,idfacc:idfacc,

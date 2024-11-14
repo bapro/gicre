@@ -18,16 +18,42 @@
  </style>
 </head>
 <body>
-<div class='hr'>
+<?php
+    $camaNum=$this->db->select('num_cama')->where('id',$cama)
+   ->get('mapa_de_cama')->row('num_cama');
+
+?>
+<!--<div class='hr'>
  <h2>
  <img  style="width:80px;text-align:center" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro_logo; ?>"  />
-<br/>
  <?=$centro_name?></h2>
  <span style='font-size:10px'><?php  echo "{$centro_prov}, {$centro_muni}, {$calle}, {$barrio}<br/>  <strong>Tel: </strong>{$primer_tel} <strong>RNC: </strong> {$rnc}";?></span><br/>
+ </div>-->
+ 
+ 
+ <div class='hr'>
+ <table  id='header-table' >
+<tr>
+<td>
+<img class="img "  style="width:130px" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro_logo; ?>"  />
+<h2  align="center"> <?=$centro_name?></h2>
+<p><strong>Tel :</strong> <?=$primer_tel?> </p>
+
+ <p><strong>RNC : </strong><?=$rnc?></p>
+<p ><strong>Ubicación :</strong> <?=$calle?>, <?=$barrio?>, <?=$centro_prov?>, <?=$centro_muni?> </p>
+</td>
+
+</tr>
+</table>
+ 
  </div>
+ 
+ 
+ 
+ 
  <div class='hr'>
   <h2 style='text-align:center'>ADMISION HOSPITALARIA</h2>
-  <div style="width: 65%;float: left;"><strong>#HCE: <?=$id_hosp?></strong></div>  <div style="float: left;color:red;font-size:12px">FECHA: <?=date("d-m-Y H:i:s", strtotime($timeinserted));?></div>
+  <div style="width: 65%;float: left;"><strong>#HCE: <?=$num_pat?></strong></div>  <div style="float: left;color:red;font-size:12px">FECHA: <?=date("d-m-Y H:i:s", strtotime($timeinserted));?></div>
  </div>
   <div class='hr'>
   <h4><i>1- DATOS DEL PACIENTE</i></h4>
@@ -83,7 +109,7 @@
   <td><strong>CAUSA DE INGRESO:</strong> <?=$causa?></td><td><strong>VIA DE INGRESO:</strong> <?=$via?></td><td><strong>SALA:</strong> <span style='color:red'><?=$sala?></span></td>
   </tr>
    <tr>
-  <td><strong>SERVICIO:</strong> <?=$servicio?></td><td><strong>CAMA:</strong> <span style='color:red'><?=$cama?></span></td>
+  <td><strong>SERVICIO:</strong> <?=$servicio?></td><td><strong>CAMA:</strong> <span style='color:red'><?=$camaNum?></span></td>
   </tr>
   </table>
  </div>
@@ -149,7 +175,8 @@
  <br/>
  <div style="text-align:right;color:red;font-size:9px">
 
- FECHA IMPRESION: <?=date("d-m-Y H:i:s");?>
+ FECHA IMPRESION: <?=date("d-m-Y H:i:s");?><br/>
+ FECHA DE MODIFICACION <?=date("d-m-Y H:i:s", strtotime($timeupdated));?>, <?=$usernameuPdate?>
 
 </div>
 </body>

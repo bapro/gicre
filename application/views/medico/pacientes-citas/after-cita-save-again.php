@@ -4,8 +4,24 @@ if($perfil=="Admin"){
 	$function='appointments';
 } else {
 	$controller="medico";
-	$function='';
+	$function='';	
 }
+
+if($centro_type=="privado"){
+	$typc="privado";
+}else{
+	$typc="centro";
+}
+
+$typ = encrypt_url($typc);	
+$id_apB= encrypt_url($id_rdv);	
+$docB= encrypt_url($id_dd);	
+$centB= encrypt_url($id_cm);
+$segB= encrypt_url($id_seguro);	
+$idpaB= encrypt_url($idpatient);	
+
+
+
 ?>
 <!-- Modal -->
 <div class="modal fade" id="myModal" role="dialog">
@@ -20,17 +36,9 @@ if($perfil=="Admin"){
 <div style="text-align:center" >
 <!--href="<?php echo base_url("$controller/patient/$idpatient/$id_cm")?>"-->
 <a  class="btn btn-primary btn-sm" id="return-to-patient-data" >  No</a>
-<?php
-if($centro_type=="privado"){
-?>
-<a  class="btn btn-default btn-sm" href="<?php echo base_url("$controller/patient_billing_/privado/$id_rdv/$id_dd/$id_cm/$id_seguro")?>" >Si</a>
-<?php
-} else{
-?>
-<a  class="btn btn-default btn-sm" href="<?php echo base_url("$controller/patient_billing_/centro/$id_rdv/$id_dd/$id_cm/$id_seguro")?>">Si</a>
-<?php
-} 
-?>
+
+<a  class="btn btn-default btn-sm" href="<?php echo base_url("$controller/patient_billing_/$typ/$id_apB/$docB/$centB/$segB/$idpaB")?>" >Si</a>
+
 </div>
 
 </div>

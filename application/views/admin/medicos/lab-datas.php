@@ -1,32 +1,41 @@
-<table id="example" class="table table-striped" style="margin:auto" width="70%" cellspacing="0">
+<table id="all-labs" class="table table-striped" style="margin:auto" width="70%" cellspacing="0">
 <thead>
 <tr>
-<td style='text-align:left'>
-<div class="input-group" style="width:100%">
-    <span class="input-group-addon">Grupo</span>
-	<select  class="form-control select2"   id='nuevo-groupo' >
-<option value=''></option>
+<td style='text-align:left;width:100%'>
+
+<?php
+if($id_user==-1){
+	$and='';	
+	}else{
+	$and="&& id_doc=$id_user";		
+	}
+ $sqllbb ="SELECT * FROM h_c_groupo_lab WHERE rmvd=0 $and GROUP BY groupo ORDER BY id DESC";
+     $querylbb= $this->db->query($sqllbb);
+	 $totallab = $querylbb->num_rows();
+?>
+   
+	<select  class="form-control select2"   id='nuevo-groupo' style='width:100%' >
+<option value=''>Grupos (<?=$totallab?>)</option>
 
 	<?php 
-	 $sqllbb ="SELECT * FROM h_c_groupo_lab  GROUP BY groupo ORDER BY id DESC";
-     $querylbb= $this->db->query($sqllbb);
+	
 	 foreach ($querylbb->result() as $row){
 	echo "<option value='".$row->groupo."'>$row->groupo</option>
 	";
      }
 	?>
    </select>
-</div>
+
 </td>
 </tr>
 <tr>
-<td><input placeholder="Agregar Nuevo Laboratorio" id="nuevo-lab" style="width:100%" class="form-control"/></td>
+<td><input placeholder="Buscar Laboratorio" id="nuevo-lab" style="width:100%" class="form-control"/></td>
 <td><button id="btn-nuevo" class="btn btn-primary btn-xs" > Agregar Nuevo</button></td>
 <td></td>
 </tr>
 <tr style="background:#5957F7;color:white">
-<th style="width:5px">Laboratorios</th>
-<th style="width:1px">Anexar al grupo</th>
+<th style="width:5px">Laboratorios (<?=$totatlabo?>)</th>
+<th style="width:20px">Anexar al grupo</th>
 <th style="width:1px" colspan='2'>Acciones</th>
 </tr>
 
@@ -45,14 +54,15 @@ foreach($query->result() as $row)
  <input style="display: none;" class="editInput  form-control input-sm edit-lab" name="edit-lab"  type="text"   value="<?=$row->name?>"  />
  </td>
  <td style="width:1px" >
+ <span class='nuevo-groupo-add' style='position:absolute;float:left;color:green;z-index:40000;background:white'></span>
 <input type='checkbox' class="check-lab" name="check-lab" value="<?=$row->id?>" disabled>
 
 </td>
 <td >
-<button type="button"  class="btn btn-sm btn-success editBtn " style="float: none;" ><span class="glyphicon glyphicon-pencil"></span></button>
+<button type="button"  class="btn btn-sm btn-success editBtn " style="float: none;font-size:12px" ><span class="glyphicon glyphicon-pencil"></span></button>
 
-<button type="button" id="saveBtn" class="btn btn-sm btn-success saveBtn" style="float: none; display: none;"><span class="glyphicon glyphicon-ok-sign"></span></button>
-<a class="st delete-lab" id="<?=$row->id; ?>" style="color:red;background:white"  title="Eliminar"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+<button type="button" id="saveBtn" class="btn btn-sm btn-success saveBtn" style="float: none; display: none;font-size:9px"><span class="glyphicon glyphicon-ok-sign"></span></button>
+<a class="st delete-lab" id="<?=$row->id; ?>" style="color:red;background:white;font-size:12px"  title="Eliminar"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
 
 </td>
 
@@ -64,7 +74,15 @@ foreach($query->result() as $row)
 </tbody>    
 </table>
 <script>
+ /* $('#all-labs').DataTable( {
+	   //"pageLength": 20,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+        },
+"aaSorting": [ [1,'ASC'] ],
 
+    } );*/
+	
 $('.select2').select2({ 
 tags: true  
  
@@ -73,7 +91,7 @@ tags: true
 
  $("#nuevo-lab").on("keyup", function() {
     var value = $(this).val().toLowerCase();
-    $("#example tbody tr").filter(function() {
+    $("#all-labs tbody tr").filter(function() {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
 	 
     });
@@ -83,6 +101,7 @@ tags: true
 	$.ajax({
 type: "POST",
 url: "<?=base_url('admin_medico/listarGroupLab')?>",
+data: {id_user:<?=$id_user?>},
 success:function(data){
 $('#list-group').html(data);
 
@@ -98,6 +117,7 @@ $("#list-lab").fadeIn().html('<span style="font-size:24px" class="glyphicon glyp
 	$.ajax({
 type: "POST",
 url: "<?=base_url('admin_medico/listarLab')?>",
+data: {id_user:<?=$id_user?>},
 success:function(data){
 $('#list-lab').html(data);
 
@@ -109,33 +129,6 @@ $('#list-lab').html(data);
 }
 
 
-/*
-  $('#btn-nuevo').on('click', function(event) {
-event.preventDefault();
-var nuevolab  = $("#nuevo-lab").val();
-var nuevogroupo  = $("#nuevo-groupo").val();
-	var checked = [];
-            $.each($("input[name='check-lab']:checked"), function(){
-                checked.push($(this).val());
-            });
-$('#btn-nuevo').prop('disabled',true);
-$.ajax({
-type: "POST",
-url: "<?=base_url('admin_medico/nuevoLab')?>",
-data: {nuevolab:nuevolab,checked:checked,groupo:nuevogroupo},
-success:function(data){
-$(':input').val('');
-$(".check-lab"). prop("checked", false);
-$('#btn-nuevo').prop('disabled',false);
-listgroup();
-listarLab();
-},
-
-
-});		
- 
-});*/
-
 
  $('#btn-nuevo').on('click', function(event) {
 event.preventDefault();
@@ -145,7 +138,7 @@ $('#btn-nuevo').prop('disabled',true);
 $.ajax({
 type: "POST",
 url: "<?=base_url('admin_medico/nuevoLab')?>",
-data: {nuevolab:nuevolab,groupo:nuevogroupo},
+data: {nuevolab:nuevolab,groupo:nuevogroupo,id_user:<?=$id_user?>},
 success:function(data){
 $(':input').val('');
 $(".check-lab"). prop("checked", false);
@@ -154,13 +147,12 @@ listgroup();
 listarLab();
 },
 
-
 });		
- 
+
 })
 
 
-var checkboxes = $("input[name='check-lab']");
+/*var checkboxes = $("input[name='check-lab']");
 
 checkboxes.click(function() {
 	if(checkboxes.is(":checked")){
@@ -169,7 +161,7 @@ checkboxes.click(function() {
 		$('#btn-nuevo').prop("disabled",false);
 		}
 
-});
+});*/
 
 
  $('#nuevo-groupo').on('change', function(event) {
@@ -183,13 +175,15 @@ checkboxes.click(function() {
   $('.check-lab').on('change', function(event) {
 	var labCheckded= $(this).val();
 	var nuevogroupo  = $("#nuevo-groupo").val();
+	 	var checkagregado = $(this).closest("tr").find(".nuevo-groupo-add");
    if ($(this).is(':checked')) {
      var lab= $(this).val();
 	$.ajax({
 		type:'POST',
 		url:'<?=base_url('admin_medico/nuevoLabGroupo')?>',
-		data: {lab:lab,nuevogroupo:nuevogroupo},
+		data: {lab:lab,nuevogroupo:nuevogroupo,id_user:<?=$id_user?>},
 		success:function(data) {
+		checkagregado.html(data).delay( 2000 ).hide(0);
     listgroup();
 		
       },
@@ -203,7 +197,7 @@ checkboxes.click(function() {
 		url:'<?=base_url('admin_medico/deleteLabGroupo')?>',
 		data: {lab:lab,nuevogroupo:nuevogroupo},
 		success:function(data) {
-		
+	checkagregado.html(data).delay( 2000 ).hide(0);
 	  },
 
 	});

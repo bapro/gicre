@@ -2,201 +2,27 @@
 class Model_admin extends CI_Model{
     function __construct() {
        // $this->userTbl = 'users';
+	   	$this->clinical_history = $this->load->database('clinical_history',TRUE);
 	 }
 
    public function getPieChat($data1,$data2,$centro,$medico)
     {
-	 $condition = "h_c_enfermedad.filter_date  BETWEEN " . "'" . $data1 . "'" . " AND " . "'" . $data2 . "'";
+	 $condition = "h_c_sinopsis.filter_date  BETWEEN " . "'" . $data1 . "'" . " AND " . "'" . $data2 . "'";
 $this->db->select('sexo,count(sexo) as total');
 $this->db->from('patients_appointments');
- $this->db->join('h_c_enfermedad', 'h_c_enfermedad.historial_id= patients_appointments.id_p_a');
+ $this->db->join('h_c_sinopsis', 'h_c_sinopsis.historial_id= patients_appointments.id_p_a');
  $this->db->where($condition);
  if($centro==""){
 $this->db->where('user_id',$medico);
  }else{
-$this->db->where('h_c_enfermedad.centro_medico',$centro);
+$this->db->where('h_c_sinopsis.centro_medico',$centro);
  }
 $this->db->group_by('sexo');
 $query = $this->db->get();
   return $query->result();
     }
 
-	  public function getBarCha1($data1,$data2,$centro,$medico)
-    {
-	 $condition = "h_c_enfermedad.filter_date  BETWEEN " . "'" . $data1 . "'" . " AND " . "'" . $data2 . "'";
-$this->db->select('count(historial_id) as Paciente, user_id as idMed');
-$this->db->from('h_c_enfermedad');
- //$this->db->join('users', 'users.id_user= h_c_enfermedad.user_id');
- $this->db->where($condition);
- if($centro==""){
-$this->db->where('user_id',$medico);
- }else{
-$this->db->where('centro_medico',$centro);
- }
-$this->db->group_by('user_id');
-$this->db->order_by('Paciente','desc');
-$query = $this->db->get();
-  return $query->result();
-    }
-
-
-  public function getBarChart2($data1,$data2,$centro,$medico)
-    {
-	 $condition = "insert_date  BETWEEN " . "'" . $data1 . "'" . " AND " . "'" . $data2 . "'";
-$this->db->select('count(diagno_def) as Diagnostico, code as Cod, description as Descrip');
-$this->db->from('h_c_diagno_def_link');
- $this->db->join('cied', 'cied.idd= h_c_diagno_def_link.diagno_def');
-$this->db->where($condition);
- if($centro==""){
-$this->db->where('user_id',$medico);
- }else{
-$this->db->where('h_c_diagno_def_link.centro_medico',$centro);
- }
-$this->db->group_by('diagno_def');
-$this->db->order_by('Diagnostico','desc');
-$this->db->limit(20);
-$query = $this->db->get();
-  return $query->result();
-    }
-
-
-
-
-  public function getBarChart2Otros($data1,$data2,$centro,$medico)
-    {
-	 $condition = "insert_date  BETWEEN " . "'" . $data1 . "'" . " AND " . "'" . $data2 . "'";
-$this->db->select('count(diagno_def) as Diagnostico, code as Cod, description as Descrip');
-$this->db->from('h_c_diagno_def_link');
- $this->db->join('cied', 'cied.idd= h_c_diagno_def_link.diagno_def');
-$this->db->where($condition);
- if($centro==""){
-$this->db->where('user_id',$medico);
- }else{
-$this->db->where('h_c_diagno_def_link.centro_medico',$centro);
- }
-$this->db->group_by('diagno_def');
-$query = $this->db->get();
-  return $query->result();
-    }
-
-
-
-
-
-
-
-  public function getBarChart3($data1,$data2,$centro,$medico)
-    {
-	 $condition = "inserted_time  BETWEEN " . "'" . $data1 . "'" . " AND " . "'" . $data2 . "'";
-$this->db->select('count(otros_diagnos) as OtroD, otros_diagnos as OtroDiagnostico');
-$this->db->from('h_c_conclusion_diagno');
-$this->db->where($condition);
-$this->db->where('otros_diagnos !=','');
- if($centro==""){
-$this->db->where('id_user',$medico);
- }else{
-$this->db->where('centro_medico',$centro);
- }
-$this->db->group_by('otros_diagnos');
-$this->db->order_by('OtroD','desc');
-$this->db->limit(20);
-$query = $this->db->get();
-  return $query->result();
-    }
-
-
-	  public function getBarChart3Otros($data1,$data2,$centro,$medico)
-    {
-	 $condition = "inserted_time  BETWEEN " . "'" . $data1 . "'" . " AND " . "'" . $data2 . "'";
-$this->db->select('count(otros_diagnos) as OtroD, otros_diagnos as OtroDiagnostico');
-$this->db->from('h_c_conclusion_diagno');
-$this->db->where($condition);
-$this->db->where('otros_diagnos !=','');
- if($centro==""){
-$this->db->where('id_user',$medico);
- }else{
-$this->db->where('centro_medico',$centro);
- }
-$this->db->group_by('otros_diagnos');
-$this->db->order_by('OtroD','desc');
-$query = $this->db->get();
-  return $query->result();
-    }
-
-
-
-	  public function getBarChart4($data1,$data2,$centro,$medico)
-    {
-$condition = "h_c_enfermedad.filter_date  BETWEEN " . "'" . $data1 . "'" . " AND " . "'" . $data2 . "'";
-$this->db->select('count(historial_id) as Total, historial_id as Paciente');
-$this->db->from('h_c_enfermedad');
-$this->db->join('patients_appointments', 'h_c_enfermedad.historial_id= patients_appointments.id_p_a');
-$this->db->where($condition);
- if($centro==""){
-$this->db->where('user_id',$medico);
-
- }else{
-$this->db->where('h_c_enfermedad.centro_medico',$centro);
- }
-$this->db->group_by('provincia');
-$this->db->order_by('Total','desc');
-//$this->db->limit(20);
-$query = $this->db->get();
-  return $query->result();
-    }
-
-
-
-
-	  public function getBarChart5($data1,$data2,$centro,$medico)
-    {
-	 $condition = "patients_appointments.filter_date  BETWEEN " . "'" . $data1 . "'" . " AND " . "'" . $data2 . "'";
-$this->db->select('count(nacionalidad) as Total, nacionalidad as Nacionalidad');
-$this->db->from('patients_appointments');
-$this->db->join('rendez_vous', 'rendez_vous.id_apoint= patients_appointments.id_p_a');
-$this->db->where($condition);
-if($centro==""){
-$this->db->where('doctor',$medico);
- }else{
-$this->db->where('centro',$centro);
- }
-$this->db->group_by('nacionalidad');
-$this->db->order_by('Total','desc');
-//$this->db->limit(20);
-$query = $this->db->get();
-  return $query->result();
-    }
-
-
-	  public function getBarChartAge($data1,$data2,$centro,$medico)
-    {
-$condition = "h_c_enfermedad.filter_date  BETWEEN " . "'" . $data1 . "'" . " AND " . "'" . $data2 . "'";
-$this->db->select("CASE WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(date_nacer_format, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(date_nacer_format, '00-%m-%d'))) < 1 THEN '< 1 año'
-     WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(date_nacer_format, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(date_nacer_format, '00-%m-%d'))) <= 4 THEN '1-4 año'
-     WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(date_nacer_format, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(date_nacer_format, '00-%m-%d'))) <= 14 THEN '5-14 año'
-     WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(date_nacer_format, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(date_nacer_format, '00-%m-%d'))) <= 49 THEN '15-49 año'
-	 WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(date_nacer_format, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(date_nacer_format, '00-%m-%d'))) <= 69 THEN '50-69 año'
-	 WHEN (DATE_FORMAT(NOW(), '%Y') - DATE_FORMAT(date_nacer_format, '%Y') - (DATE_FORMAT(NOW(), '00-%m-%d') < DATE_FORMAT(date_nacer_format, '00-%m-%d'))) >= 70 THEN '70 y mas'
-	 END AS age,
-COUNT(*) total");
-$this->db->from('patients_appointments');
-$this->db->join('h_c_enfermedad', 'h_c_enfermedad.historial_id= patients_appointments.id_p_a');
-$this->db->where($condition);
- if($centro==""){
-$this->db->where('user_id',$medico);
-
- }else{
-$this->db->where('h_c_enfermedad.centro_medico',$centro);
- }
-$this->db->group_by('age');
-$this->db->order_by('total','desc');
-//$this->db->limit(20);
-$query = $this->db->get();
-  return $query->result();
-    }
-
-
-
+	
 
 
 
@@ -285,7 +111,7 @@ public function RendezVous($id){
 $this->db->select("*");
   $this->db->from('rendez_vous');
   $this->db->where('id_patient',$id);
-  $this->db->order_by('id_apoint', 'desc');
+  $this->db->order_by('id', 'desc');
   $query = $this->db->get();
   return $query->result();
 }
@@ -317,19 +143,14 @@ $this->db->select("*");
 
 
 public function Search_factura($val){
-$this->db->select("*");
+  $this->db->select("*");
   $this->db->from('rendez_vous');
-	if($val['perfil']=="Admin"){
- $this->db->where('id_patient',$val['id_patient']);
-	} else if($val['perfil']=="Medico"){
+  if($val['doctor'] !=0){
   $this->db->where('doctor',$val['doctor']);
+  }else{
+	   $this->db->where('centro',$val['centro_medico']);
+  }
   $this->db->where('id_patient',$val['id_patient']);
-	} else{
-$this->db->join('doctor_centro_medico', 'doctor_centro_medico.centro_medico = rendez_vous.centro');
-$this->db->where('id_doctor',$val['doctor']);
-$this->db->where('id_patient',$val['id_patient']);
-
-	}
   $this->db->order_by('id_apoint', 'desc');
   $query = $this->db->get();
   return $query->result();
@@ -339,16 +160,12 @@ public function facturaSinCita($val){
 $this->db->select("*");
   $this->db->from('factura2');
    $this->db->where('id_rdv','fac');
-	if($val['perfil']=="Admin"){
- $this->db->where('paciente',$val['id_patient']);
-	} else if($val['perfil']=="Medico"){
+   if($val['doctor'] !=0){
   $this->db->where('medico',$val['doctor']);
+   }else{
+	$this->db->where('centro_medico',$val['centro_medico']);   
+   }
   $this->db->where('paciente',$val['id_patient']);
-	} else{
-$this->db->join('doctor_centro_medico', 'doctor_centro_medico.centro_medico = factura2.centro_medico');
-$this->db->where('id_doctor',$val['doctor']);
-$this->db->where('paciente',$val['id_patient']);
-}
   $this->db->order_by('idfacc', 'desc');
   $query = $this->db->get();
   return $query->result();
@@ -380,7 +197,7 @@ $this->db->select("*");
 public function get_patient_for_billing($id){
 $this->db->select("centro,area,id_patient,doctor");
   $this->db->from('rendez_vous');
-// $this->db->join('patients_appointments', 'rendez_vous.id_apoint= patients_appointments.id_p_a');
+// $this->db->join('patients_appointments', 'rendez_vous.id= patients_appointments.id_p_a');
   $this->db->where('id_apoint',$id);
   $query = $this->db->get();
   return $query->result();
@@ -457,24 +274,23 @@ $this->db->select("*");
 }
 
 
-public function get_centro_medico_datepicker($data) {
-$condition = "filter_date  BETWEEN " . "'" . $data['date1'] . "'" . " AND " . "'" . $data['date2'] . "'";
+
+public function date_range_appointments_query($data) {
+$condition = "filter_date BETWEEN " . "'" . $data['date1'] . "'" . " AND " . "'" . $data['date2'] . "'";
 $this->db->select('*');
 $this->db->from('rendez_vous');
 $this->db->where($condition);
 $this->db->where('centro', $data['centro']);
-$query = $this->db->get();
-$data = array();  // <--- here
-     if($query->num_rows()>0)
-      {
-      foreach($query->result() as $row)
-      {
-        $data[] = $row;
-      }
-       return $data;
-     }
+if($data['perfil']=="Medico"){
+$this->db->where('doctor', $data['doctor']);
 }
-
+//if($data['perfil']=='Asistente Medico'){
+ //$this->db->join('doctor_centro_medico', 'rendez_vous.doctor= doctor_centro_medico.id_doctor');
+//$this->db->group_by('centro'); 
+//}
+$query = $this->db->get();
+return $query;
+}
 
  function getCountries()
     {
@@ -536,7 +352,7 @@ $data = array();  // <--- here
 
 
 public function get_input($seguro_medico)  {
-  $this->db->select('name');
+  $this->db->select('name AS seguro_campo');
   $this->db->from('fields');
   $this->db->join('medical_insurances_fields', 'fields.id= medical_insurances_fields.field_id');
   $this->db->where('medical_insurance_id',$seguro_medico);
@@ -544,7 +360,7 @@ public function get_input($seguro_medico)  {
   return $query->result();
 }
 public function GET_NAMEF($idpatient)  {
- $this->db->select('input_name,inputf');
+ $this->db->select('input_name AS seguro_camp_numero ,inputf AS seguro_campo');
   $this->db->from('saveinput');
   $this->db->where('patient_id',$idpatient);
   $query = $this->db->get();
@@ -913,7 +729,7 @@ function all_seguro_tarif($val)
     {
 	$this->db->select('*');
 $this->db->from('seguro_medico');
- $this->db->join(' tarifarios', 'seguro_medico.id_sm =  tarifarios.id_seguro');
+ $this->db->join(' tarifarios_test', 'seguro_medico.id_sm =  tarifarios_test.id_seguro');
  $this->db->where('procedimiento',$val);
  $this->db->group_by('id_seguro');
 $this->db->order_by('title');
@@ -1123,13 +939,33 @@ public function get_doc_esp_tarif($id_esp)
 	$this->db->select("id_user, name");
 	$this->db->from('users');
 	$this->db->join('doctor_agenda_test', 'doctor_agenda_test.id_doctor = users.id_user');
-	$this->db->where('area',$id_esp);
 	$this->db->where('id_centro',$id_centro);
 	$this->db->where('active',0);
 	$this->db->group_by('id_doctor');
 	$query = $this->db->get();
 	return $query->result();
 	}
+
+
+	public function get_doc_esp_($id_centro,$id_user)
+	{
+	$this->db->select("id_user, name");
+	$this->db->from('users');
+	$this->db->join('doctor_agenda_test', 'doctor_agenda_test.id_doctor = users.id_user');
+	$this->db->where('id_user',$id_user);
+	$this->db->where('id_centro',$id_centro);
+	$this->db->where('active',0);
+	$this->db->group_by('id_doctor');
+	$query = $this->db->get();
+	return $query->result();
+	}
+
+
+
+
+
+
+
 
 public function view_doctor($id_doctor)
 	{
@@ -1237,16 +1073,7 @@ $this->db->select("*");
   $query = $this->db->get();
   return $query->result();
 }
-public function view_as_doctor_centro($id_doctor)
-	{
 
-$this->db->select("*");
-  $this->db->from('doctor_centro_medico');
-  $this->db->join('medical_centers', 'doctor_centro_medico.centro_medico = medical_centers.id_m_c');
-  $this->db->where('id_doctor',$id_doctor);
-  $query = $this->db->get();
-  return $query->result();
-}
 
 
 
@@ -1258,10 +1085,29 @@ public function view_doctor_centro($id_doctor)
   $this->db->join('medical_centers', 'doctor_agenda_test.id_centro = medical_centers.id_m_c');
   $this->db->where('id_doctor',$id_doctor);
   $this->db->where('active',0);
+  //$this->db->where('type','privado');
+   $this->db->order_by('name','asc');
   $this->db->group_by('id_centro');
   $query = $this->db->get();
   return $query->result();
 }
+
+
+public function view_doctor_centro_cita($id_doctor)
+	{
+   $this->db->select("id_doctor,name,id_m_c");
+  $this->db->from('doctor_agenda_test');
+  $this->db->join('medical_centers', 'doctor_agenda_test.id_centro = medical_centers.id_m_c');
+  $this->db->where('id_doctor',$id_doctor);
+  $this->db->where('active',0);
+   $this->db->order_by('name','asc');
+  $this->db->group_by('id_centro');
+  $query = $this->db->get();
+  return $query->result();
+}
+
+
+
 
 
 public function view_doctor_seguro_as($id)
@@ -1298,7 +1144,7 @@ public function getNec()
 $this->db->select("nec,id_p_a");
   $this->db->from('patients_appointments');
   $this->db->join('rendez_vous', 'rendez_vous.id_patient = patients_appointments.id_p_a');
-  $this->db->order_by('id_apoint', 'desc');
+  $this->db->order_by('id', 'desc');
   $query = $this->db->get();
   return $query->result();
 }
@@ -1746,10 +1592,11 @@ return $result['branch_name'];
 
     }
 
-	public function IndicacionesPrevias($historial_id){
+	public function IndicacionesPrevias($historial_id,$centro){
   $this->db->select('*');
   $this->db->from('h_c_indicaciones_medicales');
   $this->db->where('historial_id',$historial_id);
+    $this->db->where('centro',$centro);
   $this->db->order_by('id_i_m', 'asc');
  $query = $this->db->get();
  return $query->result();
@@ -1778,16 +1625,21 @@ $query = $this->db->get();
  return $query->result();
 }
 
-	public function print_recetas($id){
+	public function print_recetas($id,$col){
   $this->db->select('*');
   $this->db->from('h_c_indicaciones_medicales');
-  $this->db->where('singular_id',1);
+  $this->db->where($col,1);
     $this->db->where('historial_id',$id);
 	$this->db->limit(6);
   $this->db->order_by('id_i_m', 'asc');
  $query = $this->db->get();
  return $query->result();
 }
+
+
+
+
+
 
 
 
@@ -1918,9 +1770,9 @@ function hist_count($historial_id){
 }
 
 
-function hist_count_recetas($historial_id){
+function hist_count_recetas($historial_id,$centro){
 
-    $this->db->select('historial_id')->from('h_c_indicaciones_medicales')->where('historial_id', $historial_id);
+    $this->db->select('historial_id')->from('h_c_indicaciones_medicales')->where('historial_id', $historial_id)->where('centro',$centro);
     $q = $this->db->get();
     return $q->num_rows();
 }
@@ -1958,7 +1810,7 @@ $this->db->select('*');
 $this->db->from('h_c_indicaciones_estudio');
 $this->db->where('historial_id',$historial_id);
 $this->db->where('emergency',$id);
-$this->db->order_by('id_i_e', 'asc');
+$this->db->order_by('id_i_e', 'desc');
 $query = $this->db->get();
 return $query->result();
 }
@@ -1990,11 +1842,12 @@ $query = $this->db->get();
 
 
 
-     function patLab($historial_id,$id_em)
+     function patLab($historial_id,$id_em,$centro)
     {
 	$this->db->select('id_lab, laboratory, operator, insert_time, updated_by,updated_time,printing');
 $this->db->from('h_c_indications_labs');
  $this->db->where('historial_id',$historial_id);
+ $this->db->where('centro',$centro);
   $this->db->where('emergency',$id_em);
  $this->db->order_by('id_lab','DESC');
 $query = $this->db->get();
@@ -2133,23 +1986,14 @@ $query = $this->db->get();
 
 
 
-
-
-
-
-
-
-
-
-
 function Enfermedad($historial_id)
     {
 $this->db->select('*');
-$this->db->from('h_c_enfermedad');
+$this->db->from('h_c_sinopsis');
 $this->db->where('historial_id',$historial_id);
 $this->db->where('id_triaje',0);
 $this->db->group_by('filter_date');
-$this->db->order_by('id_enf', 'asc');
+$this->db->order_by('id_enf', 'DESC');
 $query = $this->db->get();
  return $query->result();
    }
@@ -2185,19 +2029,19 @@ $query = $this->db->get();
 function tarif_by_area($id)
 {
 $this->db->select('id_tarif,codigo,simon,procedimiento,title_area,id_categoria');
-$this->db->from('tarifarios');
-$this->db->join('areas', 'tarifarios.id_categoria= areas.id_ar');
+$this->db->from('tarifarios_test');
+$this->db->join('areas', 'tarifarios_test.id_categoria= areas.id_ar');
 $this->db->where('id_tarif',$id);
 $query = $this->db->get();
 return $query->result();
 }
 
 
-function tarifarios_by_seguros($id)
+function tarifarios_test_by_seguros($id)
 {
 $this->db->select('id_tarif,codigo,simon,procedimiento,id_seguro,monto');
-$this->db->from('tarifarios');
- $this->db->join('seguro_medico', 'tarifarios.id_seguro = seguro_medico.id_sm');
+$this->db->from('tarifarios_test');
+ $this->db->join('seguro_medico', 'tarifarios_test.id_seguro = seguro_medico.id_sm');
 $this->db->where('procedimiento',$id);
 $this->db->group_by('id_seguro');
 $query = $this->db->get();
@@ -2207,7 +2051,7 @@ return $query->result();
 function get_tarifario($id)
 {
 $this->db->select('monto,codigo,simon');
-$this->db->from('tarifarios');
+$this->db->from('tarifarios_test');
 $this->db->where('id_tarif',$id);
 $query = $this->db->get();
 return $query->result();
@@ -2298,7 +2142,7 @@ public function getSSR($historial_id){
   $this->db->select('*');
   $this->db->from('h_c_ant_ssr');
   $this->db->where('hist_id',$historial_id);
-  $this->db->order_by('idssr', 'asc');
+  $this->db->order_by('idssr', 'DESC');
  $query = $this->db->get();
  return $query->result();
 }
@@ -2361,7 +2205,7 @@ return  $insert_id;
 //--------------------------------------------------------------
 
 	 public function saveEnfermedad($saveEnf) {
-        $this->db->insert('h_c_enfermedad', $saveEnf);
+        $this->db->insert('h_c_sinopsis', $saveEnf);
 		$insert_id = $this->db->insert_id();
          return  $insert_id;
 
@@ -2391,11 +2235,11 @@ $this->db->update('h_c_indicaciones_medicales', $checked);
 
 	public function SaveUpEnfermedad($id_con,$s1){
 $this->db->where('id_enf', $id_con);
-$this->db->update('h_c_enfermedad', $s1);
+$this->db->update('h_c_sinopsis', $s1);
 }
 
 	function count_ante_enf($historial_id){
-   $this->db->select('id_enf')->from('h_c_enfermedad');
+   $this->db->select('id_enf')->from('h_c_sinopsis');
 	$this -> db -> where('historial_id',$historial_id);
     $q = $this->db->get();
     return $q->num_rows();
@@ -2438,7 +2282,7 @@ $this->db->select('*');
 $this->db->from('h_c_examen_fisico');
 $this->db->where('historial_id',$historial_id);
 //$this->db->where('id_triaje',0);
-$this->db->order_by('id_sig', 'asc');
+$this->db->order_by('id_sig', 'DESC');
 $query = $this->db->get();
 return $query->result();
 }
@@ -2506,7 +2350,7 @@ $this->db->update('h_c_examen_sistema', $s1);
   $this->db->select('*');
   $this->db->from('h_c_examen_sistema');
   $this->db->where('historial_id',$historial_id);
-  $this->db->order_by('id_exs', 'asc');
+  $this->db->order_by('id_exs', 'DESC');
  $query = $this->db->get();
  return $query->result();
 }
@@ -2532,7 +2376,7 @@ $this->db->update('h_c_examen_sistema', $s1);
   $this->db->from('h_c_conclusion_diagno');
  $this->db->where('historial_id',$historial_id);
 $this->db->group_by('current_day');
-  $this->db->order_by('id_cdia', 'asc');
+  $this->db->order_by('id_cdia', 'desc');
  $query = $this->db->get();
  return $query->result();
 }
@@ -2560,7 +2404,7 @@ public function DeleteHistLab2($val){
   $this -> db -> where('laboratory', $val['laboratory']);
   $this -> db -> where('user_id', $val['user_id']);
   $this -> db -> where('historial_id', $val['historial_id']);
-  $this -> db -> where('printing',1);
+  $this -> db -> where('printing2',1);
   $this -> db -> delete('h_c_indications_labs');
 }
 
@@ -2592,7 +2436,7 @@ public function DeleteHistLabEmpty(){
 
 public function show_enfermedad($id_enf)  {
   $this->db->select('*');
-  $this->db->from('h_c_enfermedad');
+  $this->db->from('h_c_sinopsis');
   $this->db->where('id_enf',$id_enf);
    $query = $this->db->get();
   return $query->result();
@@ -2600,23 +2444,13 @@ public function show_enfermedad($id_enf)  {
 
 public function print_enf_act($id)  {
   $this->db->select('*');
-  $this->db->from('h_c_enfermedad');
+  $this->db->from('h_c_sinopsis');
   $this->db->where('historial_id',$id);
   $query = $this->db->get();
   return $query->result();
 }
 
 
-//------------------------
-
-
-public function getExecuatur()  {
-  $this->db->select('*');
-  $this->db->from('execuatur');
-  $this->db->limit(40);
-  $query = $this->db->get();
-  return $query->result();
-}
 
 public function Diag_pres($val)  {
   $this->db->select('idd,description');
@@ -2654,17 +2488,7 @@ public function Diag_pro($val)  {
 
 
 
-public function deleteCondef($id_con){
-$this -> db -> where('con_id_link', $id_con);
-$this -> db -> delete('h_c_diagno_def_link_clown');
-}
 
-
-
-public function deleteCondef2(){
-$this -> db -> where('diagno_def',0);
-$this -> db -> delete('h_c_diagno_def_link_clown');
-}
 
 
 public function deleteConPro($id_con){
@@ -2699,12 +2523,12 @@ public function print_cond($id){
 
 
 public function show_diagno_def($id_con,$origine){
-  $this->db->select('diagno_def');
-  $this->db->from('h_c_diagno_def_link');
-  $this->db->where('con_id_link',$id_con);
-  $this->db->where('origine',$origine);
-  $this->db->group_by('diagno_def');
- $query = $this->db->get();
+  $this->clinical_history->select('diagno_def');
+  $this->clinical_history->from('h_c_diagno_def_link');
+  $this->clinical_history->where('con_id_link',$id_con);
+  $this->clinical_history->where('origine',$origine);
+  $this->clinical_history->group_by('diagno_def');
+ $query = $this->clinical_history->get();
  return $query->result();
 }
 
@@ -2744,13 +2568,6 @@ public function DelAsistenteCentro($id){
 }
 
 
-public function print_estudio($id)  {
-  $this->db->select('*');
- $this->db->from('h_c_indicaciones_estudio');
- $this->db->where('id_i_e',$id);
-  $query = $this->db->get();
-  return $query->result();
-}
 
 
 public function print_estudio_patient_search($id)  {
@@ -2837,18 +2654,35 @@ $this->db->select("name");
     }
 
 
-	  public function DeleteEmptyRehab($historial_id){
- $this->db->where('marcha_inicio', '');
-    $this->db->where('long_mov_der', '');
-	 $this->db->where('long_mov_izq', '');
-	  $this->db->where('long_simetria', '');
-	   $this->db->where('long_fluidez', '');
-	    $this->db->where('long_traject', '');
-		 $this->db->where('long_tronco', '');
-		  $this->db->where('long_postura', '');
-		   $this->db->where('equi_sentado', '');
-		    $this->db->where('equi_levantarse', '');
-			 $this->db->where('equi_intentos', '');
+	 public function DeleteEmptyRehab($historial_id){
+$this->db->where('marcha_inicio', '');
+$this->db->where('long_mov_der', '');
+$this->db->where('long_mov_izq', '');
+$this->db->where('long_simetria', '');
+$this->db->where('long_fluidez', '');
+$this->db->where('long_traject', '');
+$this->db->where('long_tronco', '');
+$this->db->where('long_postura', '');
+$this->db->where('equi_sentado', '');
+$this->db->where('equi_levantarse', '');
+$this->db->where('equi_intentos', '');
+$this->db->where('equi_biped1', '');
+$this->db->where('equi_biped2', '');
+$this->db->where('equi_emp', '');
+$this->db->where('equi_ojos', '');
+$this->db->where('equi_vuelta', '');
+$this->db->where('equi_sentarse', '');
+$this->db->where('eval_balsys', '');
+$this->db->where('eval_movim', '');
+$this->db->where('eval_monop', '');
+$this->db->where('criteria_intens', '');
+$this->db->where('criteria_cuidado1', '');
+$this->db->where('levantar_peso', '');
+$this->db->where('criteria_caminar', '');
+$this->db->where('criteria_estar_sent', '');
+$this->db->where('criteria_dormir', '');
+$this->db->where('criteria_sexual', '');
+$this->db->where('criteria_vida', '');
 $this->db->where('id_historial', $historial_id);
 $this->db->delete('h_c_rehabilitacion');
 }
@@ -2901,7 +2735,7 @@ public function Rehab($historial_id){
   $this->db->select('*');
   $this->db->from('h_c_rehabilitacion');
   $this->db->where('id_historial',$historial_id);
-  $this->db->order_by('id_rehab', 'asc');
+  $this->db->order_by('id_rehab', 'DESC');
  $query = $this->db->get();
  return $query->result();
 }
@@ -2910,7 +2744,7 @@ public function Oftal($historial_id){
   $this->db->select('*');
   $this->db->from('h_c_oftalmologia');
   $this->db->where('id_historial',$historial_id);
-  $this->db->order_by('id_oftal', 'asc');
+  $this->db->order_by('id_oftal', 'DESC');
  $query = $this->db->get();
  return $query->result();
 }
@@ -3962,7 +3796,7 @@ public function sObs($historial_id){
   $this->db->select('*');
   $this->db->from('h_c_ante_obs1');
   $this->db->where('hist_id',$historial_id);
-    $this->db->order_by('idobs', 'asc');
+    $this->db->order_by('idobs', 'DESC');
   $query = $this->db->get();
  return $query->result();
 }
@@ -4001,37 +3835,6 @@ $this->db->insert('h_c_ant_pedia', $save);
 $this->db->where('hist_id', $historial_id);
 	 $this->db->delete('h_c_ant_pedia');
 }
-
-   public function DeleteAntPuerperio($id){
-$this->db->where('pu_fecha1', '');
-$this->db->where('pu_fecha2', '');
-$this->db->where('pu_fecha3', '');
-$this->db->where('pu_t1', '');
-$this->db->where('pu_t2', '');
-$this->db->where('pu_t3', '');
-$this->db->where('pu_pul1', '');
-$this->db->where('pu_pul11', '');
-$this->db->where('pu_pul2', '');
-$this->db->where('pu_pul22', '');
-$this->db->where('pu_pul3', '');
-$this->db->where('pu_pul33', '');
-$this->db->where('pu_ten1', '');
-$this->db->where('pu_ten11', '');
-$this->db->where('pu_ten2', '');
-$this->db->where('pu_ten22', '');
-$this->db->where('pu_ten3', '');
-$this->db->where('pu_ten33', '');
-$this->db->where('pu_inv1', '');
-$this->db->where('pu_inv2', '');
-$this->db->where('pu_inv3', '');
-$this->db->where('pu_inv3', '');
-$this->db->where('loquios1', '');
-$this->db->where('loquios2', '');
-$this->db->where('loquios3', '');
-$this->db->where('hist_id', $id);
-$this->db->delete('h_c_ant_puerperio');
-}
-
 
 
 
@@ -4212,6 +4015,22 @@ $this->db->select("*");
 }
 
 
+
+
+function NecPatientSearch($nec){
+$this->db->select("*");
+  $this->db->from('patients_appointments');
+ $this->db->where('id_p_a',$nec);
+ $query = $this->db->get();
+  return $query->result();
+}
+
+
+
+
+
+
+
 function findPatientByNombre($val1,$val2,$val3){
 $this->db->select("*");
   $this->db->from('patients_appointments');
@@ -4359,7 +4178,7 @@ $this->db->insert('mssn1', $save);
 }
 public function Serviciomssm($doc_seg){
 $this->db->select("id_tarif,procedimiento");
-  $this->db->from('tarifarios');
+  $this->db->from('tarifarios_temporal');
   $this->db->where('id_doctor', $doc_seg['id_doctor']);
     $this->db->where('id_seguro', $doc_seg['id_seguro']);
 	$this->db->where('plan', $doc_seg['plan']);
@@ -4372,9 +4191,42 @@ $this->db->group_by('procedimiento');
 
 
 
+ function count_medico_seguro_publico_tariff($doc_seg){
+
+    $this->db->select('id_tarif')->from('tarifarios_temporal');
+  $this->db->where('id_doctor', $doc_seg['id_doctor']);
+    $this->db->where('id_seguro', $doc_seg['id_seguro']);
+	$this->db->where('plan', $doc_seg['plan']);
+$this->db->group_by('procedimiento');
+    $q = $this->db->get();
+    return $q->num_rows();
+}
+
+
+
+
+
+
+
+
+
+ function count_medico_seguro_privado_tariff($doc_seg){
+
+    $this->db->select('id_tarif')->from('tarifarios_temporal');
+  $this->db->where('id_doctor', $doc_seg['id_doctor']);
+    $this->db->where('id_seguro', $doc_seg['id_seguro']);
+	 $this->db->where('plan', $doc_seg['id_cm']);
+$this->db->group_by('procedimiento');
+    $q = $this->db->get();
+    return $q->num_rows();
+}
+
+
+
+
 public function ServiciomssmPrivado($doc_seg){
-$this->db->select("id_tarif,procedimiento");
-  $this->db->from('tarifarios');
+$this->db->select("id_tarif, procedimiento, monto, id_seguro, plan, id_doctor, id_centro");
+  $this->db->from('tarifarios_temporal');
   $this->db->where('id_doctor', $doc_seg['id_doctor']);
     $this->db->where('id_seguro', $doc_seg['id_seguro']);
 	 $this->db->where('plan', $doc_seg['id_cm']);
@@ -4387,18 +4239,26 @@ $this->db->group_by('procedimiento');
 
 
 
+ function count_centro_tariff($id1,$id2){
+
+    $this->db->select('id_c_taf')->from('centros_tarifarios_test');
+	  $this->db->where('centro_id', $id1);
+    $this->db->where('seguro_id', $id2);
+    $this->db->group_by('sub_groupo');
+    $q = $this->db->get();
+    return $q->num_rows();
+}
 
 
 
 
 
-
-public function Service_centro($id1,$id2){
-$this->db->select("id_c_taf,sub_groupo,groupo");
-  $this->db->from('centros_tarifarios');
-  $this->db->where('centro_id', $id1);
-  $this->db->where('seguro_id', $id2);
-$this->db->group_by('sub_groupo');
+public function Service_centro($id_cm,$seg){
+$this->db->select("id_tarif,procedimiento");
+  $this->db->from('tarifarios_temporal');
+  $this->db->where('id_centro', $id_cm);
+    $this->db->where('id_seguro', $seg);
+$this->db->group_by('procedimiento');
   $query = $this->db->get();
   return $query->result();
 }
@@ -4427,7 +4287,7 @@ $this->db->select("id,doctorid,insumservicio");
 */
 public function getCatName($cat){
 $this->db->select("id_tarif,procedimiento,id_categoria");
-  $this->db->from('tarifarios');
+  $this->db->from('tarifarios_test');
   $this->db->where('id_categoria',$cat);
  $query = $this->db->get();
   return $query->result();
@@ -4436,13 +4296,14 @@ public function ViewFact2($id){
 $this->db->select("*");
   $this->db->from('factura2');
  $this->db->where('idfacc',$id);
+ $this->db->where('canceled',0);
   $query = $this->db->get();
   return $query->result();
 }
 
 public function EditProcedTarif($get){
 $this->db->select("id_tarif,procedimiento");
-  $this->db->from('tarifarios');
+  $this->db->from('tarifarios_test');
  	$this->db->where('id_seguro',$get['id_seguro']);
 	$this->db->where('id_doctor',$get['id_doctor']);
   $query = $this->db->get();
@@ -4452,6 +4313,7 @@ public function ViewFact($id){
 $this->db->select("*");
   $this->db->from('factura');
  $this->db->where('id2',$id);
+ $this->db->where('canceled',0);
  $this->db->order_by('idfac','desc');
   $query = $this->db->get();
   return $query->result();
@@ -4538,10 +4400,7 @@ $this->db->update('patients_appointments', $data);
 }
 
 
-  public function delete_empty_obs(){
-  $this->db->where('dia1 =','NULL');
-  $this->db->delete('h_c_ante_obs1');
-}
+
   public function delete_empty_oftal(){
   $this->db->where('od_sin_con','');
   $this->db->delete('h_c_oftalmologia');
@@ -4808,15 +4667,17 @@ public function print_ars_fac_report($id_ncf,$seguro)  {
   return $query->result();
 }
 
-public function print_ars_fac_found($id_ncf,$id_patient)  {
+public function print_ars_fac_found($id_ncf, $desde, $hasta)  {
+	$condition="fecha BETWEEN " . "'" . $desde . "'" . " AND " . "'" . $hasta . "'";
  $this->db->select('*,sum(tsubtotal) as t1, sum(totpagseg) as t2, sum(totpagpa) as t3');
   $this->db->from('invoice_ars_claims');
-  if($id_patient !=0){
-  $this->db->where('paciente',$id_patient);
-  }
+  //if($id_patient !=0){
+  //$this->db->where('paciente',$id_patient);
+  //}
+  $this->db->where($condition);
   $this->db->where('ncf_id',$id_ncf);
   $this->db->group_by('numauto');
-  $this->db->order_by('fecha','desc');
+  $this->db->order_by('fecha','asc');
   $query = $this->db->get();
   return $query->result();
 }
@@ -5053,33 +4914,17 @@ $data = array();  // <--- here
 }
 
 
-public function get_patient_historial($desde,$hasta,$medico,$pat,$cent)  {
-$condition = "filter_date BETWEEN " . "'" .$desde. "'" . " AND " . "'" .$hasta. "'";
-  $this->db->select('*');
-  $this->db->from('h_c_enfermedad');
-  // $this->db->join('h_c_diagno_def_link', 'h_c_diagno_def_link.p_id=h_c_enfermedad.historial_id');
-  $this->db->where('historial_id',$pat);
- $this->db->where('user_id',$medico);
-  $this->db->where('centro_medico',$cent);
- $this->db->where($condition);
-  $query = $this->db->get();
-  return $query->result();
-}
 
 
 
 
-public function show_diagno_pat($id1,$id2,$id3,$date){
-$this->db->select('code,description');
-  $this->db->from('h_c_diagno_def_link');
- $this->db->join('cied', 'h_c_diagno_def_link.diagno_def=cied.idd');
- $this->db->where('p_id',$id1);
-  $this->db->where('user_id',$id2);
-  $this->db->where('centro_medico',$id3);
-   $this->db->where('insert_date',$date);
- $this->db->group_by('diagno_def');
-  $this->db->order_by('insert_date','desc');
- $query = $this->db->get();
+
+public function show_diagno_pat($con_id_link){
+$this->clinical_history->select('code,description');
+  $this->clinical_history->from('h_c_diagno_def_link');
+ $this->clinical_history->join('cied', 'h_c_diagno_def_link.diagno_def=cied.idd');
+ $this->clinical_history->where('con_id_link',$con_id_link);
+ $query = $this->clinical_history->get();
  return $query->result();
 
 }
@@ -5088,26 +4933,26 @@ $this->db->select('code,description');
 
 
 public function show_diagno_pat_audit($id1,$id2,$id3){
-$this->db->select('code,description');
-  $this->db->from('h_c_diagno_def_link');
- $this->db->join('cied', 'h_c_diagno_def_link.diagno_def=cied.idd');
- $this->db->where('p_id',$id1);
-  $this->db->where('user_id',$id2);
-  $this->db->where('centro_medico',$id3);
- $query = $this->db->get();
+$this->clinical_history->select('code,description');
+  $this->clinical_history->from('h_c_diagno_def_link');
+ $this->clinical_history->join('cied', 'h_c_diagno_def_link.diagno_def=cied.idd');
+ $this->clinical_history->where('p_id',$id1);
+  $this->clinical_history->where('user_id',$id2);
+  $this->clinical_history->where('centro_medico',$id3);
+ $query = $this->clinical_history->get();
  return $query->result();
 
 }
 
 
 public function show_diagno_pat_admin($id1,$id2,$date){
-$this->db->select('code,description');
-  $this->db->from('h_c_diagno_def_link');
- $this->db->join('cied', 'h_c_diagno_def_link.diagno_def=cied.idd');
- $this->db->where('p_id',$id1);
- $this->db->where('centro_medico',$id2);
- $this->db->where('insert_date',$date);
- $query = $this->db->get();
+$this->clinical_history->select('code,description');
+  $this->clinical_history->from('h_c_diagno_def_link');
+ $this->clinical_history->join('cied', 'h_c_diagno_def_link.diagno_def=cied.idd');
+ $this->clinical_history->where('p_id',$id1);
+ $this->clinical_history->where('centro_medico',$id2);
+ $this->clinical_history->like('insert_date',$date);
+ $query = $this->clinical_history->get();
  return $query->result();
 
 }
@@ -5117,9 +4962,9 @@ $this->db->select('code,description');
 
 public function show_diagno_pat_print($id){
 
-	 $this->db->join('cied', 'h_c_diagno_def_link.diagno_def=cied.idd');
-   $this->db->where('p_id',$id);
-  $query = $this->db->get('h_c_diagno_def_link');
+	 $this->clinical_history->join('cied', 'h_c_diagno_def_link.diagno_def=cied.idd');
+   $this->clinical_history->where('p_id',$id);
+  $query = $this->clinical_history->get('h_c_diagno_def_link');
   return $query;
 
 
@@ -5164,7 +5009,7 @@ $this->db->where("validate",1);
   public function rates_view($id)
     {
 	$this->db->select("*");
-  $this->db->from('tarifarios');
+  $this->db->from('tarifarios_test');
   $this->db->where('id_tarif', $id);
   $this->db->order_by('procedimiento', 'desc');
   $query = $this->db->get();
@@ -5196,22 +5041,22 @@ $this->db->insert('tarif_seg_doc', $save);
 
 
 
-function tarifarios_grouped()
+function tarifarios_test_grouped()
 	{
 	$this->db->select('id_user,name');
-	$this->db->from('tarifarios');
-	$this->db->join('users', 'tarifarios.id_doctor=users.id_user');
+	$this->db->from('tarifarios_test');
+	$this->db->join('users', 'tarifarios_test.id_doctor=users.id_user');
 	$this->db->group_by('id_doctor');
 	$query = $this->db->get();
 	return $query->result();
 	}
 
 
-	function tarifarios_grouped_seguro()
+	function tarifarios_test_grouped_seguro()
 	{
 	$this->db->select('id_sm,title');
-	$this->db->from('tarifarios');
-	$this->db->join('seguro_medico', 'tarifarios.id_seguro=seguro_medico.id_sm');
+	$this->db->from('tarifarios_test');
+	$this->db->join('seguro_medico', 'tarifarios_test.id_seguro=seguro_medico.id_sm');
 	$this->db->group_by('id_seguro');
 	$query = $this->db->get();
 	return $query->result();
@@ -5222,18 +5067,18 @@ function tarifarios_grouped()
 
 public function save_edit_tarif($id,$data){
 $this->db->where('id_tarif', $id);
-$this->db->update('tarifarios', $data);
+$this->db->update('tarifarios_test', $data);
 }
 
 public function save_edit_tarifario_centro($id,$data){
 $this->db->where('id_c_taf', $id);
-$this->db->update('centros_tarifarios', $data);
+$this->db->update('centros_tarifarios_test', $data);
 }
 
 	function display_tarif_seguro($id)
 	{
 	$this->db->select('*');
-	$this->db->from('tarifarios');
+	$this->db->from('tarifarios_test');
 	$this->db->where('id_seguro',$id);
 	$this->db->order_by('id_tarif','desc');
 	$query = $this->db->get();
@@ -5243,7 +5088,7 @@ $this->db->update('centros_tarifarios', $data);
 	function display_tarif_doc($id)
 	{
 	$this->db->select('*');
-	$this->db->from('tarifarios');
+	$this->db->from('tarifarios_test');
 	$this->db->where('id_doctor',$id);
 	$query = $this->db->get();
 	return $query->result();
@@ -5252,7 +5097,7 @@ $this->db->update('centros_tarifarios', $data);
 	function display_tarif_doc_($id1,$id2)
 	{
 	$this->db->select('*');
-	$this->db->from('tarifarios');
+	$this->db->from('tarifarios_test');
 	$this->db->where('id_doctor',$id1);
 	$this->db->where('id_seguro',$id2);
 	$query = $this->db->get();
@@ -5262,7 +5107,7 @@ $this->db->update('centros_tarifarios', $data);
 		function display_tarif_seguro_doc($taf)
 	{
 	$this->db->select('*');
-	$this->db->from('tarifarios');
+	$this->db->from('tarifarios_test');
 	$this->db->where('id_doctor',$taf['id_doctor']);
 	$this->db->where('id_seguro',$taf['id_seguro']);
 	$this->db->order_by('id_tarif','desc');
@@ -5281,7 +5126,7 @@ $this->db->update('centros_tarifarios', $data);
 		function seguro_header($id)
 	{
 	$this->db->select('*');
-	$this->db->from('tarifarios');
+	$this->db->from('tarifarios_test');
 	$this->db->where('id_seguro',$id);
 	$query = $this->db->get();
 	return $query->result();
@@ -5290,7 +5135,7 @@ $this->db->update('centros_tarifarios', $data);
 		function other_seguro_tarif($val)
 	{
 	$this->db->select('*');
-	$this->db->from('tarifarios');
+	$this->db->from('tarifarios_test');
 	$this->db->where('id_seguro',$val['id_seguro']);
 	$this->db->where('id_doctor',$val['id_doctor']);
 
@@ -5304,7 +5149,7 @@ $this->db->update('centros_tarifarios', $data);
 	function edit_tarifario($id)
 	{
 	$this->db->select('*');
-	$this->db->from('tarifarios');
+	$this->db->from('tarifarios_test');
 	$this->db->where('id_tarif',$id);
 	$query = $this->db->get();
 	return $query->result();
@@ -5313,7 +5158,7 @@ $this->db->update('centros_tarifarios', $data);
 	function edit_tarifario_centro($id)
 	{
 	$this->db->select('*');
-	$this->db->from('centros_tarifarios');
+	$this->db->from('centros_tarifarios_test');
 	$this->db->where('id_c_taf',$id);
 	$query = $this->db->get();
 	return $query->result();
@@ -5323,7 +5168,7 @@ $this->db->update('centros_tarifarios', $data);
 	function tarifario_centro_bill($id)
 	{
 	$this->db->select('*');
-	$this->db->from('centros_tarifarios');
+	$this->db->from('centros_tarifarios_test');
 	$this->db->where('centro_id',$id);
 	$query = $this->db->get();
 	return $query->result();
@@ -5335,7 +5180,7 @@ $this->db->update('centros_tarifarios', $data);
 	{
 	$this->db->select('id_m_c,name');
 	$this->db->from('medical_centers');
-	$this->db->join('centros_tarifarios', 'medical_centers.id_m_c=centros_tarifarios.centro_id');
+	$this->db->join('centros_tarifarios_test', 'medical_centers.id_m_c=centros_tarifarios_test.centro_id');
 	$this->db->group_by('centro_id');
 	$query = $this->db->get();
 	return $query->result();
@@ -5356,7 +5201,7 @@ $this->db->update('centros_tarifarios', $data);
 	{
 	$this->db->select('id_ar,title_area');
 	$this->db->from('areas');
-	$this->db->join('tarifarios', 'areas.id_ar=tarifarios.id_categoria');
+	$this->db->join('tarifarios_test', 'areas.id_ar=tarifarios_test.id_categoria');
 	$this->db->where('id_doctor',$id_user);
 	$this->db->group_by('id_categoria');
 	$query = $this->db->get();
@@ -5368,7 +5213,7 @@ $this->db->update('centros_tarifarios', $data);
 function display_tarif_centro_categoria($id1,$id2)
 	{
 	$this->db->select('groupo,centro_id,seguro_id');
-	$this->db->from('centros_tarifarios');
+	$this->db->from('centros_tarifarios_test');
 	$this->db->where('centro_id',$id1);
 	$this->db->where('seguro_id',$id2);
 	$this->db->where('groupo !=',"");
@@ -5380,8 +5225,8 @@ function display_tarif_centro_categoria($id1,$id2)
 
 	public function seguro_doc_tarif_grouped($id)  {
   $this->db->select('*');
-  $this->db->from('tarifarios');
- $this->db->join('seguro_medico', 'seguro_medico.id_sm= tarifarios.id_seguro');
+  $this->db->from('tarifarios_test');
+ $this->db->join('seguro_medico', 'seguro_medico.id_sm= tarifarios_test.id_seguro');
   $this->db->where("id_doctor",$id);
   $this->db->group_by('id_seguro');
   $query = $this->db->get();
@@ -5391,8 +5236,8 @@ function display_tarif_centro_categoria($id1,$id2)
 
 	public function seguro_doc_tarif_grouped_med($id,$id2)  {
   $this->db->select('*');
-  $this->db->from('tarifarios');
- $this->db->join('seguro_medico', 'seguro_medico.id_sm= tarifarios.id_seguro');
+  $this->db->from('tarifarios_test');
+ $this->db->join('seguro_medico', 'seguro_medico.id_sm= tarifarios_test.id_seguro');
   $this->db->where("id_doctor",$id);
   $this->db->where("id_seguro",$id2);
   $this->db->group_by('id_seguro');
@@ -5409,7 +5254,7 @@ function display_tarif_centro_categoria($id1,$id2)
 
 	public function seguro_doc_tarif_grouped1($id)  {
   $this->db->select('*');
-  $this->db->from('tarifarios');
+  $this->db->from('tarifarios_test');
  $this->db->where("id_seguro",$id);
   $this->db->group_by('id_doctor');
   $query = $this->db->get();
@@ -5420,7 +5265,7 @@ function display_tarif_centro_categoria($id1,$id2)
 	function centro_categoria_servicios($val)
 	{
 	$this->db->select('*');
-	$this->db->from('centros_tarifarios');
+	$this->db->from('centros_tarifarios_test');
 	$this->db->where('groupo',$val['categoria']);
 	$this->db->where('centro_id',$val['id_centro']);
 	$this->db->where('seguro_id',$val['id_seguro']);
@@ -5437,20 +5282,20 @@ function display_tarif_centro_categoria($id1,$id2)
      }
 
 	 public function saveNewTarifMedico($data) {
-        $this->db->insert('tarifarios', $data);
+        $this->db->insert('tarifarios_test', $data);
      }
 
-	function check_if_doc_has_tarifarios_for_this_seguro($get)
+	function check_if_doc_has_tarifarios_test_for_this_seguro($get)
 	{
 	$this->db->select('*');
-	$this->db->from('tarifarios');
+	$this->db->from('tarifarios_test');
 	$this->db->where('id_seguro',$get['id_seguro']);
 	$this->db->where('id_doctor',$get['id_doctor']);
 	$query = $this->db->get();
 	 return $query->num_rows();
 	}
 
-		function check_if_centro_medico_has_tarifarios_already($id1,$id2)
+		function check_if_centro_medico_has_tarifarios_test_already($id1,$id2)
 	{
 	$this->db->select('*');
 	$this->db->from('codigo_contrato');
@@ -5486,11 +5331,11 @@ $this -> db -> delete('doctor_seguro');
 
 	public function delete_tarifarios_centro($id){
   $this -> db -> where('id_c_taf', $id);
-  $this -> db -> delete('centros_tarifarios');
+  $this -> db -> delete('centros_tarifarios_test');
 }
 
 	public function saveNewTarifCentro($data){
- $this->db->insert('centros_tarifarios', $data);
+ $this->db->insert('centros_tarifarios_test', $data);
 }
 
 
@@ -5499,19 +5344,19 @@ $this -> db -> delete('doctor_seguro');
 
 	public function delete_tarifarios($id){
   $this -> db -> where('id_tarif', $id);
-  $this -> db -> delete('tarifarios');
+  $this -> db -> delete('tarifarios_test');
 }
 
 
 
-	public function delete_all_tarifarios($del){
+	public function delete_all_tarifarios_test($del){
   $this -> db -> where('id_seguro', $del['id_seguro']);
    $this -> db -> where('id_doctor', $del['id_doctor']);
-  $this -> db -> delete('tarifarios');
+  $this -> db -> delete('tarifarios_test');
 }
 
 
-	public function delete_all_tarifarios_codigo($del){
+	public function delete_all_tarifarios_test_codigo($del){
   $this -> db -> where('id_seguro', $del['id_seguro']);
    $this -> db -> where('id_doctor', $del['id_doctor']);
   $this -> db -> delete('codigo_contrato');
@@ -5587,12 +5432,89 @@ return $query->result();
 public function report_bill_by_date_centro($id,$perfil){
 $this->db->select("centro_medico");
 $this->db->from('factura2');
+$this->db->join('medical_centers', 'factura2.centro_medico = medical_centers.id_m_c');
 if($perfil=="Medico"){
 $this->db->where('medico',$id);
 }
 $this->db->group_by('centro_medico');
 $query = $this->db->get();
 return $query->result();
+}
+
+
+
+public function report_bill_by_date_centro_linked($id) {
+$this->db->select("id_centro AS centro_medico");
+$this->db->from('medico_citas_linked_centers');
+$this->db->join('doctor_agenda_test', 'doctor_agenda_test.id_doctor = medico_citas_linked_centers.current_doctor');
+
+$this->db->where('id_doctor',$id);
+
+$this->db->group_by('id_centro');
+$query = $this->db->get();
+return $query->result();
+}
+
+
+
+
+public function billCentroAdministrativo($id){
+$this->db->select("centro_medico");
+$this->db->from('factura2');
+$this->db->join('medical_centers', 'factura2.centro_medico = medical_centers.id_m_c');
+
+$this->db->where('centro_medico',$id);
+
+$this->db->group_by('centro_medico');
+$query = $this->db->get();
+return $query->result();
+}
+
+public function report_bill_by_date_centro_fac($id,$perfil,$type, $admin_type_centro){
+$this->db->select("centro_medico");
+$this->db->from('factura2');
+$this->db->join('medical_centers', 'factura2.centro_medico = medical_centers.id_m_c');
+if($perfil=="Medico"){
+$this->db->where('medico',$id);
+}else{
+if($admin_type_centro){
+	$this->db->where('centro_medico',$admin_type_centro);
+}	
+}
+$this->db->where('type',$type);
+$this->db->group_by('centro_medico');
+$query = $this->db->get();
+return $query->result();
+}
+
+
+
+
+
+
+
+public function view_as_doctor_centro($id_doctor)
+	{
+
+$this->db->select("*");
+  $this->db->from('doctor_centro_medico');
+  $this->db->join('medical_centers', 'doctor_centro_medico.centro_medico = medical_centers.id_m_c');
+    $this->db->where('id_doctor',$id_doctor);
+	 $this->db->where('activate',0);
+  $query = $this->db->get();
+  return $query->result();
+}
+
+public function view_as_doctor_centro_fac($id_doctor,$type)
+	{
+
+$this->db->select("*");
+  $this->db->from('doctor_centro_medico');
+  $this->db->join('medical_centers', 'doctor_centro_medico.centro_medico = medical_centers.id_m_c');
+    $this->db->where('id_doctor',$id_doctor);
+  $this->db->where('type',$type);
+  $query = $this->db->get();
+  return $query->result();
 }
 
 
@@ -5646,6 +5568,7 @@ $this->db->where("center_id",$data['centro']);
 if($data['perfil'] =="Medico"){
 $this->db->where("medico2",$data['id_user']);
 }
+$this->db->group_by('inserted_time');
 $this->db->order_by('seguro','desc');
 $query = $this->db->get();
 return $query->result();
@@ -5654,17 +5577,7 @@ return $query->result();
 
 
 
-public function get_seguro_date_range($data) {
-$condition = "filter BETWEEN " . "'" . $data['desde'] . "'" . " AND " . "'" . $data['hasta'] . "'";
-$this->db->select('*');
-$this->db->from('factura');
-$this->db->where($condition);
-$this->db->where("center_id",$data['centro']);
-$this->db->where("seguro",$data['seguro']);
-$this->db->order_by('pat_id','desc');
-$query = $this->db->get();
-return $query->result();
-}
+
 
 
 
@@ -5684,6 +5597,7 @@ $this->db->where("seguro",11);
 if($data['perfil'] =="Medico"){
 $this->db->where("medico2",$data['id_user']);
 }
+$this->db->group_by('inserted_time');
 $this->db->order_by('seguro','desc');
 $query = $this->db->get();
 return $query->result();
@@ -5697,6 +5611,7 @@ $this->db->where($condition);
 $this->db->where("medico2",$data['doctor']);
 $this->db->where("center_id",$data['centro']);
 $this->db->where("seguro",11);
+$this->db->group_by('inserted_time');
 $this->db->order_by('seguro','desc');
 $query = $this->db->get();
 return $query->result();
@@ -5710,6 +5625,7 @@ $this->db->where($condition);
 $this->db->where("medico2",$data['doctor']);
 $this->db->where("center_id",$data['centro']);
 //$this->db->where("seguro !=",11);
+//$this->db->group_by('inserted_time');
 $this->db->order_by('seguro','desc');
 $query = $this->db->get();
 return $query->result();
@@ -5743,6 +5659,7 @@ $this->db->join('doctor_centro_medico', 'doctor_centro_medico.centro_medico = fa
 } else if($perfil='Medico') {
 $this->db->where('medico',$id);
 }
+$this->db->where('seguro_medico !=',11);
 $this->db->group_by('seguro_medico');
 $query = $this->db->get();
 return $query->result();
@@ -5754,17 +5671,18 @@ return $query->result();
 public function search_date_range_seguro_factura_adm(){
 $this->db->select("seguro_medico");
 $this->db->from('factura2');
+$this->db->where('seguro_medico !=',11);
 $this->db->group_by('seguro_medico');
 $query = $this->db->get();
 return $query->result();
 }
 
 
-function tarifarios_by_seguros_doc($get)
+function tarifarios_test_by_seguros_doc($get)
 {
 $this->db->select('id_tarif,codigo,simon,procedimiento,id_seguro,monto');
-$this->db->from('tarifarios');
- $this->db->join('seguro_medico', 'tarifarios.id_seguro = seguro_medico.id_sm');
+$this->db->from('tarifarios_test');
+ $this->db->join('seguro_medico', 'tarifarios_test.id_seguro = seguro_medico.id_sm');
 $this->db->where('procedimiento',$get['procedimiento']);
 $this->db->where('id_doctor',$get['id_user']);
 $this->db->group_by('id_seguro');
@@ -5772,11 +5690,11 @@ $query = $this->db->get();
 return $query->result();
 }
 
-function tarifarios_grouped_seguro_doc($id_user)
+function tarifarios_test_grouped_seguro_doc($id_user)
 	{
 	$this->db->select('id_sm,title');
-	$this->db->from('tarifarios');
-	$this->db->join('seguro_medico', 'tarifarios.id_seguro=seguro_medico.id_sm');
+	$this->db->from('tarifarios_test');
+	$this->db->join('seguro_medico', 'tarifarios_test.id_seguro=seguro_medico.id_sm');
 	$this->db->where('id_doctor',$id_user);
 	$this->db->group_by('id_seguro');
 	$query = $this->db->get();
@@ -5794,8 +5712,8 @@ public function deleteNingunoDroga(){
 
 
 public function DeletePatCied($id){
-  $this -> db -> where('diagno_def', $id);
-  $this -> db -> delete('h_c_diagno_def_link');
+  $this ->clinical_history -> where('diagno_def', $id);
+  $this ->clinical_history -> delete('h_c_diagno_def_link');
 }
 
 
@@ -5889,8 +5807,8 @@ public function Cervix(){
 
 
  public function SaveConDef($savecd) {
-        $this->db->insert('h_c_diagno_def_link', $savecd);
-         $insert_id = $this->db->insert_id();
+        $this->clinical_history->insert('h_c_diagno_def_link', $savecd);
+         $insert_id = $this->clinical_history->insert_id();
         return  $insert_id;
     }
 
@@ -5985,9 +5903,12 @@ $query = $this->db->get();
 
 
 
-  	public function countTotalCitaDoc(){
+  	public function countTotalCitaDoc($id_centro){
 $this->db->select('doctor, count(doctor) as Total');
   $this->db->from('rendez_vous');
+  if($id_centro){
+   $this->db->where('centro',$id_centro);
+  }
   $this->db->where('confirmada',0);
    $this->db->where('fecha_propuesta',date("d-m-Y"));
   $this->db->where('cancelar',0);

@@ -1,0 +1,99 @@
+  <div class="col-md-12" >
+  <div id="ddzzsw"></div>
+   <h5 class="card-title">KARDEX DE MEDICAMENTOS <span id='kardex-num'></span></h5>
+  <div id="loadKardexFromOrenMedica"></div>
+  </div>
+  
+ <?php if($query_k_ordm->result() !=NULL){?>
+  <div class="col-md-7"  >
+  
+    <form class="row g-3">
+	<div class="col-md-6">
+                <div class="col-12">
+                  <label for="inputNanme4" class="form-label">Liquido E.V </label>
+				      <input type="text" class="form-control kardex-remove" id='liquido-ev' />
+					  <input type="hidden" class="form-control" id='kardex-id_i_m' />
+                  <input type="hidden" class="form-control kardex-remove" id='id_med_al' />
+                </div>
+                <div class="col-12">
+                  <label for="inputEmail4" class="form-label">Via</label>
+                    <input type="text" class="form-control kardex-remove" id='kardex-via' />
+                </div>
+                <div class="col-12">
+                  <label for="inputPassword4" class="form-label">Frecuencia cada</label>
+                  <input type="text" class="form-control kardex-remove" id='kardex-frecuencia'/>
+                </div>
+               
+				</div>
+				<div class="col-md-6">
+				   <div class="col-12">
+                  <label for="inputAddress" class="form-label">Dosis</label>
+                    <input type="text" class="form-control kardex-remove" id='kardex-dosis' />
+                </div>
+				
+				  <div class="col-12">
+                  <label for="inputAddress" class="form-label">Fecha Hora Realizada</label>
+                    <input type="datetime-local" class="form-control kardex-remove" id='kardex-hora' />
+                </div>
+				<div class="row">
+				 <div class="col-md-6">
+                  <label for="inputAddress" class="form-label">Cantidad</label>
+                  <input type="text" class="form-control kardex-remove" id='kardex-cantidad'/>
+                </div>
+				
+				 <div class="col-md-6">
+                  <label for="inputAddress" class="form-label">Turno</label>
+                  <input type="text" class="form-control kardex-remove" id="kardex-turno" >
+                </div>
+				
+				</div>
+				 </div>
+				<div class="col-md-12">
+                <div class="text-start">
+                  <button type="button" id="kardex-add-med" class="btn btn-primary">Agregar</button>
+                  <button type="reset" class="btn btn-secondary">Cancelar</button>
+                </div>
+				</div>
+				  
+              </form><!-- Vertical Form --> 
+			
+			</div>
+ <?php } ?>
+			<div class="col-md-12"  >
+			<hr class="prenatal-separator"/>
+			<div id="kardex-new-med" class="kardex-new-med"  >
+			<?php $this->load->view('hospitalization/clinical-history/kardex/new-kardex');?> 
+			</div>
+			</div>
+			
+		
+			  <script>
+			  
+ $('#kardex-add-med').on('click',function(e){
+
+$.ajax({
+url:"<?php echo base_url(); ?>hosp_kardex/addNewKardex",
+data: {new_cant:$("#kardex-cantidad").val(),id_i_m:$("#kardex-id_i_m").val(),
+turno:$("#kardex-turno").val(),fecha:$("#kardex-hora").val(),dosis:$("#kardex-dosis").val()
+},
+method:"POST",
+success:function(data){
+$('.kardex-remove').val('');
+$('.check-input-csv').val('');
+$('#kardex-new-med').html(data);
+	$(".disabled-btn-kardex").prop('disabled',true);
+},
+
+});
+
+});
+
+
+
+
+
+
+
+			  </script>
+  
+  

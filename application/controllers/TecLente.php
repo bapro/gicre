@@ -37,7 +37,10 @@ $this->db->update("laboratory_lentes",$update);
 $this->load->view('optica/tecnico-de-lentes/header');	
 $id_usr=$this->session->userdata['tec_lent_id'];
 $data['user_id']=$id_usr; 
-$sql ="SELECT * FROM laboratory_lentes WHERE  enviado=0  ORDER BY id DESC";
+
+$id_tecnico_lentes=$this->db->select('id_tecnico_lentes')->where('id_user',$id_usr)->get('user_tecnico_lentes')->row('id_tecnico_lentes');
+
+$sql ="SELECT * FROM laboratory_lentes WHERE id_lab_lente=$id_tecnico_lentes && enviado=0  ORDER BY id DESC";
 
 $query= $this->db->query($sql);
 $data['query']=$query;
@@ -236,7 +239,9 @@ $user_id=$this->session->userdata['tec_lent_id'];
 $data['user_id']=$user_id;
 $this->load->view('optica/tecnico-de-lentes/header');
 
-$sql_con ="SELECT enviado FROM  laboratory_lentes WHERE enviado=2";
+$id_tecnico_lentes=$this->db->select('id_tecnico_lentes')->where('id_user',$user_id)->get('user_tecnico_lentes')->row('id_tecnico_lentes');
+$data["id_tecnico_lentes"] =$id_tecnico_lentes;
+$sql_con ="SELECT enviado FROM  laboratory_lentes WHERE id_lab_lente=$id_tecnico_lentes && enviado=2";
 $atendido_con = $this->db->query($sql_con);
 
  $config["base_url"] = base_url() . "tecLente/lentes_entregados";
@@ -270,7 +275,7 @@ $config['full_tag_open']    = "<ul class='pagination'>";
         $data["links"] = $this->pagination->create_links();
 
 
-$sql ="SELECT *,laboratory_lentes.id AS idlente FROM h_c_of_refracion JOIN laboratory_lentes ON h_c_of_refracion.id= laboratory_lentes.id_refraccion WHERE  enviado=2 LIMIT $per_page OFFSET  $page";
+$sql ="SELECT *,laboratory_lentes.id AS idlente FROM h_c_of_refracion JOIN laboratory_lentes ON h_c_of_refracion.id= laboratory_lentes.id_refraccion WHERE id_lab_lente=$id_tecnico_lentes && enviado=2 LIMIT $per_page OFFSET  $page";
 
 $query= $this->db->query($sql);
 $data['query']=$query;
@@ -291,9 +296,10 @@ $user_id=$this->session->userdata['tec_lent_id'];
 $data['user_id']=$user_id;
 $this->load->view('optica/tecnico-de-lentes/header');
 
+$id_tecnico_lentes=$this->db->select('id_tecnico_lentes')->where('id_user',$user_id)->get('user_tecnico_lentes')->row('id_tecnico_lentes');
+$data["id_tecnico_lentes"] =$id_tecnico_lentes;
 
-
-$sql_con ="SELECT enviado FROM  laboratory_lentes WHERE enviado=1";
+$sql_con ="SELECT enviado FROM  laboratory_lentes WHERE id_lab_lente=$id_tecnico_lentes &&  enviado=1";
 $atendido_con = $this->db->query($sql_con);
 
  $config["base_url"] = base_url() . "tecLente/lentes_entregados";
@@ -327,7 +333,7 @@ $config['full_tag_open']    = "<ul class='pagination'>";
         $data["links"] = $this->pagination->create_links();
 
 
-$sql ="SELECT *,laboratory_lentes.id AS idlente FROM h_c_of_refracion JOIN laboratory_lentes ON h_c_of_refracion.id= laboratory_lentes.id_refraccion WHERE  enviado=1 LIMIT $per_page OFFSET  $page";
+$sql ="SELECT *,laboratory_lentes.id AS idlente FROM h_c_of_refracion JOIN laboratory_lentes ON h_c_of_refracion.id= laboratory_lentes.id_refraccion WHERE id_lab_lente=$id_tecnico_lentes && enviado=1 LIMIT $per_page OFFSET  $page";
 
 $data['title']="LENTES PROPUESTOS A REALIZAR";
 $query= $this->db->query($sql);

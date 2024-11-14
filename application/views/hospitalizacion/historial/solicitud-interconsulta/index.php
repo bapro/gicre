@@ -78,7 +78,7 @@ echo '<option value="'.$row->id_m_c.'">'.$row->name.'</option>';
 
 <script type="text/javascript">
 $(".select-n").select2({
-tags: true
+
 });
 
 
@@ -86,14 +86,24 @@ tags: true
 //-----------paginate-------------------------
 function paginateSolInterCons(){
 $.ajax({
-url:"<?php echo base_url(); ?>hospitalizacion/paginateSolInterCons",
+url:"<?php echo base_url(); ?>hosp_interconsultas/paginateSolInterCons",
 data: {user_id:<?=$user_id?>,id_historial:<?=$patient_id?>},
 method:"POST",
 success:function(data){
 
 $('#paginateSolInterCons').html(data);
 },
+error:function(jqXHR, textStatus, errorThrown) {
+alert('An erroroccurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
 
+                $('#paginateSolInterCons').html('<p>statuscode: '+jqXHR.status+'</p><p>errorThrown: ' + errorThrown + '</p><p>jqXHR.responseText:</p><div>'+jqXHR.responseText + '</div>');
+                console.log('jqXHR:');
+                console.log(jqXHR);
+                console.log('textStatus:');
+                console.log(textStatus);
+                console.log('errorThrown:');
+                console.log(errorThrown);
+            },
 });
 }
 
@@ -151,7 +161,7 @@ $('#hosp-save-inter-con-sol').prop("disabled",true);
 $(".resultSolInt").fadeIn().html('guardando...').css('font-style','italic').css('color','gray');
  $.ajax({
 type: "POST",
-url: "<?=base_url('hospitalizacion/saveSolInter')?>",
+url: "<?=base_url('hosp_interconsultas/saveSolInter')?>",
 data: {id_user:<?=$user_id?>,patient_id:<?=$patient_id?>,hosp_sol_int_cent:hosp_sol_int_cent,who:0,id_hosp:<?=$id_hosp?>,
 hosp_sol_int_esp:hosp_sol_int_esp,hosp_sol_int_doc:hosp_sol_int_doc,hosp_desc_sol_inter:hosp_desc_sol_inter},
 success:function(data){

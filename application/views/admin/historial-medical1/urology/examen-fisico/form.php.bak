@@ -1,0 +1,306 @@
+ <div style="position: fixed;left:16vw;z-index:500;top:78px">
+<span id="urology-btns" style="display:none">
+		<button  type="button" class="btn btn-default btn-lg reload-urology" >Nuevo</button>
+		<button type="button" class="btn btn-success btn-lg" style="border:1px solid;display:none" id="saveEditUrology" ><i class="fa fa-save"></i></button>
+		<button type="button" class="btn btn-warning btn-lg" style="border:1px solid" id="showEditUrology"><i class="fa fa-pencil"></i></button>
+        </span>
+		
+ </div>
+
+<div id="disabled-all-urology">
+<?php
+if($query_uro->result() !=NULL){
+foreach ($query_uro->result() as $row)
+$uro_pene= $row->uro_pene;
+$uro_testicule= $row->uro_testicule;
+$uro_epididimos= $row->uro_epididimos;
+$uro_tacto_rectal_done= $row->uro_tacto_rectal_done;
+$uro_tato_rec_pros= $row->uro_tato_rec_pros;
+$uro_geni_mujer= $row->uro_geni_mujer;
+$uro_vejiga= $row->uro_vejiga;
+$uro_loins= $row->uro_loins;
+$uro_otros= $row->uro_otros;
+$created_by=$this->db->select('name')->where('id_user',$row->inserted_by)->get('users')->row('name');
+$updated_by=$this->db->select('name')->where('id_user',$row->updated_by)->get('users')->row('name');
+$id=$row->id;
+$inserted_time = date("d-m-Y H:i:s", strtotime($row->inserted_time));
+$update_time = date("d-m-Y H:i:s", strtotime($row->updated_time));
+$info="<br/><br/><br/><div class='alert alert-info' style='font-size:15px'>Creado por $created_by, $inserted_time - Cambiado por <span id='uroFrmUpdate'>$updated_by, $update_time</span>  </div>";
+} else{
+
+$uro_pene="";		
+$uro_testicule= "";
+$uro_epididimos= "";
+$uro_tacto_rectal_done= 0;
+$uro_tato_rec_pros= "";
+$uro_geni_mujer= "";
+$uro_vejiga= "";
+$uro_loins= "";
+$uro_otros= "";
+$id="";
+$inserted_time = "";
+$update_time = "";
+$info="";
+}
+
+
+
+$data['edad']=$edad;
+if($action_id==0){
+$this->load->view('admin/historial-medical1/urology/examen-fisico/signo_empty', $data);	
+}else{
+$data['ExamFisById']=$ExamFisById;
+$data['id_user']=$user_id;
+$data['user']=$user_id;
+$data['centro']=$centro;
+echo $info;
+$this->load->view('admin/historial-medical1/urology/examen-fisico/signo_data', $data);		
+}
+
+
+?>
+ <div class="col-md-12"  >
+
+  <div class="row"  >
+<strong>Examen Fisico De Urología</strong>
+</div>
+  <div class="row" >
+ <div class="col-md-6"  >
+<table class="table" style="width:100%">
+<tr>
+<td style="text-align:left">
+<div class="form-group row">
+<input type='hidden' value="<?=$user_id?>" id="urology_user_id" />
+<input type='hidden' value="<?=$id?>" id="id_urology" />
+<label class="col-form-label" style="text-align:right">Pene </label>
+ <button type="button" id="btnSpeechUroPene" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroPene"></span>
+<textarea id="uro_pene" rows='6'  class="form-control"><?=$uro_pene?></textarea>
+
+</div>
+<div class="form-group row">
+
+<label class="col-form-label" style="text-align:right">Testiculos </label>
+ <button type="button" id="btnSpeechUroTesticulos" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroTesticulos"></span>
+ <textarea id="uro_testicule" rows='6'  class="form-control"><?=$uro_testicule?></textarea>
+</div>
+<div class="form-group row">
+<label class="col-form-label" style="text-align:right">Epididimos </label>
+ <button type="button" id="btnSpeechUroEpididimos" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroEpididimos"></span>
+<textarea id="uro_epididimos" rows='6'  class="form-control"><?=$uro_epididimos?></textarea>
+</div>
+<div class="form-group row">
+<table style="width:100%">
+<tr>
+<td>
+<label class="col-form-label" style="text-align:right">Tacto Rectal y Prostático </label>
+ <button type="button" id="btnSpeechUroTacto" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroTacto"></span>
+</td>
+<td>
+<?php
+   if ($uro_tacto_rectal_done ==0){
+	$selected="";
+	}
+	else
+	{
+	$selected="checked";
+	}
+ ?>
+ <label><input type="checkbox" id="uro_tacto_rectal_done" name="uro_tacto_rectal_done" <?=$selected?>> <em>Tacto Realizado</em> </label>
+
+</td>
+</tr>
+</table>
+
+<textarea id="uro_tato_rec_pros" rows='6'  class="form-control"><?=$uro_tato_rec_pros?></textarea>
+<?php
+if ($uro_tacto_rectal_done ==0){
+$get_number_only=preg_replace('/\D/', '', $edad);
+if($get_number_only >=40){
+echo '<script>
+
+  $(".required-menu").show().html("<strong>ALERTA:</strong> El paciente tiene 40 años de edad o más, debe realizarle un tacto rectal.");
+
+</script>';
+
+
+
+}
+}
+?>
+
+</div>
+</td>
+</tr>
+</table>
+</div>
+ <div class="col-md-6"  >
+<table class="table" style="width:100%">
+<tr>
+<td>
+<div class="form-group row">
+<label class="col-form-label" style="text-align:right">Genitourinario Mujer </label>
+ <button type="button" id="btnSpeechUroGeniMuyer" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroGeniMuyer"></span>
+<textarea id="uro_geni_mujer" rows='6' class="form-control"><?=$uro_geni_mujer?></textarea>
+
+</div>
+<div class="form-group row">
+
+<label class="col-form-label" style="text-align:right">Vejiga </label>
+ <button type="button" id="btnSpeechUroVejiga" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroVejiga"></span>
+ <textarea id="uro_vejiga" rows='6'  class="form-control"><?=$uro_vejiga?></textarea>
+
+</div>
+<div class="form-group row">
+
+<label class="col-form-label" style="text-align:right">Riñones </label>
+ <button type="button" id="btnSpeechUroLoins" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroLoins"></span>
+<textarea id="uro_loins" rows='6'  class="form-control"><?=$uro_loins?></textarea>
+
+</div>
+<div class="form-group row">
+
+<label class="col-form-label" style="text-align:right">Otros</label>
+ <button type="button" id="btnSpeechUroOtros" title='soporte solo para el navegador Chrome'  class="btn btn-primary btn-sm" ><i class="fa fa-microphone" aria-hidden="true"></i></button>
+  &nbsp; <span id="actionSpeechUroOtros"></span>
+<textarea id="uro_otros" rows='6'  class="form-control"><?=$uro_otros?></textarea>
+
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<script>
+
+
+
+$("#load-urology").hide();
+
+
+ if(<?=$action_id?>==1){
+	  $('#urology-btns').show();
+	  $( "#disabled-all-urology input" ).prop( "disabled", true );
+	   $( "#disabled-all-urology textarea" ).prop( "disabled", true );
+	   $( "#disabled-all-urology button" ).hide();
+  }else{
+	$('#urology-btns').hide();  
+  }
+
+
+
+
+	$('#showEditUrology').on('click', function(e) {
+	e.preventDefault();
+	$(this).hide();
+	$('#saveEditUrology').slideDown();  
+		  $( "#disabled-all-urology input" ).prop( "disabled", false );
+	    $( "#disabled-all-urology textarea" ).prop( "disabled", false );
+		$( "#disabled-all-urology button" ).slideDown(1000);
+	});
+
+
+
+
+  	$('.reload-urology').on('click', function(e) {
+	e.preventDefault();
+paginateCounseling();
+	loadUrologyContent();
+	$('#urology-btns').hide();  
+	});
+
+
+
+$('#urology-content').css("opacity","");
+	$('#uro_tacto_rectal_done').click(function(){
+    if($('#uro_tacto_rectal_done').is(":checked")){
+        $(".alert_tacto_rectal_done").hide(1000);
+$(".required-menu").hide().html("<strong>ALERTA:</strong> El paciente tiene 40 años de edad o más, debe realizarle un tacto rectal.");
+    }else{
+		$(".required-menu").show(1000);
+	}
+});
+
+ var btnSpeechUroPene = document.getElementById('btnSpeechUroPene');
+					
+					btnSpeechUroPene.onclick = function() {
+					var output = document.getElementById("uro_pene");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroPene");
+					runSpeechRecognition(output,action);
+					}
+
+ var btnSpeechUroTesticulos = document.getElementById('btnSpeechUroTesticulos');
+					
+					btnSpeechUroTesticulos.onclick = function() {
+					var output = document.getElementById("uro_testicule");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroTesticulos");
+					runSpeechRecognition(output,action);
+					}
+					
+					
+ var btnSpeechUroEpididimos = document.getElementById('btnSpeechUroEpididimos');
+					
+					btnSpeechUroEpididimos.onclick = function() {
+					var output = document.getElementById("uro_epididimos");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroEpididimos");
+					runSpeechRecognition(output,action);
+					}
+					
+					
+ var btnSpeechUroTacto = document.getElementById('btnSpeechUroTacto');
+					
+					btnSpeechUroTacto.onclick = function() {
+					var output = document.getElementById("uro_tato_rec_pros");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroTacto");
+					runSpeechRecognition(output,action);
+					}					
+					
+					
+ var btnSpeechUroGeniMuyer = document.getElementById('btnSpeechUroGeniMuyer');
+					
+					btnSpeechUroGeniMuyer.onclick = function() {
+					var output = document.getElementById("uro_geni_mujer");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroGeniMuyer");
+					runSpeechRecognition(output,action);
+					}
+
+ var btnSpeechUroVejiga = document.getElementById('btnSpeechUroVejiga');
+					
+					btnSpeechUroVejiga.onclick = function() {
+					var output = document.getElementById("uro_vejiga");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroVejiga");
+					runSpeechRecognition(output,action);
+					}	
+					
+ var btnSpeechUroLoins = document.getElementById('btnSpeechUroLoins');
+					
+					btnSpeechUroLoins.onclick = function() {
+					var output = document.getElementById("uro_loins");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroLoins");
+					runSpeechRecognition(output,action);
+					}
+					
+ var btnSpeechUroOtros = document.getElementById('btnSpeechUroOtros');
+					
+					btnSpeechUroOtros.onclick = function() {
+					var output = document.getElementById("uro_otros");
+					// get action element reference
+					var action = document.getElementById("actionSpeechUroOtros");
+					runSpeechRecognition(output,action);
+					}					
+</script>

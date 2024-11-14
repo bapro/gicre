@@ -114,7 +114,11 @@ Gracias, La firma ya esta guardada con éxito.
 $(document).ready(function() {
 
  // Initialize jSignature
- var $sigdiv = $("#signature").jSignature({'UndoButton':true});
+ var $sigdiv = $("#signature").jSignature({
+	 'UndoButton':true,
+	   'background-color': 'transparent',
+       'decor-color': 'transparent',
+	 });
 
  $('#click').click(function(){
   // Get response of type image

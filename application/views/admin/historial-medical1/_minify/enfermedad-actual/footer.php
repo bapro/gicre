@@ -1,0 +1,5 @@
+<script>
+$(".select2").select2({tags:!0}),$("#save_enf_act_hide").on("click",(function(e){e.preventDefault();var a=$("#updated_by").val(),i=$("#id_enf").val(),n=$("#enf_motivo1").val(),d=$("#enf_signopsis1").val(),o=$("#enf_laboratorios1").val(),s=$("#enf_estudios1").val();return $.ajax({type:"POST",url:"<?=base_url('admin_medico/SaveUpEnfermedad')?>",data:{id_enf:i,updated_by:a,enf_motivo:n,enf_signopsis:d,enf_laboratorios:o,enf_estudios:s},cache:!0,success:function(e){alert("Cambiado ha sido hecho !"),$(".show_modif_enf_act").slideDown(),$(".save_enf_act_hide").hide(),$(".disable-all :input").prop("disabled",!0)}}),!1})),$(".disable-all :input").prop("disabled",!0),$(".show_modif_enf_act").on("click",(function(e){$(".show_modif_enf_act").hide(),$(".save_enf_act_hide").slideDown(),$(".disable-all :input").prop("disabled",!1)}));
+
+
+</script>

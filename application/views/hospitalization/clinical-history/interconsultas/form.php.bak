@@ -1,0 +1,205 @@
+		  <?php
+		  
+		  if($solCon_data==0){
+			  $hosp_desc_sol_inter='';
+			  $hosp_sol_int_cent='';
+			  $hosp_sol_int_esp='';
+			  $hosp_sol_int_doc1='';
+			  $asked_byasked_by='';
+			  $respuesta_doc='';
+			  $asked_by='';
+		  }else{
+			 foreach ($queryscon as $row)
+			  $hosp_desc_sol_inter=$row->descripcion;
+			  $hosp_sol_int_cent=$row->centro;
+			  $hosp_sol_int_esp=$row->esp;
+			  $hosp_sol_int_doc1=$row->asked_to;
+			  $asked_by=$row->asked_by;
+			  $respuesta_doc=$row->respuesta;
+		  }
+		  ?>
+		  <form id="saveSolInterForm">
+ <div class="row">
+<div id="paginateSolInterCons"></div>
+ <div class="col-md-5">
+ 
+  <div class="mb-2">
+   <label class="form-label"><span style="color:red">*</span> Centro Medico</label>
+                  <select name="hosp_sol_int_cent" id="hosp_sol_int_cent1" class="form-select clear-conInt" >
+				   <?php 
+				   $query = $this->db->query("SELECT id, title FROM centros_medicos");
+                   foreach($query->result() as $row){
+					   echo "<option value='$row->id'>$row->title</option>";
+				   }
+
+					?>
+                    
+                  </select>
+  </div>
+  
+  <div class="mb-2">
+  <label  class="form-label"><span style="color:red">*</span> Especialidad</label>
+           <select name="hosp_sol_int_esp" id="hosp_sol_int_esp1" class="form-select clear-conInt">
+		      <?php 
+				   $query = $this->db->query("SELECT area FROM users WHERE area !='' GROUP BY area");
+                   foreach($query->result() as $row){
+					   echo "<option value='$row->id'>$row->area</option>";
+				   }
+
+					?>
+                    
+                  </select>
+  </div>
+  
+   <div class="mb-2">
+  <label class="form-label"><span style="color:red">*</span> Doctor</label>
+             <select name="hosp_sol_int_doc" id="hosp_sol_int_doc1" class="form-select clear-conInt">
+			  <?php 
+				   $query = $this->db->query("SELECT name FROM users GROUP BY name");
+                   foreach($query->result() as $row){
+					   echo "<option value='$row->id'>$row->name</option>";
+				   }
+
+					?>
+                    
+                  </select>
+		  
+	
+		     
+  </div>
+  </div>
+		<div class="col-md-7">
+
+		<label><span style="color:red">*</span> Descripción de solicitud</label>
+		<textarea class="form-control clear-conInt" name="hosp_desc_sol_inter" style="height: 100px"><?=$hosp_desc_sol_inter?></textarea>
+		<br/>
+		
+			<?php
+         if($solCon_data > 0) {
+			if($asked_by==$this->session->userdata('ID_USER')) {
+			$disabled2='disabled';
+			}else{
+			$disabled2='';	 
+			} 
+			?>
+		<label for="hosp_desc_sol_response">Respuesta de Interconsulta</label>
+			<textarea class="form-control clear-conInt" name="hosp_desc_sol_response" style="height: 100px" <?=$disabled2?>><?=$respuesta_doc?></textarea>
+			
+		 <?php } ?>
+		<div class="mb-3"> 
+<br/>		
+		<button type="submit" id="saveSolInter" class="btn btn-success btn-sm ">Guardar y Enviar</button>     
+	    <button type="button" id="newSolInter" class="btn btn-primary btn-sm ">Nuevo</button>  
+		<br/><span  id='resultSolInt'></span> 
+
+		</div>
+		</div>
+  
+ 
+ </div>
+ 
+
+</form>
+
+<script>
+ $(document).ready(function() {
+ $(".spinner-border").hide();
+
+
+ $("#newSolInter").click(function(event) {
+            event.preventDefault();
+            var li = "pagination-hosp_interconsultas-li";
+            var controller = "hosp_interconsultas";
+            var div = "hospSolCon-form";
+            resetForm(li, controller, div);
+        });
+
+
+
+$('#saveSolInterForm').on('submit', function(event) {
+event.preventDefault();	 
+$('#saveSolInter').prop("disabled",true);
+
+$.ajax({
+url: "<?=base_url('hosp_interconsultas/saveSolInter')?>",
+method:"POST",
+dataType: 'json',
+data:new FormData(this),
+contentType:false,
+cache:false,
+processData:false,
+success:function(response){
+if(response.status == 0){
+	showalert(response.message, "alert-danger", "resultSolInt");
+}else if(response.status > 0){
+	paginateSolInterCons();
+showalert(response.message, "alert-success", "resultSolInt");
+
+
+} else{
+	$('#resultSolInt').html('<p class="alert alert-danger">'+response.message+'</p>');
+}
+
+
+$('#saveSolInter').prop("disabled",false);
+	
+},
+
+
+});
+
+});
+
+});
+
+
+	function paginateSolInterCons(){
+$.ajax({
+url:"<?php echo base_url(); ?>hosp_interconsultas/pagination",
+data: {},
+method:"POST",
+success:function(data){
+
+$('#pagination-hosp_interconsultas').html(data);
+},
+
+});
+}
+
+
+
+
+
+
+function registroSolInterDoc() {
+
+$.ajax({
+	type: "POST",
+	url: '<?php echo site_url('hosp_interconsultas/registroSolInterDoc');?>',
+	//data:{id_user:<?=$asked_by?>,resp:1},
+	data:{id_user:1,resp:1},
+	success: function(data){
+	$("#registroSolInterDoc").html(data);
+
+	},
+
+	});
+}
+
+
+function registroRespInterDoc() {
+
+$.ajax({
+	type: "POST",
+	url: '<?php echo site_url('hosp_interconsultas/registroSolInterDoc');?>',
+	//data:{id_user:<?=$hosp_sol_int_doc1?>,resp:2},
+	data:{id_user:1,resp:2},
+	success: function(data){
+	$("#registroRespInterDoc").html(data);
+
+	},
+
+	});
+}
+
+</script>

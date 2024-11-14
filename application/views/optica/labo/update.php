@@ -5,34 +5,26 @@
 	 foreach($query->result()  as $edit_id)
  ?>
 
-<div class="container">
+<div class="container" id="background_">
 
-
-  <div class="row" id="background_">
- <div class="col-md-5">
+ <div class="col-md-12">
  <?php echo $this->session->flashdata('success_msg');  ?>
  <h3 class="h3 col-md-offset-3">Editar Laboratorio De Lenteo #  <span class="round"><?=$edit_id->id?></span> 
   
  </h3>
-  </div>
-  <div class="col-md-7">
+
 <?php $user_c18=$this->db->select('name')->where('id_user',$edit_id->inserted_by)->get('users')->row('name');
 $user_c19=$this->db->select('name')->where('id_user',$edit_id->updated_by)->get('users')->row('name');
 
 $inserted_time = date("d-m-Y H:i:s", strtotime($edit_id->inserted_time));
 $updated_time = date("d-m-Y H:i:s", strtotime($edit_id->updated_time));
 echo "Creado por : $user_c18 ($inserted_time) <br/> Modificado por $user_c19 ($updated_time)";?>
+  </div>
 
-
-</div>
-
-
-<div class="row">
-
-<div class="col-xs-9">
 <form   class="form-horizontal" id="form-save" method="post" enctype="multipart/form-data" action="<?php echo site_url('admin/saveUpdateLabLentes');?>" > 
  
-<br/><br/>
+
+<div class="col-xs-6">
 <input name="id_m_c" type="hidden" value="<?=$edit_id->id;?>"/>
 
 <div class="form-group">
@@ -106,21 +98,9 @@ echo "Creado por : $user_c18 ($inserted_time) <br/> Modificado por $user_c19 ($u
 <input type="text" class="form-control" id="web"  name="web" value="<?=$edit_id->pagina_web;?>"  >
 </div>
 </div>
-
-
- <div class="row  col-md-offset-5">
- <div class="col-md-12">
- <input type="submit"  class="btn btn-primary btn-xs" value="Enviar">
- <br/>
-<br/>
- </div>
-
-
 </div>
- </form>
- </div>
- <div class="col-xs-3">
- <?php if($edit_id->logo==""){
+ <div class="col-xs-6">
+  <?php if($edit_id->logo==""){
 	echo "<div class='alert alert-info'>
   No hay logo.
 </div>"; 
@@ -132,9 +112,45 @@ echo "Creado por : $user_c18 ($inserted_time) <br/> Modificado por $user_c19 ($u
  }
  
   ?>
+ <div class="form-group">
+<label class="control-label col-sm-5" >OFTALMOLOGOS AFECTADOS</label>
+<div class="col-sm-7">
+<select class="form-control select2 required"  multiple="multiple"  name="lab_user[]">
+
+<?php 
+$sql = "select id_user, name FROM users WHERE area=32 ORDER BY name DESC";
+ $querylb= $this->db->query($sql);
+ foreach($querylb->result()  as $afec){
+
+$id_user_lab=$this->db->select('id_user')->where('id_user',$afec->id_user )
+->where('id_lab_lente',$edit_id->id)
+ ->get('user_oftal_lab_lentes')->row('id_user');
+ 
+		if($id_user_lab==$afec->id_user ){
+		        $selected="selected";
+		} else {
+		       $selected="";
+	    }
+		
+echo "<option value='$afec->id_user ' $selected>$afec->name</option>";
+}
+?>
+</select>
 </div>
 </div>
+ </div>
+ <div class="row  col-md-offset-5">
+ <div class="col-md-12">
+ <input type="submit"  class="btn btn-primary btn-xs" value="Guardar" id='save'>
+ <br/>
+<br/>
+ </div>
+
+
 </div>
+ </form>
+
+
 </div>
  </div>
  <?php $this->load->view('footer');?>
@@ -149,7 +165,20 @@ echo "Creado por : $user_c18 ($inserted_time) <br/> Modificado por $user_c19 ($u
   <script src="<?=base_url();?>assets/js/custom.js"></script> 
  <script type="text/javascript" src="<?=base_url();?>assets/js/validation-jq.js" charset="UTF-8"></script>
   <script>
-  
+ $('.select2').select2({ 
+//tags: true,   
+  language: {
+
+    noResults: function() {
+
+      return "No hay resultado";        
+    },
+    searching: function() {
+
+      return "Buscando..";
+    }
+  }
+});	 
   
 $('#save').click(function() {
 	
@@ -176,9 +205,8 @@ alert("Cual es le municipio ?");
 return false;
 }
 
-
-
 })
   
+
 	
 </script>

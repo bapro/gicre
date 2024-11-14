@@ -39,11 +39,14 @@ class Product extends CI_Model{
 	}
 	
 	
-	public function getConfirmSolicitudTestSpeed($limit, $start){
+	public function getConfirmSolicitudTestSpeed($limit, $start, $centro){
 $this->db->select("*");
   $this->db->from('rendez_vous');
   $this->db->where('confirmada',0);
    $this->db->where('fecha_propuesta',date("d-m-Y"));
+   if($centro){
+	$this->db->where('centro',$centro);  
+  }
   $this->db->where('cancelar',0);
   $this->db->order_by('id_apoint', 'desc');
   $this->db->limit($limit, $start);
@@ -51,6 +54,29 @@ $this->db->select("*");
   return $query->result();
 }
 	
+
+
+
+
+public function getdata($limit, $start){	
+
+	$this->db->select('id_patient, centro, doctor, created_time');
+	$this->db->from('rendez_vous'); // this is first table name
+	//$this->db->join('saveinput', 'saveinput.patient_id = rendez_vous.id_patient'); // this is second table name with both table ids
+	$this->db->where('created_time >=', '2021-09-10');
+$this->db->where('created_time <', '2022-05-17');
+  $this->db->order_by('created_time', 'DESC');
+	  $this->db->limit($limit, $start);
+	$query = $this->db->get();
+	return $query->result();
+
+	}
+
+
+
+
+
+
 	
 	
 }

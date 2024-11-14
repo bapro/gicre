@@ -1,9 +1,7 @@
 <div class='container'>
 <div class="tab-content"   >
 <div class="col-md-12"  style="border:1px solid #38a7bb;background:linear-gradient(to right, white, #E0E5E6, white);" >
-  <?=$backbutton?>
-  <i>
-  <?php
+  <?php echo $backbutton;
 if($number_found >0){
 $this->padron_database = $this->load->database('padron',TRUE);
 
@@ -54,10 +52,10 @@ if($id_pat_rdv==""){
  ?>
 <a href="<?php echo base_url("navigation/search_result/$row->MUN_CED/$row->SEQ_CED/$row->VER_CED")?>" class="btn btn-default btn-xs" > Cita </a>
 <?php } else{
-	
+	$id_pat_rdv_ = encrypt_url($id_pat_rdv);
 	?>
 
-<a href="<?php echo base_url("navigation/search_result_nec/$id_pat_rdv")?>" class="btn btn-default btn-xs" > Cita </a>
+<a href="<?php echo base_url("navigation/patient_found/$id_pat_rdv_")?>" class="btn btn-default btn-xs" > Cita </a>
 
 <?php } ?>
 </td>
@@ -111,10 +109,11 @@ else {
 $cpt=0;
 $colorBg = "#E0E5E6";
 }
+	$id_p_a_ = encrypt_url($row->id_p_a);
 ?>
 <tr>
 <td>
-<a href="<?php echo base_url("navigation/search_result_nec/$row->id_p_a")?>" class="btn btn-default btn-xs" >Cita </a>
+<a href="<?php echo base_url("navigation/patient_found/$id_p_a_")?>" class="btn btn-default btn-xs" >Cita </a>
 </td>
 <td> 
 <?php
@@ -142,9 +141,13 @@ else{
 </div>
 
 <?php } else{
-$ced1=0;$ced2=0;$ced3=0;
-	redirect("navigation/createNewRequest/$ced1/$ced2/$ced3");
+$names = $patientNamesData['patient_nombres'];
+$apel1= $patientNamesData['patient_apellido'];
+$apel2=$patientNamesData['patient_apellido2'];
+$nameformat = "$names $apel1 $apel2";
+redirect("navigation/createNewRequest/$nameformat");
 }	
+
 	?>
 </div>
 

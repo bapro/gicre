@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-$config['base_url'] = 'http://gicre/';
-//$config['base_url'] = 'https://www.admedicall.com';
+$config['base_url'] = 'http://localhost/gicre/';
+//$config['base_url'] = 'https://gicrerd.com/';
 
 $config['index_page'] = '';
 
@@ -45,12 +45,10 @@ $config['cache_path'] = '';
 $config['cache_query_string'] = FALSE;
 
 $config['encryption_key'] = 'xRUqKhsoZ5qV6y3kqARFJFdPqJvp7X2z';
-//$config['sess_driver'] = 'files';
 $config['sess_driver'] = 'database';
 $config['sess_cookie_name'] = 'ci_session';
 $config['sess_expiration'] = 7200;
 $config['sess_save_path'] = 'ci_sessions';
-//$config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
 $config['sess_regenerate_destroy'] = FALSE;
@@ -80,3 +78,5 @@ $config['time_reference'] = 'local';
 $config['rewrite_short_tags'] = FALSE;
 
 $config['proxy_ips'] = '';
+$config['google_key'] = '6LdjzmYaAAAAACQ-5S22vOQwg-ihktyNI9ksCa11';
+$config['google_secret'] = '6LdjzmYaAAAAAJfZlFYNCLHqfBYtKlT9E2jVy3_n';

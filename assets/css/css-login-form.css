@@ -1973,7 +1973,7 @@ pre code {
   color: #495057;
   background-color: #FFF;
   background-clip: padding-box;
-  border: 2px solid #ced4da;
+  border: 1px solid #ced4da;
   border-radius: 4px;
   -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
@@ -12208,7 +12208,7 @@ body.stop-scrolling {
   -o-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
   border-radius:20px;
-  border:3px solid green
+  border:1px solid green
 }
 
 

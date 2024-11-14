@@ -1,0 +1,154 @@
+<script>
+
+
+$('#saveEditUroAnt').on('click', function(event) {
+event.preventDefault();
+ var hist_id= $("#hist_id").val();
+ var id= $("#id_uro_ant").val();
+     var id_user = $("#uro_ant_user_id").val();
+ var uro_sin_ha_1 = [];
+ $("input[name='uro_sin_ha_1']:checked").each(function(){
+            uro_sin_ha_1.push(this.value);
+ })
+
+var uro_ant_escl = [];
+ $("input[name='uro_ant_escl']:checked").each(function(){
+            uro_ant_escl.push(this.value);
+ })
+
+
+var uro_ant_imp = [];
+ $("input[name='uro_ant_imp']:checked").each(function(){
+            uro_ant_imp.push(this.value);
+ })
+
+var uro_ant_ane_fal = [];
+ $("input[name='uro_ant_ane_fal']:checked").each(function(){
+            uro_ant_ane_fal.push(this.value);
+ })
+
+var uro_ant_vari = [];
+ $("input[name='uro_ant_vari']:checked").each(function(){
+            uro_ant_vari.push(this.value);
+ })
+
+var uro_ant_fimosis = [];
+ $("input[name='uro_ant_fimosis']:checked").each(function(){
+            uro_ant_fimosis.push(this.value);
+ })
+ 
+ var uro_ant_hid = [];
+ $("input[name='uro_ant_hid']:checked").each(function(){
+            uro_ant_hid.push(this.value);
+ })
+ 
+ var uro_ant_its = $("#uro_ant_its").val();
+var uro_ant_tumorales = $("#uro_ant_tumorales").val();
+var uro_ant_otros = $("#uro_ant_otros").val();
+
+ var uro_sin_ha_2 = [];
+ $("input[name='uro_sin_ha_2']:checked").each(function(){
+            uro_sin_ha_2.push(this.value);
+ })
+
+ var uro_ant_cancer_prostata = [];
+ $("input[name='uro_ant_cancer_prostata']:checked").each(function(){
+            uro_ant_cancer_prostata.push(this.value);
+ })
+
+
+ var uro_ant_poli_renal = [];
+ $("input[name='uro_ant_poli_renal']:checked").each(function(){
+            uro_ant_poli_renal.push(this.value);
+ })
+
+ var uro_ant_uroli = [];
+ $("input[name='uro_ant_uroli']:checked").each(function(){
+            uro_ant_uroli.push(this.value);
+ })
+
+ var uro_ant_cist = [];
+ $("input[name='uro_ant_cist']:checked").each(function(){
+            uro_ant_cist.push(this.value);
+ })
+ 
+var uro_ant_otros2 = $("#uro_ant_otros2").val();
+//--antecedentes alergicos
+var medicamentos_al = $("#medicamentos_al").val();
+var alimentos_al = $("#alimentos_al").val();
+var otros_al = $("#otros_al").val();
+
+//=====================Otros ante===========================
+var quirurgicos = $("#quirurgicos").val();
+var gineco = $("#gineco").val();
+var abdominal = $("#abdominal").val();
+var toracica = $("#toracica").val();
+var transfusion = $("#transfusion").val();
+var otros1 = $("#otros1").val();
+var selectmedic = $("#selectmedic").val();
+
+var grouposang = $("#grouposang").val();
+var hepatis = $('input:radio[name=hepatis]:checked').val();
+var hpv = $('input:radio[name=hpv]:checked').val();
+var toxoide = $('input:radio[name=toxoide]:checked').val();
+var tipificacion = $("#tipificacion").val();
+var rh = $('input:radio[name=rhoa]:checked').val();
+//==========habitos toxicos
+var hab_c_caf = $("#hab_c_caf").val();
+var hab_f_caf = $("#hab_f_caf").val();
+var hab_c_pip = $("#hab_c_pip").val();
+var hab_f_pip = $("#hab_f_pip").val();
+var hab_c_ciga = $("#hab_c_ciga").val();
+var hab_f_ciga = $("#hab_f_ciga").val();
+var hab_c_al = $("#hab_c_al").val();
+var hab_f_al = $("#hab_f_al").val();
+var hab_c_tab = $("#hab_c_tab").val();
+var hab_f_tab = $("#hab_f_tab").val();
+var hookah = $("#hookah").val();
+var hab_f_hookah = $("#hab_f_hookah").val();
+var hab_t_drug = $("#hab_t_drug").val();
+var hab_c_drug = $("#hab_c_drug").val();
+var hab_f_drug = $("#hab_f_drug").val();
+var cafe_cant_desc: $("#cafe_cant_desc").val();
+var pipa_cant_desc: $("#pipa_cant_desc").val();
+var ciga_can_desc: $("#ciga_can_desc").val();
+var alc_can_desc: $("#alc_can_desc").val();
+var tab_can_desc: $("#tab_can_desc").val();
+var hookah_desc: $("#hookah_desc").val();
+var hab_c_drug_desc: $("#hab_c_drug_desc").val();
+ $.ajax({
+type: "POST",
+url: "<?=base_url('save_urology/updateAntecedentes')?>",
+data: {
+/*antecedentes*/uro_sin_ha_1:uro_sin_ha_1,uro_ant_escl:uro_ant_escl,uro_ant_imp:uro_ant_imp,uro_ant_ane_fal:uro_ant_ane_fal,uro_ant_vari:uro_ant_vari,uro_ant_otros2:uro_ant_otros2,
+uro_ant_fimosis:uro_ant_fimosis, uro_ant_hid:uro_ant_hid,uro_ant_its:uro_ant_its,uro_ant_tumorales:uro_ant_tumorales,uro_ant_otros:uro_ant_otros,
+uro_sin_ha_2:uro_sin_ha_2,uro_ant_cancer_prostata:uro_ant_cancer_prostata,uro_ant_poli_renal:uro_ant_poli_renal,uro_ant_uroli:uro_ant_uroli,uro_ant_cist:uro_ant_cist,/*end*/
+/*antecedentes alergicos*/otros_al:otros_al,medicamentos_al:medicamentos_al,alimentos_al:alimentos_al,
+/*Otros ante*/quirurgicos:quirurgicos,gineco:gineco,abdominal:abdominal,toracica:toracica,transfusion:transfusion,otros1:otros1,
+hepatis:hepatis,toxoide:toxoide,hpv:hpv,grouposang:grouposang,tipificacion:tipificacion,rh:rh,
+/*Habitos toxicos */hab_c_caf:hab_c_caf,hab_f_caf:hab_f_caf,hab_c_pip:hab_c_pip,hab_f_pip:hab_f_pip,hab_c_ciga:hab_c_ciga,hab_f_ciga:hab_f_ciga,
+hab_c_al:hab_c_al,hab_f_al:hab_f_al,hab_c_tab:hab_c_tab,hab_f_tab:hab_f_tab,hab_t_drug:hab_t_drug,hab_c_drug:hab_c_drug,hab_f_drug:hab_f_drug,
+hookah:hookah,hab_f_hookah:hab_f_hookah,cafe_cant_desc:cafe_cant_desc, pipa_cant_desc:pipa_cant_desc, ciga_can_desc:ciga_can_desc,
+alc_can_desc:alc_can_desc, tab_can_desc:tab_can_desc, hookah_desc:hookah_desc, hab_c_drug_desc:hab_c_drug_desc,
+id_user:id_user, id:id, hist_id:hist_id
+      },
+dataType: 'json',
+cache: true,
+
+success:function(response){
+	//formUpdate();
+$("#load-uro-ant").show().html('<p style="width:100%">'+response.message+'</p>').delay(3000).fadeOut(2500);
+$( "#uro-ant-disabled input" ).prop( "disabled", true );
+$( "#uro-ant-disabled textarea" ).prop( "disabled", true );
+$( "#uro-ant-disabled select" ).prop( "disabled", true );
+$('#showEditUroAnt').slideDown();
+$('#saveEditUroAnt').hide();	
+$( "#uro-ant-disabled button" ).fadeOut(1000);  
+  
+}  
+});
+
+
+
+ });
+ </script>

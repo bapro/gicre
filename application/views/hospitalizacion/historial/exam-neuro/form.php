@@ -1,10 +1,15 @@
 <div class="col-md-12 backg"  >
-<h4 class="h4 his_med_title">Examen Neurología (<b><?=$nb_ex_neu?> registros (s)</b>)</h4>
-
+<h4 class="h4 his_med_title">Examen Neurología</h4>
+<em><?=$nb_ex_neu?> registros (s)</em>
 
 <?php if ($nb_ex_neu > 0)
 {
-$i = 1; 
+?>
+
+<div id="paginationh">
+
+<ul class="paginationh">
+<?php 
  foreach($queryexneu->result() as $row)
 {
 
@@ -14,22 +19,13 @@ $user_c10=$this->db->select('name')->where('id_user',$row->updated_by)->get('use
 $inserted_time = date("d-m-Y H:i:s", strtotime($row->inserted_time));
 $update_time = date("d-m-Y H:i:s", strtotime($row->updated_time));
 
-
 ?>
-<div class="pagination">
-<a  data-toggle="modal" data-target="#ver_ex_neu" href="<?php echo base_url("hospitalizacion/get_data_exam_neuro/$row->id/$id_historial/$user_id")?>">
-<?php echo $i; $i++;  ?> 
+<li class="paninate-li" title='Creado por <?=$user_c9?>, Actualizado por <?=$user_c10?>' data-toggle="modal" data-target="#ver_ex_neu" href="<?php echo base_url("hospitalizacion/get_data_exam_neuro/$row->id/$id_historial/$user_id/$id_hosp")?>">
+<?php echo $inserted_time;  ?> 
 </a>
+</li >
 
-<br/><br/>
-<div class="box-tooltip" style="display: none;position:absolute">
-<h4 style='color:green'>Registro</h4>
-<ul style='list-style:none'>
-<li>Creado por <?=$user_c9?>, <?=$inserted_time?></li>
-<li>Cambiado por <?=$user_c10?>, <?=$update_time?></li>
-<hr/>
-</ul>
-</div>
+<?php }?>
 
 </div>
 
@@ -37,23 +33,21 @@ $update_time = date("d-m-Y H:i:s", strtotime($row->updated_time));
 <?php
 }
 
-}
 
 ?>
 
 
-<i class="fa fa-warning alert-obs" style='color:red;display:none'></i>
-
 
 </div>
-
-<form   class="form-horizontal"    > 
+<span id='exam-neuro-fields' style='display:none'>0</span>
+<span id='exam-neuro-checkbox' style='display:none'>0</span>
+<form   class="form-horizontal exam-neuro"  > 
 <div class="col-md-12"  >
 
 <div class="form-group">
 <strong>Examen General Neurología </strong>
 
- <textarea  id="exam_gen_neuro" rows='5'  class="form-control"></textarea>
+ <textarea  id="exam_gen_neuro" rows='5'  class="form-control check-exam-neuro"></textarea>
 
 </div>
 
@@ -363,14 +357,23 @@ $update_time = date("d-m-Y H:i:s", strtotime($row->updated_time));
 	</form>
 <script>
 
-
-$(".pagination").hover(function () {
-    $(this).find('.box-tooltip').show();
-      },
- function () {
-        $(this).find('.box-tooltip').hide();
-      });
-//display alert
-
-
+$('.exam-neuro :input').change(function() {
+        if(!$(this).val()){
+          $('#exam-neuro-fields').text(0);
+        } else{
+          $('#exam-neuro-fields').text(1);
+        }
+    });
+	
+	//---check if checkbox 
+	let countExamNeuro=0;
+  $('.exam-neuro input[type="checkbox"]').click(function(){
+            if($(this).prop("checked") == true){
+                countExamNeuro ++;
+            }
+            else if($(this).prop("checked") == false){
+                countExamNeuro --;
+            }
+			 $('#exam-neuro-checkbox').text(countExamNeuro)
+        });
 </script>

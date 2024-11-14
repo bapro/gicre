@@ -55,9 +55,15 @@ tags: true,
 
 
 
-$("#exequatur").change(function(){
+var timerEx = null;
+$("#exequatur").keydown(function(){
+       clearTimeout(timerEx); 
+       timerEx = setTimeout(searchExeq, 1000)
+});
+
+function searchExeq(){
 $("#nombre").fadeIn().html('<span class="load"> <img  width="20px" src="<?= base_url();?>assets/img/loading.gif" /></span>');
-var exequatur=$(this).val();
+var exequatur=$("#exequatur").val();
 $.ajax({
 type: "POST",
 url: "<?=base_url('admin_medico/get_medico_exequatur')?>",
@@ -68,10 +74,7 @@ $("#nombre").html(data);
 
 }  
 });
-
-
-});
-
+};
 
 
 
@@ -84,6 +87,32 @@ $("#checkbox2").click(function(){
          $("#e2").trigger("change");
      }
 });
+
+
+
+
+$("#salud-ocupacional").click(function(){
+	var checked;
+if($("#salud-ocupacional").is(':checked') ){
+ checked=1;
+}else{
+ checked=0;
+}
+$.ajax({
+type: "POST",
+url: "<?=base_url('creation/getCentro')?>",
+data: {checked:checked},
+cache: true,
+success:function(data){ 
+$("#e2").html(data); 
+
+}  
+});
+
+});
+
+
+
 
 
 $("#Reset").click(function(){
@@ -109,9 +138,6 @@ $( "#emailInfo2" ).show();
 });
 }
 };
-
-
-
 
 
 

@@ -6,8 +6,10 @@
  <?php
  if($identificar=="privado") { 
  	$sel="Doctor Tarfarios";
+	$printView='medico';
  } else {
 	$sel="Centro Medico Tarfarios"; 
+	$printView='centro';
  }
  echo $seguro_as_been_changed;
  ?>
@@ -133,8 +135,7 @@ RD$ <?=$rf->totpapat?>
 </td>
 <td><button class="btn btn-sm button_edit_tarifarios" type="button" id="<?=$rf->idfac?>" ><i class="fa fa-pencil"></i> </button></td>
 <td>
-<!--<button class="btn btn-sm button_delete_tarifarios"  type="button" style='color:red' ><i class="fa fa-trash"></i> <span style='display:none'><?=$rf->idfac?></span></button>-->
-<a style='background:red' href="<?php echo base_url("admin_medico/deleted_fac/$rf->idfac/$user/$identificar/$count")?>" data-toggle="modal" data-target="#button_delete_tarifarios" class="btn btn-primary btn-xs"><i class="fa fa-trash"></i></a>
+<a style='background:red' href="<?php echo base_url("factura/deleted_fac/$rf->idfac/$user/$identificar/$count")?>" data-toggle="modal" data-target="#button_delete_tarifarios" class="btn btn-primary btn-xs"><i class="fa fa-trash"></i></a>
 </td>
 <td><i class="fa fa-info-circle" title="Creado por <?=$crt1?> (<?=$inserted_time?>) &#013 Modificado por <?=$updt1?> (<?=$updated_time?>) "></i> </td>
 
@@ -215,7 +216,9 @@ fecha de creacion  <?=$insert_date?> - fecha de modificacion <?=$update_date?>
 </i>
 </div>
 <div class="col-md-2" >
-<a class="btn btn-sm btn-primary"  href="<?php echo base_url("admin_medico/billing_print_view1/$idfacc/$is_admin")?>" ><i class="fa fa-eye"></i>Ver Factura </a>
+<!--<a class="btn btn-sm btn-primary"  href="<?php echo base_url("factura/billing_print_view1/$idfacc/$is_admin")?>" ><i class="fa fa-eye"></i>Ver Factura</a>-->
+<a class="btn btn-sm btn-primary" target="_blank" href="<?php echo base_url("printings/print_billing/$idfacc/$printView")?>" ><i class="fa fa-print"></i>Imprimir Factura</a>
+
 </div>
 <br/><br/><br/><br/>
 
@@ -299,7 +302,7 @@ $('.button_edit_tarifarios').on('click', function(event) {
    var centro = "<?=$centro_in_fac?>";
  $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/updateBillTable')?>",
+url: "<?=base_url('factura/updateBillTable')?>",
 data: {id_fact:id_fact,id_facc:id_facc,is_admin:is_admin,user:user,identificar:identificar,centro:centro},
 cache: true,
 success:function(data){
@@ -323,7 +326,7 @@ $("#edit_this_tarif").html(data);
 function getSegName(dropDown) {
 $.ajax({
 type: "POST",
-url: '<?php echo site_url('admin_medico/get_service_precio_centro');?>',
+url: '<?php echo site_url('factura/get_service_precio_centro');?>',
 data:{id_mssm1:dropDown.value},
 success: function(data){
 $($(dropDown).parents('tr')[0]).find('input.total-pag-seg').val(data);
@@ -337,7 +340,7 @@ function getSegNamePrivado(dropDown) {
 
 $.ajax({
 type: "POST",
-url: '<?php echo site_url('admin_medico/get_service_precio');?>',
+url: '<?php echo site_url('factura/get_service_precio');?>',
 data:{id_mssm1:dropDown.value},
 success: function(data){
 $($(dropDown).parents('tr')[0]).find('input.total-pag-seg').val(data);
@@ -412,12 +415,6 @@ function onlyfloat(event) {
     return true;
     };
 	
-
-
-
-
-	
-//************************************************************************************************
 //===============save_factura==============================
 $('#agregar_new_fac').on('click', function(event) {
 
@@ -453,7 +450,7 @@ var is_admin="<?=$is_admin?>";
 var action=1;
 $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/updateBill1')?>",
+url: "<?=base_url('factura/updateBill1')?>",
 data: {service:service,cantidad:cantidad,preciouni:precio,id_patient:id_patient,area_id:area_id,
 subtotal:total,totalpaseg:totalpaseg,descuento:descuento,totpapat:totpapat,idfacc:idfacc,
 idfac:idfac,updated_by:updated_by,action:action,medico:medico,seguro:seguro,centro:centro},
@@ -481,10 +478,6 @@ return false;
 
 
 
-//********************************************************************************************************
-
-
-
 $(".button_delete_tarifarios").click(function(){
 if (confirm("Estás seguro de eliminar ?"))
 { 
@@ -494,7 +487,7 @@ var rowElement = $(this).parent().parent(); //grab the row
 
 $.ajax({
 type:'POST',
-url:'<?=base_url('admin_medico/delete_factura')?>',
+url:'<?=base_url('factura/delete_factura')?>',
 data: {id : del_id},
 success:function(response) {
 

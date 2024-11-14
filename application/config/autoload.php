@@ -23,3 +23,4 @@ $autoload['language'] = array();
 
 
 $autoload['model'] = array();
+$autoload['helper'] = array('url', 'security');

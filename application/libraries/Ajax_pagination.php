@@ -1,4 +1,4 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * Pagination Class
  *
@@ -7,40 +7,40 @@
  * 
  * Modified by CodexWorld.com
  * @Ajax pagination functionality has added with this library. 
- * @It will helps to integrate Ajax pagination with loading image in CodeIgniter application.
+ * @It helps to integrate Ajax pagination with loading image in CodeIgniter application.
  * @TutorialLink http://www.codexworld.com/ajax-pagination-in-codeigniter-framework/
  */
 class Ajax_pagination{
 
 	var $base_url           = ''; // The page we are linking to
-	var $total_rows  		= ''; // Total number of items (database results)
-	var $per_page	 		= 10; // Max number of items you want shown per page
-	var $num_links			=  2; // Number of "digit" links to show before/after the currently viewed page
-	var $cur_page	 		=  0; // The current page being viewed
-	var $first_link   		= 'Primero';
-	var $next_link			= '<i class="fa fa-angle-double-right"></i>';
-	var $prev_link			= '<i class="fa fa-angle-double-left"></i>';
-	var $last_link			= 'Ultimo';
-	var $uri_segment		= 3;
-	var $full_tag_open		= '<ul class="pagination">';
-	var $full_tag_close		= '</ul>';
-	var $first_tag_open		= '<li>';
-	var $first_tag_close	= '</li>';
-	var $last_tag_open		= '<li>';
-	var $last_tag_close		= '</li>';
-	var $cur_tag_open		= "<li class='disabled'><li class='active'><a href='#'>";
-	var $cur_tag_close		= "<span class='sr-only'></span></a></li>";
-	var $next_tag_open		= '<li>';
-	var $next_tag_close		= '</li>';
-	var $prev_tag_open		= '<li>';
-	var $prev_tag_close		= '</li>';
-	var $num_tag_open		= '<li>';
-	var $num_tag_close		= '</li>';
+	var $total_rows  	= ''; // Total number of items (database results)
+	var $per_page	 	= 10; // Max number of items you want shown per page
+	var $num_links		=  2; // Number of "digit" links to show before/after the currently viewed page
+	var $cur_page	 	=  0; // The current page being viewed
+	var $first_link   	= 'First';
+	var $next_link		= '&#187;';
+	var $prev_link		= '&#171;';
+	var $last_link		= 'Last';
+	var $uri_segment	= 3;
+	var $full_tag_open	= '<div class="pagination">';
+	var $full_tag_close	= '</div>';
+	var $first_tag_open	= '';
+	var $first_tag_close	= '&nbsp;';
+	var $last_tag_open	= '&nbsp;';
+	var $last_tag_close	= '';
+	var $cur_tag_open	= '&nbsp;<b>';
+	var $cur_tag_close	= '</b>';
+	var $next_tag_open	= '&nbsp;';
+	var $next_tag_close	= '&nbsp;';
+	var $prev_tag_open	= '&nbsp;';
+	var $prev_tag_close	= '';
+	var $num_tag_open	= '&nbsp;';
+	var $num_tag_close	= '';
 	var $target             = '';
-    var $anchor_class		= '';
-    var $show_count         = true;
-    var $link_func          = 'getData';
-    var $loading            = '.loading';
+    	var $anchor_class	= '';
+    	var $show_count         = true;
+    	var $link_func          = 'getData';
+    	var $loading            = '.loading';
 
 	/**
 	 * Constructor
@@ -91,7 +91,7 @@ class Ajax_pagination{
 
 		// Is there only one page? Hm... nothing more to do here then.
 		if ($num_pages == 1){
-            $info =$this->total_rows;
+            		$info = 'Showing : ' . $this->total_rows;
 			return $info;
 		}
 
@@ -137,14 +137,14 @@ class Ajax_pagination{
 		// SHOWING LINKS
 		if ($this->show_count){
 			$curr_offset = $CI->uri->segment($this->uri_segment);
-           // $info =( $curr_offset + 1 ) ;
-			$info ='  ';
-			//if( ( $curr_offset + $this->per_page ) < ( $this->total_rows -1 ) )
-			//$info .= $curr_offset + $this->per_page;
-			//else
-			//$info .= $this->total_rows;
+			$info = 'Showing ' . ( $curr_offset + 1 ) . ' to ' ;
 			
-			$info .='<i style="font-size:10px;font-size:bold;color:red">&nbsp;&nbsp;(Total ' . $this->total_rows . ' registros)</i> ';
+			if( ( $curr_offset + $this->per_page ) < ( $this->total_rows -1 ) )
+			$info .= $curr_offset + $this->per_page;
+			else
+			$info .= $this->total_rows;
+			
+			$info .= ' of ' . $this->total_rows . ' | ';
 			
 			$output .= $info;
 		}
@@ -212,12 +212,6 @@ class Ajax_pagination{
                 success: function(data){
                     $('<?php echo $this->loading; ?>').hide();
                     $('<?php echo $this->target; ?>').html(data);
-					$(".push-save-down").css("margin-top", "-76px");
-					$(".push-save-down-oftal").css("margin-top", "-80px");
-					$(".hide_pagination").css("visibility", "hidden");
-			
-					
-					
                 }
             });
         }

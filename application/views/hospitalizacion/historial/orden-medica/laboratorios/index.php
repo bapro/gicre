@@ -97,7 +97,7 @@ alert('An erroroccurred... Look at the console (F12 or Ctrl+Shift+I, Console tab
 } 
  })
  
-
+allLaboratoriosOrdMed();
 function allLaboratoriosOrdMed()
 {
 $("#allLaboratoriosOrdMed").fadeIn().html('<span class="load"> <img  width="40px" src="<?= base_url();?>assets/img/loading.gif" /></span>');
@@ -105,7 +105,7 @@ var historial_id = <?=$id_historial?>;
 var user_id  = <?=$user_id?>;
 $.ajax({
 url:"<?php echo base_url(); ?>hospitalizacion/allLaboratoriosOrdMed",
-data: {historial_id:historial_id,user_id:user_id,printing:2,centro:<?=$centro_id?>},
+data: {historial_id:historial_id,user_id:user_id,printing:3,centro:<?=$centro_id?>},
 method:"POST",
 success:function(data){
 $('#allLaboratoriosOrdMed').html(data);

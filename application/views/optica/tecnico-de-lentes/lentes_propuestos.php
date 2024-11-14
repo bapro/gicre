@@ -32,7 +32,7 @@ th{text-align:left}
 <select class='select2' id='search-patient'>
 <option value=''>Buscar paciente</option>
  <?php
- $sql ="SELECT patient,inserted_time, laboratory_lentes.id AS idlente FROM h_c_of_refracion JOIN laboratory_lentes ON h_c_of_refracion.id= laboratory_lentes.id_refraccion WHERE  enviado=$enviado ORDER BY laboratory_lentes.id desc ";
+ $sql ="SELECT patient,inserted_time, laboratory_lentes.id AS idlente FROM h_c_of_refracion JOIN laboratory_lentes ON h_c_of_refracion.id= laboratory_lentes.id_refraccion WHERE id_lab_lente=$id_tecnico_lentes &&  enviado=$enviado ORDER BY laboratory_lentes.id desc ";
 $querysc= $this->db->query($sql);
   foreach($querysc->result() as $row){
 	  $fecha=date("d-m-Y H:i:s", strtotime($row->inserted_time));

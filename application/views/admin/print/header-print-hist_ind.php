@@ -5,8 +5,8 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/mpdf.css">
 <style>
  table { border-collapse: collapse; witdh:100%;font-size: 10px}
-    tr { border-top: solid 1px black border-bottom: solid 1px black; }
-    td { border-right: none; border-left: none;padding: 1em; }
+    tr { border-top: solid 1px #E6E6E6 border-bottom: solid 1px #E6E6E6; }
+    td { border-right: none; border-left: none;border-color:#E6E6E6;}
     div.footer-firma {
       position: absolute;
       width: 80%;
@@ -51,24 +51,73 @@ $logoseg='<img  style="width:50px;" src="'.base_url().'/assets/img/seguros_medic
   $plan=$this->db->select('name')->where('id',$paciente['plan'])->get('seguro_plan')->row('name');
 
 
+$centroInfo=$this->db->select('name,logo,rnc,primer_tel,segundo_tel,provincia,municipio,barrio,calle,type')->where('id_m_c',$centroId)
+->get('medical_centers')->row_array();
+$centro_name=$centroInfo['name'];
+$rnc=$centroInfo['rnc'];
+$centro_logo=$centroInfo['logo'];
+$primer_tel=$centroInfo['primer_tel'];
+$segundo_tel=$centroInfo['segundo_tel'];
+$barrio=$centroInfo['barrio'];
+$calle=$centroInfo['calle'];
+$centro_prov=$this->db->select('title')->where('id',$centroInfo['provincia'])->get('provinces')->row('title');
+$centro_muni=$this->db->select('title_town')->where('id_town',$centroInfo['municipio'])->get('townships')->row('title_town');
+
 $logo_tipo=$this->db->select('sello')->where('doc',$id_doc)->where('dist',1)->get('doctor_sello')->row('sello');
 
 if ($logo_tipo) {
-echo '<div style="text-align:center"><img   class="center-img" src="'.base_url().'/assets/update/'.$logo_tipo.'"  /> </div>';
+$doc_log_tipo= '<div style="text-align:center"><img class="center-img" src="'.base_url().'/assets/update/'.$logo_tipo.'"  /> </div>';
 
 } else {
-echo "<br/><br/><br/><br/><br/>";
+$doc_log_tipo=  "<br/><br/><br/>";
+}
+$testme ='';
+
+if($centroInfo['type']=='privado' && $id_doc!=555){
+echo $doc_log_tipo ;
+$testme =1;
+}elseif($centroInfo['type']=='publico' || $centroInfo['type']=='Salud ocupacional') {?>
+<table style="width:100%">
+<tr>
+<td><img style="width:60px" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro_logo; ?>"  /></td>
+<td >
+<h3><?=$centro_name?></h3>
+<strong>Tel:</strong> <?=$primer_tel?> <?=$segundo_tel?> <strong>RNC: </strong><?=$rnc?> <strong>Ubicación:</strong> <?=$calle?>, <?=$barrio?>, <?=$centro_prov?>, <?=$centro_muni?> 
+</td>
+
+</tr>
+</table>
+<?php
+$testme =2;
+} 
+elseif($centroInfo['type']=='privado' && $id_doc==555){?>
+<table style="width:100%">
+<tr>
+<td><img style="width:60px" src="<?= base_url();?>/assets/img/centros_medicos/<?php echo $centro_logo; ?>"  /></td>
+<td >
+<h3><?=$centro_name?></h3>
+<strong>Tel:</strong> <?=$primer_tel?> <?=$segundo_tel?> <strong>RNC: </strong><?=$rnc?> <strong>Ubicación:</strong> <?=$calle?>, <?=$barrio?>, <?=$centro_prov?>, <?=$centro_muni?> 
+</td>
+
+</tr>
+</table>
+<?php
+$testme =3;
+}
+else{
+echo $doc_log_tipo ;
+$testme =4;	
 }
 ?>
 
-<h3 style='text-align:center'><?=$title?></h3>
+<p style='text-align:center'><strong><?=$title?></strong></p>
 <table  align="left" style="width:100%" class='r-b' >
 <tr>
-	<?=$display?> 	
-		<td style="text-transform:uppercase;font-size:14px"><strong><?=$paciente['nombre']?></strong></td>
+	<?=$display?> 
+		<td style="text-transform:uppercase;"><strong><?=$paciente['nombre']?>  </strong></td>
 
 		<td style="text-align:center">
-		<table class="r-b" style="width:40px;border-collapse: collapse; border-spacing: 0;">
+		<table class="r-b" style="width:100%;border-collapse: collapse; border-spacing: 0;">
 		<tr>
 		<td>
 		<?=$logoseg?>
@@ -80,11 +129,12 @@ echo "<br/><br/><br/><br/><br/>";
 		if($paciente['plan'] !=""){echo "$plan";}
 		?>
 		</td>
-		<td style="text-align:center"><?=$nss['inputf']?> <span style="color:red"><?=$nss['input_name']?></span></td><td></td>
+		<td style="text-align:center;text-transform:lowercase"><?=$nss['inputf']?> <span style="color:red"><?=$nss['input_name']?></span></td><td></td>
 		</tr>
 
 		</table>
 		</td>
+		
 	</tr>
 
 
@@ -95,15 +145,15 @@ echo "<br/><br/><br/><br/><br/>";
 		<td><strong>Nacionalidad</strong></td>
 		<td><strong>Edad</strong></td>
 		<td style='width"70px'><strong>Telefonos</strong></td>
-		<td><strong></strong></td>
+		<td></td>
 	</tr>
 
 	<tr>
-		<td style="" > <?=$paciente['ced1']?>-<?=$paciente['ced2']?>-<?=$paciente['ced3']?></td>
+		<td style="" > <?=$paciente['cedula']?></td>
 		<td style=""><?=$paciente['nacionalidad']?></td>
 		<td style=""><?=getPatientAge($paciente['date_nacer'])?></td>
-		<td style=";"><?=$paciente['tel_resi']?> / <?=$paciente['tel_cel']?></td>
-		<td style="text-transform: lowercase;"></td>
+		<td style=""><?=$paciente['tel_resi']?> / <?=$paciente['tel_cel']?></td>
+		<td style=""></td>
 	</tr>
 </table>
 

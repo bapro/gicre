@@ -32,7 +32,8 @@ $this->load->model('excel_import_model');
 }
  public function search_code()
 { 
-$code=$this->session->userdata['codepat'];
+$code=md5($this->input->post('code'));
+//$code=$this->session->userdata['codepat'];
 $this->load->view('estudios/header');
 $id_usr=$this->session->userdata['estudios_id'];
 $data['id_usr']=$id_usr; 

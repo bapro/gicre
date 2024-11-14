@@ -1,19 +1,4 @@
-<style>
 
-.add-row{color:#38a7bb;border-color:#38a7bb;}
-#plus{
-    
-    text-decoration:none;
-    color:#38a7bb;
-	display:inline-block;
-    cursor:pointer
-}
-.td-input{background:white;border:1px solid #38a7bb}
-.totpapat,.total,.totalpaseg{background:rgb(230,230,230);border:1px solid #38a7bb}
-.col-sm-5,.col-sm-7,.col-sm-9,.col-sm-3,.col-sm-8{font-size:15px;}
-td,th{text-align:left;font-size:14px}
-
-</style>
   <?php foreach($billings2 as $row)
 
 
@@ -90,7 +75,7 @@ $("#load_factura_table_view").fadeIn().html('<span style="font-size:24px" class=
   var id_patient = "<?=$id_p_a?>";
 $.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/factura_table_view')?>",
+url: "<?=base_url('factura/factura_table_view')?>",
 data: {id_facc:id_facc,is_admin:is_admin,user:user,identificar:identificar,id_patient:id_patient},
 cache: true,
 success:function(data){ 
@@ -119,7 +104,7 @@ else
 $('#change-header-fac').prop("disabled",true);
 	$.ajax({
 type: "POST",
-url: "<?=base_url('admin_medico/UpdateBillHead')?>",
+url: "<?=base_url('factura/UpdateBillHead')?>",
 data: {fechaEdit:fechaEdit,numauto:numauto,autopor:autopor,user:user,id_facc:id_facc,comment:comment},
 cache: true,
 success:function(data){

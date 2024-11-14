@@ -4,7 +4,7 @@
     <meta charset="utf-8">
   <title>ADMEDICALL</title>
 <noscript><meta http-equiv="refresh" content="0; url=<?php echo site_url('admin_medico/noJs');?>" /></noscript>
-    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display|Spectral">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
@@ -12,8 +12,9 @@
  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css"> 
 	<link href="<?=base_url();?>assets/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">
-    <link href="<?=base_url();?>assets/css/custom.css" rel="stylesheet">
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">  
+    <link href="<?=base_url();?>assets/css/custom.css?rnd=132" rel="stylesheet">
+		    <link href="<?=base_url();?>assets/css/autocomplete.css?rnd=133" rel="stylesheet">
+<link href="<?=base_url();?>assets/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
      <link rel="shortcut icon" href="<?= base_url();?>assets/img/adms.png" type="image/x-icon" />
 	
 <style>
@@ -139,18 +140,34 @@ function tempAlert(msg,duration)
  
 <?php
 
-$query_user= $this->db->get('users');
 $name=$this->session->userdata['admin_name'];
  if(empty($this->session->userdata['admin_name'])){
 redirect('https://www.admedicall.com');	
  }
 $id_usr=$this->session->userdata['admin_id'];
+$admin_position_centro=$this->session->userdata['admin_position_centro'];
+if($admin_position_centro){
+	$user_peril = "Administrativo";
+	$hide_payment="style='display:none'";
+	$hide_top_header="display:none";
+	$sqlUs ="SELECT id_user FROM user_centro_administrativo WHERE id_centro =$admin_position_centro";
+$queryUs= $this->db->query($sqlUs);
+ $nb_users =$queryUs->num_rows();
+	
+	
+}else{
+$hide_top_header="";
+	$hide_payment="";
+	$user_peril = "Admin";
+	$query_user= $this->db->get('users');
+	$nb_users=$query_user->num_rows();
+}
 ?>
 
 
 <header>
 
-<div id="top" style="background:linear-gradient(to top, white, #E0E5E6);border-top:3px solid #38a7bb;border-bottom:none">
+<div id="top" style="background:linear-gradient(to top, white, #E0E5E6);border-top:3px solid #38a7bb;border-bottom:none;<?=$hide_top_header?>" >
 <div class="container">
 <div class="row">
 
@@ -215,15 +232,15 @@ _________________________________________________________ -->
 <li class="dropdown" >
 
   <a title="<?= $name; ?> : admin de Admedicall " class="dropdown-toggle" style="cursor:pointer" data-toggle="dropdown" data-hover="dropdown">
-  <img src="<?= base_url();?>assets/img/user.png" style="width:25px;border-radius:20px" alt=""/> <?= $name; ?> : Admin
+  <img src="<?= base_url();?>assets/img/user.png" style="width:25px;border-radius:20px" alt=""/> <?= $name; ?> : <?=$user_peril?>
 
  <span class="caret"></span>
   </a>
 
  <ul class="dropdown-menu" >
 
- <li><a href="<?php echo site_url('admin/users');?>"> <img src="<?= base_url();?>assets/img/user.png" style="width:25px;border-radius:20px" alt=""/> <?=$query_user->num_rows();?> Usuarios | <span id='connected_users'></span> conectado(s)</a></li>
-  <li><a href="<?php echo site_url('admin/payment_received');?>" ><i class="fa fa-money" style="color:red"></i> Pagos</a></li>
+ <li><a href="<?php echo site_url('admin/users');?>"> <img src="<?= base_url();?>assets/img/user.png" style="width:25px;border-radius:20px" alt=""/> <?=$nb_users;?> Usuarios | <span id='connected_users'></span> conectado(s)</a></li>
+  <li <?=$hide_payment?>><a href="<?php echo site_url('admin/payment_received');?>" ><i class="fa fa-money" style="color:red"></i> Pagos</a></li>
  <li><a href="<?php echo site_url('login/admin_logout');?>" ><i class="fa fa-sign-out"></i>  Cerrar sesión</a></li>
   
 	
@@ -268,9 +285,7 @@ setInterval(function(){
  }, 1000);
  
  
- setInterval(function(){
-  $('#new-update').load("<?php echo base_url('admin_medico/show_update/'.$id_usr)?>").fadeIn("slow");
- }, 1000);
+
 </script>
 
 <div class="modal fade" id="myModalConnection" role="dialog">

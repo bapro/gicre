@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display|Spectral">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/mpdf.css">
+<style>
+ table { border-collapse: collapse; witdh:100%} 
+    tr { border-top: solid 1px black border-bottom: solid 1px black; } 
+    td { border-right: none; border-left: none;padding: 1em; }
+</style>
+</head>
+
+<div style="width: 100%;">
+<button onclick="ExportToExcel('xlsx')" style="float:right">Export Table Data To Excel File</button>
+<?php
+$desde1= date("d-m-Y", strtotime($from));
+$hasta1= date("d-m-Y", strtotime($to));
+ $fecha = date("d-m-Y");
+ $hour=date("H:i:s");
+?>
+<p style="text-align:center">Desde <?=$from?> Hasta <?=$to?></p>
+
+<table  style="font-size:11px;width:100%" id="tbl_exporttable_to_xls">
+<thead>
+<tr style="background:#D7E495">
+<td  style="text-align:left"><strong>#</strong></td>
+<td  style="text-align:left"><strong>FICHA</strong></td>
+<td  style="text-align:left"><strong>Dept</strong></td>
+<td  style="text-align:left"><strong>Nombre</strong></td>
+<td  style="text-align:left"><strong>Diagnóstico</strong></td>
+<td  style="text-align:left"><strong>Fecha de Salida</strong></td>
+
+
+
+
+<td  style="text-align:left"><strong>Días</strong></td>
+<td  style="text-align:left"><strong>Fecha Retorno a planta</strong></td>
+<td  style="text-align:left"><strong>Turno</strong></td>
+<td  style="text-align:left"><strong>Supervisor</strong></td>
+<td  style="text-align:left"><strong>Area</strong></td>
+
+
+<td  style="text-align:left"><strong>Sistema</strong></td>
+
+<td  style="text-align:left"><strong>Nombre Médico</strong></td>
+<td  style="text-align:left"><strong>Especialidad</strong></td>
+<td  style="text-align:left"><strong>Centro</strong></td>
+<td  style="text-align:left"><strong>Teléf. del Especialista</strong></td>
+<td  style="text-align:left"><strong>Comentario</strong></td>
+<td  style="text-align:left"><strong>Digitado</strong></td>
+<td  style="text-align:left"><strong>telefono</strong></td>
+<td  style="text-align:left"><strong>Fecha Intrada</strong></td>
+<td  style="text-align:left"><strong>Fecha de ingreso</strong></td>
+<td  style="text-align:left"><strong>Tempo en la empresa YY/MM</strong></td>
+
+
+
+
+
+</tr>
+
+</thead>
+<tbody>
+
+<?php
+//if($query->result() !=NULL){
+$i = 1;
+foreach ($query->result() as $row){
+$digitado=$this->db->select('name')->where('id_user',$row->created_by)->get('users')->row('name');
+
+$now = new DateTime();
+$ref = new DateTime($row->date_sen);
+$diff = $now->diff($ref);
+//printf('%d days, %d hours, %d minutes', $diff->d, $diff->h, $diff->i);
+?>
+<tr>
+<td  style="text-align:left"><?php echo $i; $i++?></td>
+<td  style="text-align:left"><?=$row->clock?></td>
+<td  style="text-align:left"><?=$row->department_num?></td>
+<td  style="text-align:left"><?=$row->employee_name?></td>
+<td  style="text-align:left"><?=$row->diagnostico?></td>
+<td  style="text-align:left"><?=$row->fecha_inicio?></td>
+
+<td  style="text-align:left"><?=$row->amount_days?></td>
+<td  style="text-align:left"><?=$row->fecha_retorno?></td>
+<td  style="text-align:left"><?=$row->gbl_shift?> </td>
+<td  style="text-align:left"><?=$row->super_name?> </td>
+<td  style="text-align:left"><?=$row->dr_pr_dept?></td>
+<td  style="text-align:left"><?=$row->sistema?></td>
+
+<td  style="text-align:left"><?=$row->medico_licencia?></td>
+<td  style="text-align:left"><?=$row->area?></td>
+<td  style="text-align:left"><?=$row->centro_med?></td>
+<td  style="text-align:left"><?=$row->phone_centro?></td>
+<td  style="text-align:left"><?=$row->comentario?></td>
+<td  style="text-align:left"><?=$digitado?></td>
+<td  style="text-align:left"><?=$row->phone_emp?></td>
+<td  style="text-align:left"><?=$row->inserted_time?></td>
+<td  style="text-align:left"><?=$row->date_sen?></td>
+<td  style="text-align:left"><?php printf('%d year, %d month', $diff->y, $diff->m);?></td>
+
+</tr>
+<?php
+}
+//}
+//else{
+	//echo "<tr><td colspan='6' style='text-align:center'>No hay datos...</td></tr>";
+//}
+?>
+<tbody>
+ </table>
+ </div>
+ <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+ <script>
+ function ExportToExcel(type, fn, dl) {
+       var elt = document.getElementById('tbl_exporttable_to_xls');
+       var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+       return dl ?
+         XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }):
+         XLSX.writeFile(wb, fn || ('MySheetName.' + (type || 'xlsx')));
+    }
+ </script>
+ 

@@ -1,0 +1,106 @@
+<div class="container">
+  <div class="row">
+   
+ <div class="col-md-12">
+ <div class="col-md-9">
+</div>
+ <div class="col-md-3">
+ <span class="hide-mes-pas"><?php echo $this->session->flashdata('msg_pass'); ?></span>
+</div>
+  
+ </div>
+ 
+
+</div>
+
+<?php foreach($editUser as $row)
+
+?>
+ <hr id="hr_ad"/>
+<h3   class="h3">CAMBIAR USUARIO <?=$row->perfil?></h3>
+<div style="color:red" id="errorBox"></div>
+<div class="col-xs-12 "  id="background_">
+<p style='color:black'>
+<?php
+$user_c18=$this->db->select('name')->where('id_user',$row->inserted_by)->get('users')->row('name');
+$user_c19=$this->db->select('name')->where('id_user',$row->updated_by)->get('users')->row('name');
+
+$inserted_time = date("d-m-Y H:i:s", strtotime($row->insert_date));
+$updated_time = date("d-m-Y H:i:s", strtotime($row->update_date));
+echo "Creado por : $user_c18 ($inserted_time) <br/> Modificado por $user_c19 ($updated_time)";
+?>
+</p>
+<div id="success" class='alert alert-success' style="text-aling:center;display:none">Usuario se guada con exito.</div>
+<div class="col-md-9">
+<form method="post" id="form_user"  class="form-horizontal">
+<input class="form-control" value="<?=$row->id_user?>" name="id_user"  type="hidden">
+<p style="text-align:center;color:red"  id="errorBox"></p>
+
+<div class="form-group">
+<label class="control-label col-sm-4" >Nombres Apellidos</span> <span id="oblig">*</span></label>
+<div class="col-sm-7">
+<input class="form-control" value="<?=$row->name?>" name="nombre" id="nombre"  type="text">
+</div>
+</div>
+
+
+<div class="form-group">
+<label class="control-label col-sm-4" >Nombre usuario</span> <span id="oblig">*</span></label>
+<div class="col-sm-7">
+<input class="form-control" name="user" id="user" type="text" value="<?=$row->username?>">
+</div>
+</div>
+<div class="form-group">
+<label class="control-label col-sm-4" >Correo Elec.</span> <span id="oblig">*</span></label>
+<div class="col-sm-7">
+<input class="form-control" name="user" id="user" type="text" value="<?=$row->correo?>">
+</div>
+</div>
+
+<div class="col-sm-5 col-md-offset-4">
+
+<button type="submit" id="send"  class="btn btn-primary">Cambiar</button>
+<br/><br/>
+</div>
+</form>
+</div>
+<div class="col-md-12">
+<br/>
+<form class="form-inline"  >
+<label class="control-label" >Cambiar Contrasena</label><br/>
+  <button class='btn btn-primary btn-sm"' style='font-size:9px' type='button' id='generarCont'>Generar</button>
+   <input id="pass1"  style="width:190px" type="password" class="form-control new-pass" >
+
+   <input id="pass2" style="width:190px" type="password" class="form-control new-pass" >
+     <button  class="btn btn-default btn-sm" type="button" id="verPassword"><i class="fa fa-eye" aria-hidden="true"></i></button>
+   <button  class="btn btn-success btn-sm" type="button" id="savePassw" >Cambiar</button>
+ </form>
+
+<br/><br/>
+</div>
+</div>
+</div>
+
+</div>
+<br/><br/>
+ <?php 
+ 
+ 
+        $this->load->view('footer');
+
+
+ ?>
+
+
+  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+ 	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+  <script src="<?=base_url();?>assets/js/custom.js"></script> 
+<script type="text/javascript"> 
+
+
+
+ </script>
+   </body>
+</html>

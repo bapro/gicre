@@ -38,4 +38,5 @@ $data['seguro_medico'] = $this->model_admin->view_doctor_seguro_as($as_medico_ce
 $this->load->view('medico/pacientes-citas/patient-found-in-padron', $data);
  $this->load->view('admin/pacientes-citas/footer_patient_search');
 $this->load->view('medico/pacientes-citas/cita-footer');
+
 ?>

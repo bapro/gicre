@@ -14,13 +14,28 @@
 <h4 style="text-align:right"><i><?=date('d-m-Y H:i A')?></i></h4>
 <?php 
 $i=1;
+
+if($centro==103){
+	$additional_col_th_m="<td><strong>MEDICO</strong></td>";
+	$additional_col_th_en="<td><strong>ENTREGA</strong></td>";
+	$additional_col_th_en_in="<td style='border:1px solid'></td>";
+	$colspan='7';
+	$colspan2='9';
+}else{
+	$additional_col_th_m="";
+    $additional_col_th_en="";
+	$additional_col_th_en_in="";
+    $colspan='6';	
+	$colspan2='8';
+}
+
 if($checkval=="privado") {
 	echo'<h2 style="text-align:center">REPORTE DE FACTURAS PACIENTES PRIVADOS</h2>';
 	if($doctor==0){
 $centroval=$this->db->select('name,logo')->where('id_m_c',$centro)->get('medical_centers')->row_array();
+
 	?>
 
-<img  style="width:150px;margin-left:43%" src="<?=base_url()?>/assets/img/centros_medicos/<?=$centroval['logo']?>"  />
 	<h3 style="text-align:center"><?=$centroval['name']?> </h3>
 	<?php 
     } else{
@@ -39,14 +54,15 @@ $centroval=$this->db->select('name,logo')->where('id_m_c',$centro)->get('medical
 <tr style="background:#D7E495">
 <td><strong>FECHA</strong></td>
 <td><strong>#REC</strong></td>
-<!--<th class="col-xs-2" >Foto</th>-->
 <td><strong>NOMBRES</strong></td>
+<?=$additional_col_th_m ?>
 <td ><strong>SERVICIO</strong></td>
 <td><strong>AREA</strong></td>
 <td><strong>#FAC</strong></td>
 <!--<td><strong>PRECIO</strong></td>-->
 <td ><strong>DESC.</strong></td>
 <td><strong>DIF. A PAGAR</strong></td>
+<?=$additional_col_th_en?>
 <td><strong>USUARIOS</strong></td>
 </tr>
 </thead>
@@ -55,8 +71,21 @@ $centroval=$this->db->select('name,logo')->where('id_m_c',$centro)->get('medical
 $this->padron_database = $this->load->database('padron',TRUE);
 $total_price = 0;$total_desc = 0;$total_paga= 0;
  foreach($display_report as $row)
-
 {
+$fac_time =date("d-m-Y", strtotime($row->fecha_fac));
+$get_hour_from_update_time = date("H:i:s", strtotime($row->updated_time));	
+if($centro==103){
+	$medico_name=$this->db->select('name')->where('id_user',$row->medico2)->get('users')->row('name');
+	if($medico_name=="baptiste prophete"){
+		$doc_name_="";
+	}else{
+   $doc_name_=$medico_name;
+	}	
+	$additional_col_td="<td>$doc_name_</td>";	
+}else{
+	$additional_col_td="";	
+}	
+		
  $paciente=$this->db->select('nombre,photo,ced1, ced2, ced3, nec1')->where('id_p_a',$row->pat_id)
  ->get('patients_appointments')->row_array();
  $type=$this->db->select('type')->where('id_m_c',$row->center_id)->get('medical_centers')->row('type');
@@ -73,37 +102,18 @@ $area=$this->db->select('title_area')->where('id_ar',$row->area_id)->get('areas'
 $seguro=$this->db->select('title')->where('id_sm',$row->seguro)->get('seguro_medico')->row('title');
 ?>
 <tr>
-<td><?=$row->fecha_fac;?></td>
+<td><?=$fac_time;?> <?=$get_hour_from_update_time?></td>
 <td><?=$paciente['nec1'];?></td>
-<!--<td>
-<?php
-if($paciente['photo']=="padron"){
- $photo=$this->padron_database->select('IMAGEN')
-->where('MUN_CED',$paciente['ced1'])
-->where('SEQ_CED',$paciente['ced2'])
-->where('VER_CED',$paciente['ced3'])
-->get('fotos')->row('IMAGEN');
-echo '<img width="80" height="80"   src="data:image/jpeg;base64,'. base64_encode($photo) .'" />';
-} else if($paciente['photo']==""){
-	
-}
-else{
-	?>
-<img width="80" height="80" src="<?= base_url();?>/assets/img/patients-pictures/<?php echo $paciente['photo']; ?>"  />
-<?php
-
-}
-?>
-
-</td>-->
 <td style="text-transform:uppercase;"><?=$paciente['nombre'];?></td>
+<?=$additional_col_td?>
 <td><?=$procedimiento;?></td>
 <td><?=$area;?></td>
-<td><?=$centro;?>-<?=$i;$i++;?></td>
+<td><?=$numfac;?></td>
 <!--<td><?=$numfac;?></td>-->
 <!--<td><?=$row->preciouni;?></td>-->
 <td><?=$row->descuento;?></td>
 <td><?=$row->totpapat;?></td>
+<?=$additional_col_th_en_in?>
 <td><?=$user;?></td>
 </tr>
 <?php
@@ -117,11 +127,10 @@ $total_paga += $row->totpapat;
 </tbody> 
 <tfoot>
 <tr style="background:#cde2b2">
-<td colspan="6"><span  style="margin-left: 520px;">TOTAL</span></td>
+<td colspan="<?=$colspan?>" align="center"><strong>TOTAL</strong></td>
 <!--<td><strong>$RD <?=number_format($total_price,2)?></strong></td>-->
 <td><strong>RD$<?=number_format($total_desc,2) ?></strong></td>
 <td><strong>RD$<?=number_format($total_paga,2) ?></strong></td>
-<td></td>
 </tr> 
  </tfoot>
 </table>
@@ -150,8 +159,8 @@ $centroval=$this->db->select('name,logo')->where('id_m_c',$centro)->get('medical
 <tr style="background:#D7E495">
 <td><strong>FECHA</strong></td>
 <td><strong>#REC</strong></td>
-<!--<th class="col-xs-2" >Foto</th>-->
 <td><strong>NOMBRES</strong></td>
+<?=$additional_col_th_m ?>
 <td ><strong>SERVICIO</strong></td>
 <td><strong>AREA</strong></td>
 <td><strong>#FAC</strong></td>
@@ -161,6 +170,7 @@ $centroval=$this->db->select('name,logo')->where('id_m_c',$centro)->get('medical
 <!--<td><strong>PRECIO</strong></td>-->
 <td ><strong>DESC.</strong></td>
 <td><strong>DIF. A PAGAR</strong></td>
+<?=$additional_col_th_en?>
 <td><strong>USUARIOS</strong></td>
 </tr>
 </thead>
@@ -169,8 +179,21 @@ $centroval=$this->db->select('name,logo')->where('id_m_c',$centro)->get('medical
 $this->padron_database = $this->load->database('padron',TRUE);
 $total_price = 0;$total_desc = 0;$total_paga= 0;$totalpaseg=0;
  foreach($display_report as $row)
-
 {
+$fac_time =date("d-m-Y", strtotime($row->fecha_fac));
+$get_hour_from_update_time = date("H:i:s", strtotime($row->updated_time));		
+if($centro==103){
+	$medico_name=$this->db->select('name')->where('id_user',$row->medico2)->get('users')->row('name');
+	if($medico_name=="baptiste prophete"){
+		$doc_name_="";
+	}else{
+   $doc_name_=$medico_name;
+	}
+	$additional_col_td="<td>$doc_name_</td>";
+}else{
+	$additional_col_td="";	
+}		
+	
  $paciente=$this->db->select('nombre,photo,ced1, ced2, ced3, nec1')->where('id_p_a',$row->pat_id)
  ->get('patients_appointments')->row_array();
  $type=$this->db->select('type')->where('id_m_c',$row->center_id)->get('medical_centers')->row('type');
@@ -193,39 +216,21 @@ $color="";
 }
 ?>
 <tr style="background:<?=$color?>">
-<td><?=$row->fecha_fac;?></td>
+<td><?=$fac_time;?> <?=$get_hour_from_update_time?></td>
 <td><?=$paciente['nec1'];?></td>
-<!--<td>
-<?php
-if($paciente['photo']=="padron"){
- $photo=$this->padron_database->select('IMAGEN')
-->where('MUN_CED',$paciente['ced1'])
-->where('SEQ_CED',$paciente['ced2'])
-->where('VER_CED',$paciente['ced3'])
-->get('fotos')->row('IMAGEN');
-echo '<img width="80" height="80"   src="data:image/jpeg;base64,'. base64_encode($photo) .'" />';
-} else if($paciente['photo']==""){
-	
-}
-else{
-	?>
-<img width="80" height="80" src="<?= base_url();?>/assets/img/patients-pictures/<?php echo $paciente['photo']; ?>"  />
-<?php
-
-}
-?>
-
-</td>-->
 <td style="text-transform:uppercase;"><?=$paciente['nombre'];?></td>
+<?=$additional_col_td?>
 <td><?=$procedimiento;?></td>
 <td><?=$area;?></td>
-<td><?=$centro;?>-<?=$i;$i++;?></td>
+<!--<td><?=$centro;?>-<?=$i;$i++;?></td>-->
+<td><?=$numfac?></td>
 <td><?=$seguro?></td>
 <td><?=$factura['numauto']?></td>
 <td><?=$row->totalpaseg?></td>
 <!--<td><?=$row->preciouni;?></td>-->
 <td><?=$row->descuento;?></td>
 <td><?=$row->totpapat;?></td>
+<?=$additional_col_th_en_in?> 
 <td><?=$user;?></td>
 </tr>
 <?php
@@ -240,12 +245,11 @@ $total_paga += $row->totpapat;
 </tbody> 
 <tfoot>
 <tr style="background:#cde2b2">
-<td colspan="8"><span  style="margin-left: 520px;">TOTAL</span></td>
+<td colspan="<?=$colspan2?>" align="center"><strong>TOTAL</strong></td>
 <td><strong>RD$<?=number_format($totalpaseg,2)?></strong></td>
 <!--<td><strong>$RD <?=number_format($total_price,2)?></strong></td>-->
 <td><strong>RD$<?=number_format($total_desc,2) ?></strong></td>
 <td><strong>RD$<?=number_format($total_paga,2) ?></strong></td>
-<td></td>
 </tr> 
  </tfoot>
 </table>

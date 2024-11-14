@@ -34,7 +34,7 @@ else{
 
 
 
-<a target="_blank" href="<?php echo site_url("$controller/patient/".$tut->id_tutor); ?>"><?=$tut->relacion?> : <?=$tut->name_tutor?></a>
+<a target="_blank" href="<?php echo site_url("$controller/patient/$tut->id_tutor/$id_cm/$doc"); ?>"><?=$tut->relacion?> : <?=$tut->name_tutor?></a>
 <a data-toggle="modal" data-target="#edit_tutor" href="<?php echo site_url("admin_medico/edit_tutor/".$tut->id); ?>" style="cursor:pointer" title="Editar" class="btn-sm" ><span class="glyphicon glyphicon-pencil"></span></a>
 <a title="Eliminar" style="cursor:pointer" class="delete-tutor" id="<?=$tut->id; ?>" ><i class="fa fa-remove" style="color:red"></i></a>
 </li>
