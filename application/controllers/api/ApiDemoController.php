@@ -20,6 +20,7 @@ $this->load->library('form_validation');
 		
 		$data = $this->api_model->all_users();
 		$this->response($data->result_array(), RestController::HTTP_OK);
+		echo 1;
 
 	}
 	
